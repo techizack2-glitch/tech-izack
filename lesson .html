@@ -1,0 +1,1245 @@
+```html
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>
+Lesson | Tech Izack Academy
+</title>
+
+<link
+rel="stylesheet"
+href="style.css">
+
+<style>
+
+.lesson-page {
+
+    padding:110px 20px 70px;
+
+}
+
+
+.lesson-container {
+
+    max-width:1000px;
+
+    margin:auto;
+
+}
+
+
+.lesson-header {
+
+    background:
+    linear-gradient(
+        135deg,
+        #071a2b,
+        #050b14
+    );
+
+    border:1px solid var(--border);
+
+    border-radius:12px;
+
+    padding:35px;
+
+    margin-bottom:20px;
+
+}
+
+
+.lesson-number {
+
+    color:var(--cyan);
+
+    font-family:Orbitron;
+
+    font-size:13px;
+
+}
+
+
+.lesson-title {
+
+    font-family:Orbitron;
+
+    font-size:38px;
+
+    margin:15px 0;
+
+}
+
+
+.lesson-description {
+
+    color:var(--muted);
+
+    line-height:1.7;
+
+}
+
+
+.lesson-progress {
+
+    margin-top:25px;
+
+}
+
+
+.progress-bar {
+
+    height:8px;
+
+    background:#07101b;
+
+    border-radius:20px;
+
+    overflow:hidden;
+
+}
+
+
+.progress-fill {
+
+    height:100%;
+
+    width:0%;
+
+    background:
+    linear-gradient(
+        90deg,
+        #00d9ff,
+        #20d68a
+    );
+
+}
+
+
+.content-panel {
+
+    background:var(--card);
+
+    border:1px solid var(--border);
+
+    border-radius:12px;
+
+    padding:35px;
+
+    margin-bottom:20px;
+
+}
+
+
+.lesson-content {
+
+    color:#d7e2ec;
+
+    line-height:1.9;
+
+    font-size:17px;
+
+    white-space:pre-wrap;
+
+}
+
+
+.video-container {
+
+    margin-top:30px;
+
+    aspect-ratio:16/9;
+
+    background:#02060a;
+
+    border-radius:8px;
+
+    overflow:hidden;
+
+}
+
+
+.video-container iframe {
+
+    width:100%;
+
+    height:100%;
+
+    border:0;
+
+}
+
+
+.complete-panel {
+
+    text-align:center;
+
+    background:var(--card);
+
+    border:1px solid var(--border);
+
+    border-radius:12px;
+
+    padding:30px;
+
+}
+
+
+.complete-status {
+
+    color:#20d68a;
+
+    margin-bottom:15px;
+
+}
+
+
+.navigation {
+
+    display:flex;
+
+    justify-content:space-between;
+
+    gap:15px;
+
+    margin-top:20px;
+
+}
+
+
+.disabled {
+
+    opacity:.4;
+
+    pointer-events:none;
+
+}
+
+
+.error {
+
+    color:#ff6475;
+
+}
+
+
+@media(max-width:600px) {
+
+    .lesson-title {
+
+        font-size:29px;
+
+    }
+
+    .lesson-header,
+    .content-panel,
+    .complete-panel {
+
+        padding:22px;
+
+    }
+
+    .navigation {
+
+        flex-direction:column;
+
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<header class="navbar">
+
+<div class="container nav-inner">
+
+
+<a
+href="student-dashboard.html"
+class="logo">
+
+<span>&lt;</span>
+
+TECH IZACK
+
+<span>/&gt;</span>
+
+</a>
+
+
+<a
+id="backCourse"
+href="#"
+class="btn btn-outline">
+
+← Course
+
+</a>
+
+
+</div>
+
+</header>
+
+
+<main class="lesson-page">
+
+
+<div class="lesson-container">
+
+
+<!-- HEADER -->
+
+
+<section class="lesson-header">
+
+
+<div
+id="lessonNumber"
+class="lesson-number">
+
+LESSON
+
+</div>
+
+
+<h1
+id="lessonTitle"
+class="lesson-title">
+
+Loading...
+
+</h1>
+
+
+<p
+id="lessonDescription"
+class="lesson-description">
+
+</p>
+
+
+<div class="lesson-progress">
+
+
+<div class="progress-bar">
+
+<div
+id="progressFill"
+class="progress-fill">
+
+</div>
+
+</div>
+
+
+<p
+id="progressText"
+style="color:var(--muted);font-size:13px;">
+
+Loading progress...
+
+</p>
+
+
+</div>
+
+
+</section>
+
+
+<!-- CONTENT -->
+
+
+<section class="content-panel">
+
+
+<span class="section-tag">
+// LESSON CONTENT
+</span>
+
+
+<div
+id="lessonContent"
+class="lesson-content">
+
+Loading...
+
+</div>
+
+
+<div
+id="videoContainer"
+class="video-container"
+style="display:none;">
+
+<iframe
+id="lessonVideo"
+allowfullscreen>
+
+</iframe>
+
+</div>
+
+
+</section>
+
+
+<!-- COMPLETE -->
+
+
+<section class="complete-panel">
+
+
+<div
+id="completionStatus">
+
+</div>
+
+
+<button
+id="completeButton"
+class="btn btn-primary"
+onclick="markComplete()">
+
+✓ Mark Lesson Complete
+
+</button>
+
+
+</section>
+
+
+<!-- NAVIGATION -->
+
+
+<div class="navigation">
+
+
+<a
+id="previousButton"
+class="btn btn-outline">
+
+← Previous Lesson
+
+</a>
+
+
+<a
+id="nextButton"
+class="btn btn-primary">
+
+Next Lesson →
+
+</a>
+
+
+</div>
+
+
+</div>
+
+</main>
+
+
+<script
+src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+</script>
+
+
+<script>
+
+
+const SUPABASE_URL =
+"WEKA_PROJECT_URL_HAPA";
+
+
+const SUPABASE_KEY =
+"WEKA_PUBLISHABLE_KEY_HAPA";
+
+
+const supabaseClient =
+window.supabase.createClient(
+
+    SUPABASE_URL,
+
+    SUPABASE_KEY
+
+);
+
+
+let user = null;
+
+let lesson = null;
+
+let courseLessons = [];
+
+let currentIndex = 0;
+
+
+/*
+================================
+INITIALIZE
+================================
+*/
+
+async function init() {
+
+
+    const {
+        data
+    } =
+    await supabaseClient.auth
+        .getUser();
+
+
+    user =
+        data.user;
+
+
+    if (!user) {
+
+        location.href =
+            "login.html";
+
+        return;
+
+    }
+
+
+    const lessonId =
+        new URLSearchParams(
+            location.search
+        ).get("id");
+
+
+    if (!lessonId) {
+
+        showError(
+            "Lesson ID missing."
+        );
+
+        return;
+
+    }
+
+
+    await loadLesson(
+        lessonId
+    );
+
+}
+
+
+/*
+================================
+LOAD LESSON
+================================
+*/
+
+async function loadLesson(
+    lessonId
+) {
+
+
+    const {
+        data,
+        error
+    } =
+    await supabaseClient
+
+        .from("lessons")
+
+        .select("*")
+
+        .eq(
+            "id",
+            lessonId
+        )
+
+        .eq(
+            "published",
+            true
+        )
+
+        .single();
+
+
+    if (error || !data) {
+
+        showError(
+            "Lesson not found."
+        );
+
+        return;
+
+    }
+
+
+    lesson =
+        data;
+
+
+    await loadCourseLessons();
+
+    renderLesson();
+
+    await loadCompletion();
+
+}
+
+
+/*
+================================
+LOAD COURSE LESSONS
+================================
+*/
+
+async function loadCourseLessons() {
+
+
+    const {
+        data,
+        error
+    } =
+    await supabaseClient
+
+        .from("lessons")
+
+        .select(
+            "id,title,lesson_order"
+        )
+
+        .eq(
+            "course_id",
+            lesson.course_id
+        )
+
+        .eq(
+            "published",
+            true
+        )
+
+        .order(
+            "lesson_order",
+            {
+                ascending:true
+            }
+        );
+
+
+    if (error) {
+
+        console.error(error);
+
+        return;
+
+    }
+
+
+    courseLessons =
+        data || [];
+
+
+    currentIndex =
+        courseLessons.findIndex(
+            item =>
+                item.id === lesson.id
+        );
+
+
+    updateNavigation();
+
+
+    await updateCourseProgress();
+
+}
+
+
+/*
+================================
+RENDER
+================================
+*/
+
+function renderLesson() {
+
+
+    const total =
+        courseLessons.length;
+
+
+    document.getElementById(
+        "lessonNumber"
+    ).textContent =
+
+        `LESSON ${
+            currentIndex + 1
+        } / ${total}`;
+
+
+    document.getElementById(
+        "lessonTitle"
+    ).textContent =
+        lesson.title;
+
+
+    document.getElementById(
+        "lessonDescription"
+    ).textContent =
+        lesson.description || "";
+
+
+    document.getElementById(
+        "lessonContent"
+    ).textContent =
+        lesson.content || "";
+
+
+    if (lesson.video_url) {
+
+        const video =
+            convertVideoUrl(
+                lesson.video_url
+            );
+
+
+        if (video) {
+
+            document.getElementById(
+                "lessonVideo"
+            ).src =
+                video;
+
+
+            document.getElementById(
+                "videoContainer"
+            ).style.display =
+                "block";
+
+        }
+
+    }
+
+
+    updateNavigation();
+
+}
+
+
+/*
+================================
+VIDEO URL
+================================
+*/
+
+function convertVideoUrl(
+    url
+) {
+
+
+    try {
+
+        const parsed =
+            new URL(url);
+
+
+        /*
+        YouTube
+        */
+
+        if (
+            parsed.hostname
+                .includes("youtube.com")
+        ) {
+
+            const videoId =
+                parsed.searchParams
+                .get("v");
+
+
+            if (videoId) {
+
+                return
+                    `https://www.youtube.com/embed/${videoId}`;
+
+            }
+
+        }
+
+
+        if (
+            parsed.hostname
+                .includes("youtu.be")
+        ) {
+
+            const videoId =
+                parsed.pathname
+                .substring(1);
+
+
+            return
+                `https://www.youtube.com/embed/${videoId}`;
+
+        }
+
+
+        /*
+        Vimeo
+        */
+
+        if (
+            parsed.hostname
+                .includes("vimeo.com")
+        ) {
+
+            const videoId =
+                parsed.pathname
+                .split("/")
+                .filter(Boolean)
+                .pop();
+
+
+            return
+                `https://player.vimeo.com/video/${videoId}`;
+
+        }
+
+
+        return url;
+
+    } catch {
+
+        return null;
+
+    }
+
+}
+
+
+/*
+================================
+LOAD COMPLETION
+================================
+*/
+
+async function loadCompletion() {
+
+
+    const {
+        data,
+        error
+    } =
+    await supabaseClient
+
+        .from("lesson_progress")
+
+        .select("*")
+
+        .eq(
+            "user_id",
+            user.id
+        )
+
+        .eq(
+            "lesson_id",
+            lesson.id
+        )
+
+        .maybeSingle();
+
+
+    if (error) {
+
+        console.error(error);
+
+        return;
+
+    }
+
+
+    if (
+        data &&
+        data.completed
+    ) {
+
+        showCompleted();
+
+    }
+
+}
+
+
+/*
+================================
+MARK COMPLETE
+================================
+*/
+
+async function markComplete() {
+
+
+    const {
+        error
+    } =
+    await supabaseClient
+
+        .from("lesson_progress")
+
+        .upsert(
+
+            {
+
+                user_id:
+                    user.id,
+
+                lesson_id:
+                    lesson.id,
+
+                completed:true,
+
+                completed_at:
+                    new Date()
+                    .toISOString()
+
+            },
+
+            {
+
+                onConflict:
+                    "user_id,lesson_id"
+
+            }
+
+        );
+
+
+    if (error) {
+
+        alert(
+            error.message
+        );
+
+        return;
+
+    }
+
+
+    showCompleted();
+
+
+    await updateCourseProgress();
+
+}
+
+
+/*
+================================
+SHOW COMPLETED
+================================
+*/
+
+function showCompleted() {
+
+
+    document.getElementById(
+        "completionStatus"
+    ).innerHTML = `
+
+        <div class="complete-status">
+
+            ✓ Lesson completed
+
+        </div>
+
+    `;
+
+
+    const button =
+        document.getElementById(
+            "completeButton"
+        );
+
+
+    button.textContent =
+        "✓ Completed";
+
+
+    button.disabled = true;
+
+    button.style.opacity =
+        ".6";
+
+}
+
+
+/*
+================================
+COURSE PROGRESS
+================================
+*/
+
+async function updateCourseProgress() {
+
+
+    if (!courseLessons.length) {
+
+        return;
+
+    }
+
+
+    const ids =
+        courseLessons.map(
+            item =>
+                item.id
+        );
+
+
+    const {
+        data,
+        error
+    } =
+    await supabaseClient
+
+        .from("lesson_progress")
+
+        .select("lesson_id")
+
+        .eq(
+            "user_id",
+            user.id
+        )
+
+        .eq(
+            "completed",
+            true
+        )
+
+        .in(
+            "lesson_id",
+            ids
+        );
+
+
+    if (error) {
+
+        console.error(error);
+
+        return;
+
+    }
+
+
+    const completed =
+        data?.length || 0;
+
+
+    const total =
+        courseLessons.length;
+
+
+    const percentage =
+        Math.round(
+            completed /
+            total *
+            100
+        );
+
+
+    document.getElementById(
+        "progressFill"
+    ).style.width =
+        `${percentage}%`;
+
+
+    document.getElementById(
+        "progressText"
+    ).textContent =
+
+        `${completed} of ${total} lessons completed — ${percentage}%`;
+
+}
+
+
+/*
+================================
+NAVIGATION
+================================
+*/
+
+function updateNavigation() {
+
+
+    const previous =
+        document.getElementById(
+            "previousButton"
+        );
+
+
+    const next =
+        document.getElementById(
+            "nextButton"
+        );
+
+
+    if (
+        currentIndex > 0
+    ) {
+
+        previous.href =
+
+            `lesson.html?id=${
+                courseLessons[
+                    currentIndex - 1
+                ].id
+            }`;
+
+        previous.classList.remove(
+            "disabled"
+        );
+
+    } else {
+
+        previous.href = "#";
+
+        previous.classList.add(
+            "disabled"
+        );
+
+    }
+
+
+    if (
+        currentIndex <
+        courseLessons.length - 1
+    ) {
+
+        next.href =
+
+            `lesson.html?id=${
+                courseLessons[
+                    currentIndex + 1
+                ].id
+            }`;
+
+        next.classList.remove(
+            "disabled"
+        );
+
+    } else {
+
+        next.href =
+            "#";
+
+        next.textContent =
+            "Course Complete";
+
+        next.classList.add(
+            "disabled"
+        );
+
+    }
+
+}
+
+
+/*
+================================
+ERROR
+================================
+*/
+
+function showError(
+    message
+) {
+
+    document.body.innerHTML = `
+
+        <div style="
+            color:white;
+            text-align:center;
+            padding:120px 20px;
+        ">
+
+            <h1>
+                ${escapeHTML(
+                    message
+                )}
+            </h1>
+
+            <a
+            href="student-dashboard.html"
+            class="btn btn-primary">
+
+                Back to Dashboard
+
+            </a>
+
+        </div>
+
+    `;
+
+}
+
+
+/*
+================================
+ESCAPE
+================================
+*/
+
+function escapeHTML(text) {
+
+    return String(text)
+
+        .replaceAll(
+            "&",
+            "&amp;"
+        )
+
+        .replaceAll(
+            "<",
+            "&lt;"
+        )
+
+        .replaceAll(
+            ">",
+            "&gt;"
+        )
+
+        .replaceAll(
+            '"',
+            "&quot;"
+        )
+
+        .replaceAll(
+            "'",
+            "&#039;"
+        );
+
+}
+
+
+init();
+
+</script>
+
+</body>
+
+</html>
+```

@@ -1,0 +1,819 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Admin Dashboard | Tech Izack</title>
+
+<link rel="stylesheet" href="style.css">
+
+<style>
+.admin-page {
+    padding:120px 0 70px;
+}
+
+.admin-head {
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:20px;
+    margin-bottom:30px;
+}
+
+.stats {
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:18px;
+    margin-bottom:30px;
+}
+
+.stat-card,
+.panel {
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:25px;
+}
+
+.stat-number {
+    font-size:32px;
+    font-weight:700;
+    color:var(--cyan);
+    font-family:Orbitron;
+    margin-top:10px;
+}
+
+.admin-grid {
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:20px;
+}
+
+.quick-actions {
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px;
+    margin-top:20px;
+}
+
+.action {
+    padding:18px;
+    border:1px solid var(--border);
+    border-radius:8px;
+    color:white;
+    cursor:pointer;
+    background:#07101c;
+}
+
+.action:hover {
+    border-color:var(--cyan);
+    transform:translateY(-2px);
+}
+
+table {
+    width:100%;
+    border-collapse:collapse;
+    margin-top:15px;
+}
+
+th, td {
+    padding:12px 8px;
+    border-bottom:1px solid var(--border);
+    text-align:left;
+}
+
+th {
+    color:var(--cyan);
+}
+
+.small-btn {
+    padding:7px 10px;
+    border:1px solid var(--border);
+    border-radius:5px;
+    background:transparent;
+    color:white;
+    cursor:pointer;
+}
+
+.small-btn:hover {
+    border-color:var(--cyan);
+}
+
+@media(max-width:900px) {
+    .stats {
+        grid-template-columns:1fr 1fr;
+    }
+
+    .admin-grid {
+        grid-template-columns:1fr;
+    }
+}
+
+@media(max-width:600px) {
+    .stats {
+        grid-template-columns:1fr;
+    }
+
+    .admin-head {
+        flex-direction:column;
+        align-items:flex-start;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header class="navbar">
+<div class="container nav-inner">
+
+<a href="dashboard.html" class="logo">
+<span>&lt;</span>
+TECH IZACK
+<span>/&gt;</span>
+</a>
+
+<button
+class="btn btn-outline"
+onclick="logout()">
+Logout
+</button>
+
+</div>
+</header>
+
+
+<main class="admin-page">
+
+<div class="container">
+
+<div class="admin-head">
+
+<div>
+<span class="section-tag">// ADMIN CONTROL CENTER</span>
+
+<h1 style="font-family:Orbitron;margin-top:12px">
+Admin Dashboard
+</h1>
+</div>
+
+</div>
+
+
+<!-- STATS -->
+
+<section class="stats">
+
+<div class="stat-card">
+<span class="section-tag">STUDENTS</span>
+<div id="studentsCount" class="stat-number">0</div>
+</div>
+
+<div class="stat-card">
+<span class="section-tag">COURSES</span>
+<div id="coursesCount" class="stat-number">0</div>
+</div>
+
+<div class="stat-card">
+<span class="section-tag">LESSONS</span>
+<div id="lessonsCount" class="stat-number">0</div>
+</div>
+
+<div class="stat-card">
+<span class="section-tag">LABS</span>
+<div id="labsCount" class="stat-number">0</div>
+</div>
+
+</section>
+
+
+<div class="admin-grid">
+
+<!-- QUICK ACTIONS -->
+
+<section class="panel">
+
+<span class="section-tag">// MANAGEMENT</span>
+
+<h2 style="font-family:Orbitron;margin-top:12px">
+Quick Actions
+</h2>
+
+<div class="quick-actions">
+
+<div class="action"
+onclick="location.href='course-builder.html'">
+📚 Create Course
+</div>
+
+<div class="action"
+onclick="location.href='lesson-builder.html'">
+📖 Create Lesson
+</div>
+
+<div class="action"
+onclick="location.href='quiz-builder.html'">
+🧠 Create Quiz
+</div>
+
+<div class="action"
+onclick="location.href='lab-builder.html'">
+🧪 Create Lab
+</div>
+
+<div class="action"
+onclick="location.href='students.html'">
+👨‍🎓 Students
+</div>
+
+<div class="action"
+onclick="location.href='certificates.html'">
+🏆 Certificates
+</div>
+
+</div>
+
+</section>
+
+
+<!-- QUIZ STATS -->
+
+<section class="panel">
+
+<span class="section-tag">// ACADEMY ACTIVITY</span>
+
+<h2 style="font-family:Orbitron;margin-top:12px">
+Quiz Attempts
+</h2>
+
+<div style="margin-top:25px">
+
+<p style="color:var(--muted)">
+Total attempts
+</p>
+
+<div
+id="attemptsCount"
+class="stat-number">
+0
+</div>
+
+</div>
+
+
+<div style="margin-top:25px">
+
+<p style="color:var(--muted)">
+Passed attempts
+</p>
+
+<div
+id="passedCount"
+class="stat-number">
+0
+</div>
+
+</div>
+
+</section>
+
+</div>
+
+
+<!-- COURSES -->
+
+<section class="panel" style="margin-top:20px">
+
+<span class="section-tag">// COURSES</span>
+
+<h2 style="font-family:Orbitron;margin-top:12px">
+Course Management
+</h2>
+
+<div style="overflow-x:auto">
+
+<table>
+
+<thead>
+
+<tr>
+<th>Title</th>
+<th>Level</th>
+<th>Actions</th>
+</tr>
+
+</thead>
+
+<tbody id="coursesTable">
+
+<tr>
+<td colspan="3">
+Loading...
+</td>
+</tr>
+
+</tbody>
+
+</table>
+
+</div>
+
+</section>
+
+
+<!-- RECENT STUDENTS -->
+
+<section class="panel" style="margin-top:20px">
+
+<span class="section-tag">// STUDENTS</span>
+
+<h2 style="font-family:Orbitron;margin-top:12px">
+Recent Students
+</h2>
+
+<div style="overflow-x:auto">
+
+<table>
+
+<thead>
+
+<tr>
+<th>Name</th>
+<th>Email</th>
+<th>Joined</th>
+</tr>
+
+</thead>
+
+<tbody id="studentsTable">
+
+<tr>
+<td colspan="3">
+Loading...
+</td>
+</tr>
+
+</tbody>
+
+</table>
+
+</div>
+
+</section>
+
+</div>
+
+</main>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+
+const SUPABASE_URL =
+"WEKA_PROJECT_URL_HAPA";
+
+const SUPABASE_KEY =
+"WEKA_PUBLISHABLE_KEY_HAPA";
+
+const supabaseClient =
+window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
+
+
+// ==========================
+// AUTH + ADMIN CHECK
+// ==========================
+
+async function initialize() {
+
+    const {
+        data:{user}
+    } =
+    await supabaseClient
+        .auth
+        .getUser();
+
+    if (!user) {
+
+        location.href =
+        "index.html";
+
+        return;
+
+    }
+
+
+    const {
+        data:profile
+    } =
+    await supabaseClient
+        .from("profiles")
+        .select("role")
+        .eq("id",user.id)
+        .single();
+
+
+    if (
+        !profile ||
+        profile.role !== "admin"
+    ) {
+
+        location.href =
+        "dashboard.html";
+
+        return;
+
+    }
+
+
+    await loadStats();
+
+    await loadCourses();
+
+    await loadStudents();
+
+}
+
+
+// ==========================
+// STATS
+// ==========================
+
+async function loadStats() {
+
+    const students =
+        await countRows("profiles");
+
+    const courses =
+        await countRows("courses");
+
+    const lessons =
+        await countRows("lessons");
+
+    const labs =
+        await countRows("labs");
+
+    const attempts =
+        await countRows("quiz_attempts");
+
+    const passed =
+        await countRows(
+            "quiz_attempts",
+            true
+        );
+
+
+    document.getElementById(
+        "studentsCount"
+    ).textContent =
+    students;
+
+
+    document.getElementById(
+        "coursesCount"
+    ).textContent =
+    courses;
+
+
+    document.getElementById(
+        "lessonsCount"
+    ).textContent =
+    lessons;
+
+
+    document.getElementById(
+        "labsCount"
+    ).textContent =
+    labs;
+
+
+    document.getElementById(
+        "attemptsCount"
+    ).textContent =
+    attempts;
+
+
+    document.getElementById(
+        "passedCount"
+    ).textContent =
+    passed;
+
+}
+
+
+async function countRows(
+    table,
+    onlyPassed=false
+) {
+
+    let query =
+        supabaseClient
+        .from(table)
+        .select("*",{
+            count:"exact",
+            head:true
+        });
+
+
+    if (
+        onlyPassed &&
+        table === "quiz_attempts"
+    ) {
+
+        query =
+        query.eq(
+            "passed",
+            true
+        );
+
+    }
+
+
+    const {
+        count
+    } = await query;
+
+
+    return count || 0;
+
+}
+
+
+// ==========================
+// COURSES
+// ==========================
+
+async function loadCourses() {
+
+    const {
+        data,
+        error
+    } =
+    await supabaseClient
+        .from("courses")
+        .select("id,title,level")
+        .order("id",{
+            ascending:false
+        });
+
+
+    if (error) {
+
+        console.error(error);
+
+        return;
+
+    }
+
+
+    const table =
+        document.getElementById(
+            "coursesTable"
+        );
+
+
+    if (!data?.length) {
+
+        table.innerHTML = `
+        <tr>
+            <td colspan="3">
+                No courses yet.
+            </td>
+        </tr>
+        `;
+
+        return;
+
+    }
+
+
+    table.innerHTML =
+    data.map(course => `
+
+        <tr>
+
+            <td>
+                ${escapeHTML(course.title)}
+            </td>
+
+            <td>
+                ${escapeHTML(
+                    course.level || "-"
+                )}
+            </td>
+
+            <td>
+
+                <button
+                class="small-btn"
+                onclick="editCourse(${course.id})">
+
+                Edit
+
+                </button>
+
+
+                <button
+                class="small-btn"
+                onclick="deleteCourse(${course.id})">
+
+                Delete
+
+                </button>
+
+            </td>
+
+        </tr>
+
+    `).join("");
+
+}
+
+
+// ==========================
+// STUDENTS
+// ==========================
+
+async function loadStudents() {
+
+    const {
+        data,
+        error
+    } =
+    await supabaseClient
+        .from("profiles")
+        .select(
+            "id,full_name,email,created_at"
+        )
+        .order(
+            "created_at",
+            {
+                ascending:false
+            }
+        )
+        .limit(10);
+
+
+    if (error) {
+
+        console.error(error);
+
+        return;
+
+    }
+
+
+    const table =
+        document.getElementById(
+            "studentsTable"
+        );
+
+
+    if (!data?.length) {
+
+        table.innerHTML = `
+        <tr>
+            <td colspan="3">
+                No students yet.
+            </td>
+        </tr>
+        `;
+
+        return;
+
+    }
+
+
+    table.innerHTML =
+    data.map(student => `
+
+        <tr>
+
+            <td>
+                ${escapeHTML(
+                    student.full_name || "-"
+                )}
+            </td>
+
+            <td>
+                ${escapeHTML(
+                    student.email || "-"
+                )}
+            </td>
+
+            <td>
+                ${
+                    student.created_at
+                    ? new Date(
+                        student.created_at
+                    ).toLocaleDateString()
+                    : "-"
+                }
+            </td>
+
+        </tr>
+
+    `).join("");
+
+}
+
+
+// ==========================
+// EDIT
+// ==========================
+
+function editCourse(id) {
+
+    location.href =
+    `course-builder.html?id=${id}`;
+
+}
+
+
+// ==========================
+// DELETE
+// ==========================
+
+async function deleteCourse(id) {
+
+    const confirmed =
+    confirm(
+        "Delete this course? Its related lessons/labs may also be deleted."
+    );
+
+
+    if (!confirmed) return;
+
+
+    const {
+        error
+    } =
+    await supabaseClient
+        .from("courses")
+        .delete()
+        .eq(
+            "id",
+            id
+        );
+
+
+    if (error) {
+
+        alert(
+            error.message
+        );
+
+        return;
+
+    }
+
+
+    await loadStats();
+
+    await loadCourses();
+
+}
+
+
+// ==========================
+// LOGOUT
+// ==========================
+
+async function logout() {
+
+    await supabaseClient
+        .auth
+        .signOut();
+
+    location.href =
+    "index.html";
+
+}
+
+
+// ==========================
+
+function escapeHTML(text) {
+
+    return String(text)
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+
+}
+
+
+initialize();
+
+</script>
+
+</body>
+</html>
+```

@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>Lab Builder | Tech Izack</title>
+
+<link rel="stylesheet"
+href="style.css">
+
+<style>
+
+.builder {
+    padding:120px 0 80px;
+}
+
+.card {
+    max-width:900px;
+    margin:auto;
+    padding:35px;
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:10px;
+}
+
+.group {
+    margin-bottom:20px;
+}
+
+.group label {
+    display:block;
+    margin-bottom:7px;
+    color:var(--muted);
+}
+
+.group input,
+.group textarea,
+.group select {
+    width:100%;
+    padding:13px;
+    background:#050b14;
+    color:white;
+    border:1px solid var(--border);
+    border-radius:6px;
+}
+
+.group textarea {
+    min-height:150px;
+}
+
+.task-builder {
+    margin-top:25px;
+    padding:25px;
+    border:1px solid var(--border);
+    border-radius:8px;
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+<header class="navbar">
+
+<div class="container nav-inner">
+
+<a href="admin.html"
+class="logo">
+
+<span>&lt;</span>
+TECH IZACK
+<span>/&gt;</span>
+
+</a>
+
+<a
+href="admin.html"
+class="btn btn-outline">
+
+Admin
+
+</a>
+
+</div>
+
+</header>
+
+
+<main class="builder">
+
+<div class="container">
+
+<div class="card">
+
+<span class="section-tag">
+// LAB BUILDER
+</span>
+
+<h1
+style="font-family:Orbitron;margin:15px 0 30px">
+
+Create Practical Lab
+
+</h1>
+
+
+<div class="group">
+
+<label>
+Course
+</label>
+
+<select id="courseId">
+
+<option>
+Loading...
+</option>
+
+</select>
+
+</div>
+
+
+<div class="group">
+
+<label>
+Lesson
+</label>
+
+<select id="lessonId">
+
+<option>
+Select course
+</option>
+
+</select>
+
+</div>
+
+
+<div class="group">
+
+<label>
+Lab Title
+</label>
+
+<input
+id="labTitle"
+placeholder="Linux File System Lab">
+
+</div>
+
+
+<div class="group">
+
+<label>
+Description
+</label>
+
+<textarea
+id="description"
+placeholder="Describe the lab...">
+</textarea>
+
+</div>
+
+
+<div class="group">
+
+<label>
+Objectives
+</label>
+
+<textarea
+id="objectives"
+placeholder="What will students learn?">
+</textarea>
+
+</div>
+
+
+<div class="group">
+
+<label>
+Difficulty
+</label>
+
+<select id="difficulty">
+
+<option>Beginner</option>
+<option>Intermediate</option>
+<option>Advanced</option>
+
+</select>
+
+</div>
+
+
+<h2 style="margin-top:35px">
+Tasks
+</h2>
+
+
+<div id="tasks"></div>
+
+
+<button
+class="btn btn-outline"
+onclick="addTask()">
+
++ Add Task
+
+</button>
+
+
+<br><br>
+
+
+<button
+class="btn btn-primary"
+onclick="createLab()">
+
+Create Lab
+
+</button>
+
+
+<p id="message"></p>
+
+</div>
+
+</div>
+
+</main>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+
+const SUPABASE_URL =
+"WEKA_PROJECT_URL_HAPA";
+
+const SUPABASE_KEY =
+"WEKA_PUBLISHABLE_KEY_HAPA";
+
+
+const supabaseClient =
+window.supabase.createClient(
+SUPABASE_URL,
+SUPABASE_KEY
+);
+
+
+let taskCount = 0;
+
+
+// ==========================
+// ADMIN
+// ==========================
+
+async function checkAdmin() {
+
+const {
+data:{user}
+} =
+await supabaseClient
+.auth
+.getUser();
+
+
+if (!user) {
+
+location.href =
+"index.html";
+
+return false;
+
+}
+
+
+const {
+data:profile
+} =
+await supabaseClient
+.from("profiles")
+.select("role")
+.eq("id",user.id)
+.single();
+
+
+if (
+!profile ||
+profile.role !== "admin"
+) {
+
+location.href =
+"dashboard.html";
+
+return false;
+
+}
+
+
+return true;
+
+}
+
+
+// ==========================
+// COURSES
+// ==========================
+
+async function loadCourses() {
+
+const {
+data
+} =
+await supabaseClient
+.from("courses")
+.select("id,title")
+.order("id");
+
+
+const select =
+document.getElementById(
+"courseId"
+);
+
+
+select.innerHTML =
+`<option value="">
+Select course
+</option>`;
+
+
+data.forEach(course => {
+
+select.innerHTML += `
+
+<option value="${course.id}">
+${escapeHTML(course.title)}
+</option>
+
+`;
+
+});
+
+}
+
+
+// ==========================
+// LESSONS
+// ==========================
+
+document
+.getElementById("courseId")
+.addEventListener(
+"change",
+loadLessons
+);
+
+
+async function loadLessons() {
+
+const courseId =
+document
+.getElementById("courseId")
+.value;
+
+
+const {
+data
+} =
+await supabaseClient
+.from("lessons")
+.select("id,title")
+.eq(
+"course_id",
+courseId
+)
+.order("lesson_order");
+
+
+const select =
+document.getElementById(
+"lessonId"
+);
+
+
+select.innerHTML =
+`<option value="">
+Select lesson
+</option>`;
+
+
+data.forEach(
+lesson => {
+
+select.innerHTML += `
+
+<option value="${lesson.id}">
+${escapeHTML(lesson.title)}
+</option>
+
+`;
+
+});
+
+}
+
+
+// ==========================
+// ADD TASK
+// ==========================
+
+function addTask() {
+
+taskCount++;
+
+
+document
+.getElementById("tasks")
+.insertAdjacentHTML(
+"beforeend",
+`
+
+<div
+class="task-builder"
+data-task="${taskCount}">
+
+<h3>
+Task ${taskCount}
+</h3>
+
+
+<div class="group">
+
+<label>
+Task Title
+</label>
+
+<input
+class="task-title"
+placeholder="Example: List files">
+
+</div>
+
+
+<div class="group">
+
+<label>
+Instructions
+</label>
+
+<textarea
+class="task-instructions"
+placeholder="Explain what the student should do...">
+</textarea>
+
+</div>
+
+
+<div class="group">
+
+<label>
+Expected Answer
+</label>
+
+<input
+class="expected-answer"
+placeholder="Optional answer for automatic checking">
+
+</div>
+
+
+<div class="group">
+
+<label>
+Points
+</label>
+
+<input
+class="task-points"
+type="number"
+value="10"
+min="1">
+
+</div>
+
+</div>
+
+`);
+
+}
+
+
+// ==========================
+// CREATE LAB
+// ==========================
+
+async function createLab() {
+
+const courseId =
+document
+.getElementById("courseId")
+.value;
+
+
+const lessonId =
+document
+.getElementById("lessonId")
+.value;
+
+
+const title =
+document
+.getElementById("labTitle")
+.value.trim();
+
+
+const description =
+document
+.getElementById("description")
+.value.trim();
+
+
+const objectives =
+document
+.getElementById("objectives")
+.value.trim();
+
+
+const difficulty =
+document
+.getElementById("difficulty")
+.value;
+
+
+if (
+!courseId ||
+!lessonId ||
+!title
+) {
+
+showMessage(
+"Fill in all required fields.",
+true
+);
+
+return;
+
+}
+
+
+const {
+data:lab,
+error
+} =
+await supabaseClient
+.from("labs")
+.insert({
+
+course_id:
+Number(courseId),
+
+lesson_id:
+Number(lessonId),
+
+title,
+
+description,
+
+objectives,
+
+difficulty
+
+})
+.select()
+.single();
+
+
+if (error) {
+
+showMessage(
+error.message,
+true
+);
+
+return;
+
+}
+
+
+const taskCards =
+document.querySelectorAll(
+".task-builder"
+);
+
+
+for (
+let i = 0;
+i < taskCards.length;
+i++
+) {
+
+const card =
+taskCards[i];
+
+
+await supabaseClient
+.from("lab_tasks")
+.insert({
+
+lab_id:
+lab.id,
+
+task_order:
+i + 1,
+
+title:
+card.querySelector(
+".task-title"
+).value.trim(),
+
+instructions:
+card.querySelector(
+".task-instructions"
+).value.trim(),
+
+expected_answer:
+card.querySelector(
+".expected-answer"
+).value.trim() || null,
+
+points:
+Number(
+card.querySelector(
+".task-points"
+).value
+)
+
+});
+
+}
+
+
+showMessage(
+"✓ Lab created successfully!",
+false
+);
+
+}
+
+
+// ==========================
+
+function showMessage(
+message,
+error
+) {
+
+const element =
+document.getElementById(
+"message"
+);
+
+element.textContent =
+message;
+
+element.style.color =
+error
+? "#ff6475"
+: "#20d68a";
+
+}
+
+
+// ==========================
+
+function escapeHTML(text) {
+
+return String(text)
+.replaceAll("&","&amp;")
+.replaceAll("<","&lt;")
+.replaceAll(">","&gt;")
+.replaceAll('"',"&quot;")
+.replaceAll("'","&#039;");
+
+}
+
+
+// ==========================
+
+(async()=>{
+
+const allowed =
+await checkAdmin();
+
+if (allowed) {
+
+await loadCourses();
+
+addTask();
+
+}
+
+})();
+
+</script>
+
+</body>
+
+</html>

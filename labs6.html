@@ -1,0 +1,1056 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0">
+
+<title>Practical Labs | Tech Izack Academy</title>
+
+<link rel="stylesheet" href="style.css">
+
+<style>
+
+.lab-page {
+    padding:110px 20px 60px;
+}
+
+.lab-container {
+    max-width:1150px;
+    margin:auto;
+}
+
+.lab-header {
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:14px;
+    padding:30px;
+    margin-bottom:20px;
+}
+
+.lab-header h1 {
+    font-family:Orbitron;
+}
+
+.lab-header p {
+    color:var(--muted);
+    line-height:1.7;
+}
+
+.lab-grid {
+    display:grid;
+    grid-template-columns:280px 1fr;
+    gap:20px;
+}
+
+.lab-sidebar,
+.lab-content {
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:14px;
+}
+
+.lab-sidebar {
+    padding:18px;
+    height:fit-content;
+}
+
+.lab-sidebar h3 {
+    margin-top:0;
+}
+
+.lab-item {
+    padding:13px;
+    border-radius:8px;
+    margin-top:7px;
+    cursor:pointer;
+    border:1px solid transparent;
+}
+
+.lab-item:hover {
+    background:#07141d;
+}
+
+.lab-item.active {
+    background:#07141d;
+    border-color:var(--cyan);
+}
+
+.lab-item.completed {
+    color:#20d68a;
+}
+
+.lab-content {
+    padding:30px;
+}
+
+.lab-meta {
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    margin:15px 0;
+}
+
+.badge {
+    padding:6px 10px;
+    border-radius:20px;
+    background:#07141d;
+    border:1px solid var(--border);
+    color:#9baab8;
+    font-size:12px;
+}
+
+.task-box {
+    background:#02070c;
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:20px;
+    margin:20px 0;
+}
+
+.task-box h3 {
+    color:var(--cyan);
+}
+
+.hint-box {
+    background:#07141d;
+    border-left:3px solid #ffc857;
+    padding:15px;
+    margin-top:15px;
+    color:#c8d1d8;
+}
+
+.flag-box {
+    margin-top:25px;
+    padding:20px;
+    border:1px solid #17495b;
+    background:#041018;
+    border-radius:10px;
+}
+
+.flag-input {
+    width:100%;
+    box-sizing:border-box;
+    padding:14px;
+    margin:12px 0;
+    background:#02070c;
+    color:white;
+    border:1px solid var(--border);
+    border-radius:7px;
+    outline:none;
+}
+
+.flag-input:focus {
+    border-color:var(--cyan);
+}
+
+.result {
+    margin-top:15px;
+    padding:13px;
+    border-radius:7px;
+    display:none;
+}
+
+.result.success {
+    display:block;
+    color:#20d68a;
+    background:#06120e;
+    border:1px solid #205f47;
+}
+
+.result.error {
+    display:block;
+    color:#ff6475;
+    background:#16070a;
+    border:1px solid #63303a;
+}
+
+.next-lab {
+    margin-top:25px;
+    display:flex;
+    justify-content:space-between;
+    gap:10px;
+}
+
+@media(max-width:850px) {
+
+    .lab-grid {
+        grid-template-columns:1fr;
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<header class="navbar">
+
+<div class="container nav-inner">
+
+<a
+href="index.html"
+class="logo">
+
+<span>&lt;</span>
+TECH IZACK
+<span>/&gt;</span>
+
+</a>
+
+<div style="display:flex;gap:10px">
+
+<a
+href="student-dashboard.html"
+class="btn btn-outline">
+
+Dashboard
+
+</a>
+
+<button
+class="btn btn-outline"
+onclick="logout()">
+
+Logout
+
+</button>
+
+</div>
+
+</div>
+
+</header>
+
+
+<main class="lab-page">
+
+<div class="lab-container">
+
+
+<section class="lab-header">
+
+<span class="section-tag">
+// PRACTICAL LABS</span>
+
+<h1>
+Cybersecurity Practical Labs
+</h1>
+
+<p>
+
+Practice cybersecurity concepts inside
+authorized training environments,
+CTFs and systems provided by Tech Izack Academy.
+
+</p>
+
+</section>
+
+
+<div class="lab-grid">
+
+
+<aside class="lab-sidebar">
+
+<h3>
+🧪 Challenges
+</h3>
+
+<div id="labList">
+
+Loading labs...
+
+</div>
+
+</aside>
+
+
+<section class="lab-content">
+
+<div id="labContent">
+
+Select a challenge.
+
+</div>
+
+</section>
+
+
+</div>
+
+</div>
+
+</main>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
+<script>
+
+
+const SUPABASE_URL =
+"WEKA_PROJECT_URL_HAPA";
+
+
+const SUPABASE_KEY =
+"WEKA_PUBLISHABLE_KEY_HAPA";
+
+
+const supabaseClient =
+window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
+
+
+const params =
+new URLSearchParams(
+    location.search
+);
+
+
+const courseId =
+params.get("course");
+
+
+const lessonId =
+params.get("lesson");
+
+
+let user = null;
+
+let labs = [];
+
+let submissions = [];
+
+let currentLab = null;
+
+
+/* =========================
+   INIT
+========================= */
+
+async function init() {
+
+    const {
+        data
+    } =
+    await supabaseClient.auth
+        .getUser();
+
+    user = data.user;
+
+    if (!user) {
+
+        location.href =
+            "login.html";
+
+        return;
+
+    }
+
+    await loadLabs();
+
+    await loadSubmissions();
+
+    renderLabList();
+
+    if (labs.length) {
+
+        showLab(labs[0].id);
+
+    }
+
+}
+
+
+/* =========================
+   LOAD LABS
+========================= */
+
+async function loadLabs() {
+
+    let query =
+        supabaseClient
+
+            .from("labs")
+
+            .select(`
+                id,
+                course_id,
+                lesson_id,
+                title,
+                description,
+                instructions,
+                difficulty,
+                points,
+                hint,
+                flag,
+                published,
+                position
+            `)
+
+            .eq(
+                "published",
+                true
+            )
+
+            .order(
+                "position",
+                {
+                    ascending:true
+                }
+            );
+
+
+    if (courseId) {
+
+        query =
+            query.eq(
+                "course_id",
+                courseId
+            );
+
+    }
+
+
+    if (lessonId) {
+
+        query =
+            query.eq(
+                "lesson_id",
+                lessonId
+            );
+
+    }
+
+
+    const {
+        data,
+        error
+    } =
+    await query;
+
+
+    if (error) {
+
+        console.error(error);
+
+        document.getElementById(
+            "labList"
+        ).innerHTML =
+            "<p>Unable to load labs.</p>";
+
+        return;
+
+    }
+
+
+    labs = data || [];
+
+}
+
+
+/* =========================
+   SUBMISSIONS
+========================= */
+
+async function loadSubmissions() {
+
+    const {
+        data,
+        error
+    } =
+    await supabaseClient
+
+        .from("lab_submissions")
+
+        .select(`
+            lab_id,
+            correct,
+            points,
+            submitted_at
+        `)
+
+        .eq(
+            "user_id",
+            user.id
+        );
+
+
+    if (error) {
+
+        console.error(error);
+
+        return;
+
+    }
+
+
+    submissions =
+        data || [];
+
+}
+
+
+/* =========================
+   LAB LIST
+========================= */
+
+function renderLabList() {
+
+    const container =
+        document.getElementById(
+            "labList"
+        );
+
+
+    if (!labs.length) {
+
+        container.innerHTML =
+            `<p style="color:#8797a4">
+                No labs available yet.
+            </p>`;
+
+        return;
+
+    }
+
+
+    container.innerHTML =
+        labs.map(
+            (lab, index) => {
+
+                const solved =
+                    isSolved(lab.id);
+
+                const active =
+                    currentLab &&
+                    currentLab.id ===
+                    lab.id;
+
+
+                return `
+
+                    <div
+                    class="lab-item
+                    ${active ? "active" : ""}
+                    ${solved ? "completed" : ""}"
+                    onclick="showLab(${lab.id})">
+
+                        <small>
+                            LAB ${index + 1}
+                        </small>
+
+                        <div>
+                            ${escapeHTML(
+                                lab.title
+                            )}
+                        </div>
+
+                        ${
+                            solved
+                            ? "✓ Solved"
+                            : ""
+                        }
+
+                    </div>
+
+                `;
+
+            }
+        ).join("");
+
+}
+
+
+/* =========================
+   SHOW LAB
+========================= */
+
+function showLab(labId) {
+
+    const lab =
+        labs.find(
+            item =>
+                item.id === labId
+        );
+
+
+    if (!lab) return;
+
+
+    currentLab =
+        lab;
+
+
+    renderLabList();
+
+
+    const solved =
+        isSolved(lab.id);
+
+
+    document.getElementById(
+        "labContent"
+    ).innerHTML = `
+
+        <span class="section-tag">
+            PRACTICAL CHALLENGE
+        </span>
+
+        <h2>
+            ${escapeHTML(lab.title)}
+        </h2>
+
+
+        <div class="lab-meta">
+
+            <span class="badge">
+                Difficulty:
+                ${escapeHTML(
+                    lab.difficulty || "Beginner"
+                )}
+            </span>
+
+            <span class="badge">
+                ${Number(
+                    lab.points || 0
+                )} Points
+            </span>
+
+        </div>
+
+
+        <div class="task-box">
+
+            <h3>
+                🎯 Challenge
+            </h3>
+
+            <p>
+                ${escapeHTML(
+                    lab.description || ""
+                )}
+            </p>
+
+        </div>
+
+
+        <div class="task-box">
+
+            <h3>
+                📋 Instructions
+            </h3>
+
+            <div>
+                ${safeText(
+                    lab.instructions || ""
+                )}
+            </div>
+
+        </div>
+
+
+        ${
+            lab.hint
+            ? `
+                <div class="hint-box">
+
+                    💡 <strong>Hint:</strong><br>
+
+                    ${escapeHTML(
+                        lab.hint
+                    )}
+
+                </div>
+            `
+            : ""
+        }
+
+
+        <div class="flag-box">
+
+            <h3>
+                🚩 Submit Your Answer
+            </h3>
+
+            <p style="color:#9baab8">
+
+                Complete the challenge in
+                the authorized lab environment,
+                then submit the flag here.
+
+            </p>
+
+
+            <input
+                id="flagInput"
+                class="flag-input"
+                type="text"
+                placeholder="Enter flag / answer"
+                autocomplete="off"
+                ${solved ? "disabled" : ""}>
+
+
+            <button
+                class="btn btn-primary"
+                onclick="submitFlag()"
+                ${solved ? "disabled" : ""}>
+
+                ${
+                    solved
+                    ? "✓ Challenge Solved"
+                    : "Submit Flag"
+                }
+
+            </button>
+
+
+            <div
+            id="result"
+            class="result">
+            </div>
+
+        </div>
+
+
+        <div class="next-lab">
+
+            <a
+            href="course.html?id=${encodeURIComponent(
+                lab.course_id
+            )}"
+            class="btn btn-outline">
+
+                ← Back to Course
+
+            </a>
+
+
+            ${
+                getNextLab(lab.id)
+                ? `
+                    <button
+                    class="btn btn-primary"
+                    onclick="nextLab()">
+
+                        Next Challenge →
+
+                    </button>
+                `
+                : ""
+            }
+
+        </div>
+
+    `;
+
+}
+
+
+/* =========================
+   SUBMIT FLAG
+========================= */
+
+async function submitFlag() {
+
+    if (!currentLab) return;
+
+
+    const input =
+        document.getElementById(
+            "flagInput"
+        );
+
+
+    const result =
+        document.getElementById(
+            "result"
+        );
+
+
+    const answer =
+        input.value.trim();
+
+
+    if (!answer) {
+
+        showResult(
+            result,
+            false,
+            "Enter your answer first."
+        );
+
+        return;
+
+    }
+
+
+    /*
+    IMPORTANT:
+
+    The flag is stored server-side.
+    The browser must NOT download
+    the real flag from the database.
+    */
+
+
+    const {
+        data,
+        error
+    } =
+    await supabaseClient.functions
+        .invoke(
+            "submit-lab",
+            {
+                body: {
+
+                    lab_id:
+                        currentLab.id,
+
+                    answer:
+                        answer
+
+                }
+
+            }
+        );
+
+
+    if (error) {
+
+        console.error(error);
+
+        showResult(
+            result,
+            false,
+            "Unable to submit. Try again."
+        );
+
+        return;
+
+    }
+
+
+    if (
+        data &&
+        data.correct
+    ) {
+
+        showResult(
+            result,
+            true,
+            `Correct! +${
+                data.points || 0
+            } points.`
+        );
+
+
+        submissions.push({
+
+            lab_id:
+                currentLab.id,
+
+            correct:
+                true,
+
+            points:
+                data.points || 0
+
+        });
+
+
+        renderLabList();
+
+
+        input.disabled =
+            true;
+
+
+    } else {
+
+        showResult(
+            result,
+            false,
+            "Incorrect answer. Check the challenge and try again."
+        );
+
+    }
+
+}
+
+
+/* =========================
+   RESULT
+========================= */
+
+function showResult(
+    element,
+    success,
+    message
+) {
+
+    element.className =
+        success
+        ? "result success"
+        : "result error";
+
+    element.textContent =
+        message;
+
+}
+
+
+/* =========================
+   SOLVED
+========================= */
+
+function isSolved(labId) {
+
+    return submissions.some(
+        submission =>
+
+            submission.lab_id ===
+            labId &&
+
+            submission.correct ===
+            true
+    );
+
+}
+
+
+/* =========================
+   NEXT LAB
+========================= */
+
+function getNextLab(
+    labId
+) {
+
+    const index =
+        labs.findIndex(
+            lab =>
+                lab.id ===
+                labId
+        );
+
+
+    if (
+        index === -1 ||
+        index >= labs.length - 1
+    ) {
+
+        return null;
+
+    }
+
+
+    return labs[
+        index + 1
+    ];
+
+}
+
+
+function nextLab() {
+
+    const next =
+        getNextLab(
+            currentLab.id
+        );
+
+
+    if (next) {
+
+        showLab(
+            next.id
+        );
+
+    }
+
+}
+
+
+/* =========================
+   LOGOUT
+========================= */
+
+async function logout() {
+
+    await supabaseClient.auth
+        .signOut();
+
+    location.href =
+        "login.html";
+
+}
+
+
+/* =========================
+   HELPERS
+========================= */
+
+function escapeHTML(text) {
+
+    return String(text)
+
+        .replaceAll(
+            "&",
+            "&amp;"
+        )
+
+        .replaceAll(
+            "<",
+            "&lt;"
+        )
+
+        .replaceAll(
+            ">",
+            "&gt;"
+        )
+
+        .replaceAll(
+            '"',
+            "&quot;"
+        )
+
+        .replaceAll(
+            "'",
+            "&#039;"
+        );
+
+}
+
+
+function safeText(text) {
+
+    return escapeHTML(text)
+        .replaceAll(
+            "\n",
+            "<br>"
+        );
+
+}
+
+
+init();
+
+</script>
+
+</body>
+
+</html>
+```

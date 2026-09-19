@@ -1,0 +1,432 @@
+```html
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>
+Verify Certificate | Tech Izack
+</title>
+
+<link
+rel="stylesheet"
+href="style.css">
+
+<style>
+
+.verify-page {
+
+    min-height:100vh;
+
+    padding:120px 20px;
+
+}
+
+
+.verify-container {
+
+    max-width:650px;
+
+    margin:auto;
+
+}
+
+
+.verify-card {
+
+    background:var(--card);
+
+    border:1px solid var(--border);
+
+    border-radius:12px;
+
+    padding:35px;
+
+}
+
+
+.verify-card h1 {
+
+    font-family:Orbitron;
+
+}
+
+
+.input {
+
+    width:100%;
+
+    padding:15px;
+
+    margin:20px 0;
+
+    box-sizing:border-box;
+
+    background:#050b12;
+
+    color:white;
+
+    border:1px solid var(--border);
+
+    border-radius:6px;
+
+}
+
+
+.result {
+
+    margin-top:25px;
+
+    padding:20px;
+
+    border-radius:8px;
+
+    display:none;
+
+}
+
+
+.valid {
+
+    display:block;
+
+    border:1px solid #20d68a;
+
+    background:
+    rgba(32,214,138,.06);
+
+}
+
+
+.invalid {
+
+    display:block;
+
+    border:1px solid #ff6475;
+
+    background:
+    rgba(255,100,117,.06);
+
+}
+
+
+.result strong {
+
+    color:#20d68a;
+
+}
+
+
+.invalid strong {
+
+    color:#ff6475;
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<header class="navbar">
+
+<div class="container nav-inner">
+
+<a
+href="index.html"
+class="logo">
+
+<span>&lt;</span>
+
+TECH IZACK
+
+<span>/&gt;</span>
+
+</a>
+
+</div>
+
+</header>
+
+
+<main class="verify-page">
+
+
+<div class="verify-container">
+
+
+<section class="verify-card">
+
+
+<span class="section-tag">
+
+// CERTIFICATE VERIFICATION
+
+</span>
+
+
+<h1>
+
+Verify Certificate
+
+</h1>
+
+
+<p style="color:var(--muted)">
+
+Enter a Tech Izack Academy
+certificate ID to verify it.
+
+</p>
+
+
+<input
+id="certificateInput"
+class="input"
+placeholder="Example: TZA-KALI-8F92A1">
+
+
+<button
+class="btn btn-primary"
+onclick="verifyCertificate()">
+
+Verify Certificate
+
+</button>
+
+
+<div
+id="result"
+class="result">
+
+</div>
+
+
+</section>
+
+
+</div>
+
+</main>
+
+
+<script
+src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+</script>
+
+
+<script>
+
+const SUPABASE_URL =
+"WEKA_PROJECT_URL_HAPA";
+
+
+const SUPABASE_KEY =
+"WEKA_PUBLISHABLE_KEY_HAPA";
+
+
+const supabaseClient =
+window.supabase.createClient(
+
+    SUPABASE_URL,
+
+    SUPABASE_KEY
+
+);
+
+
+async function verifyCertificate() {
+
+
+    const code =
+        document
+        .getElementById(
+            "certificateInput"
+        )
+        .value
+        .trim();
+
+
+    const result =
+        document.getElementById(
+            "result"
+        );
+
+
+    if (!code) {
+
+        result.className =
+            "result invalid";
+
+        result.innerHTML =
+            "<strong>Enter a certificate ID.</strong>";
+
+        return;
+
+    }
+
+
+    const {
+        data,
+        error
+    } =
+    await supabaseClient
+
+        .rpc(
+            "verify_certificate",
+            {
+                cert_code:code
+            }
+        );
+
+
+    if (
+        error ||
+        !data ||
+        !data.length
+    ) {
+
+        result.className =
+            "result invalid";
+
+        result.innerHTML = `
+
+            <strong>
+                ✕ Certificate Not Found
+            </strong>
+
+            <p>
+                The certificate ID could not
+                be verified.
+            </p>
+
+        `;
+
+        return;
+
+    }
+
+
+    const certificate =
+        data[0];
+
+
+    if (
+        certificate.status !==
+        "valid"
+    ) {
+
+        result.className =
+            "result invalid";
+
+        result.innerHTML = `
+
+            <strong>
+                ✕ Certificate Revoked
+            </strong>
+
+        `;
+
+        return;
+
+    }
+
+
+    result.className =
+        "result valid";
+
+
+    result.innerHTML = `
+
+        <strong>
+            ✓ Certificate Verified
+        </strong>
+
+        <p>
+
+            <b>Student:</b>
+            ${escapeHTML(
+                certificate.student_name
+            )}
+
+        </p>
+
+        <p>
+
+            <b>Course:</b>
+            ${escapeHTML(
+                certificate.course_title
+            )}
+
+        </p>
+
+        <p>
+
+            <b>Issued:</b>
+            ${new Date(
+                certificate.issued_at
+            ).toLocaleDateString()}
+
+        </p>
+
+        <p>
+
+            <b>Certificate ID:</b>
+            ${escapeHTML(
+                certificate.certificate_id
+            )}
+
+        </p>
+
+    `;
+
+}
+
+
+function escapeHTML(text) {
+
+    return String(text)
+
+        .replaceAll(
+            "&",
+            "&amp;"
+        )
+
+        .replaceAll(
+            "<",
+            "&lt;"
+        )
+
+        .replaceAll(
+            ">",
+            "&gt;"
+        )
+
+        .replaceAll(
+            '"',
+            "&quot;"
+        )
+
+        .replaceAll(
+            "'",
+            "&#039;"
+        );
+
+}
+
+</script>
+
+</body>
+
+</html>
+```

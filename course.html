@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Course | Tech Izack Academy</title>
+
+    <link rel="preconnect"
+          href="https://fonts.googleapis.com">
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Orbitron:wght@500;700;800&display=swap"
+          rel="stylesheet">
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <link rel="stylesheet"
+          href="style.css">
+
+</head>
+
+
+<body>
+
+<header class="navbar">
+
+    <div class="container nav-inner">
+
+        <a href="dashboard.html"
+           class="logo">
+
+            <span>&lt;</span>
+            TECH IZACK
+            <span>/&gt;</span>
+
+        </a>
+
+        <button class="btn btn-outline"
+                onclick="logout()">
+
+            Logout
+
+        </button>
+
+    </div>
+
+</header>
+
+
+<main class="course-page">
+
+    <div class="container">
+
+        <div id="courseHeader"
+             class="course-header">
+
+            <span class="section-tag">
+                // COURSE
+            </span>
+
+            <h1 id="courseTitle">
+                Loading...
+            </h1>
+
+            <p id="courseDescription">
+                Loading course...
+            </p>
+
+        </div>
+
+
+        <div class="course-layout">
+
+            <!-- LESSON SIDEBAR -->
+
+            <aside class="lesson-sidebar">
+
+                <h3>
+                    Course Lessons
+                </h3>
+
+                <div id="lessonList">
+                    Loading...
+                </div>
+
+            </aside>
+
+
+            <!-- LESSON CONTENT -->
+
+            <section class="lesson-content">
+
+                <div id="lessonArea">
+
+                    <h2>
+                        Select a lesson
+                    </h2>
+
+                    <p>
+                        Choose a lesson from the course menu.
+                    </p>
+
+                </div>
+
+
+                <div id="quizArea"
+                     class="quiz-area">
+
+                </div>
+
+            </section>
+
+        </div>
+
+    </div>
+
+</main>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="course.js"></script>
+
+</body>
+
+</html>
+<button
+id="completeLessonBtn"
+class="btn btn-primary">
+
+✓ Mark Lesson Complete
+
+</button>
+
+<p
+id="lessonMessage"
+style="margin-top:15px">
+</p>
+<button
+    id="certificateButton"
+    class="btn btn-primary"
+    style="display:none"
+    onclick="generateCertificate()">
+
+    🎓 Get Certificate
+
+</button>

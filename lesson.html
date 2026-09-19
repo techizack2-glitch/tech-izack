@@ -1,0 +1,482 @@
+```html
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>
+Lesson | Tech Izack Academy
+</title>
+
+<link
+rel="stylesheet"
+href="style.css">
+
+<style>
+
+.lesson-page {
+
+    padding:110px 20px 70px;
+
+}
+
+
+.lesson-container {
+
+    max-width:850px;
+
+    margin:auto;
+
+}
+
+
+.lesson-card {
+
+    background:var(--card);
+
+    border:1px solid var(--border);
+
+    border-radius:12px;
+
+    padding:35px;
+
+}
+
+
+.lesson-title {
+
+    font-family:Orbitron;
+
+    font-size:38px;
+
+    margin:15px 0;
+
+}
+
+
+.lesson-content {
+
+    color:var(--muted);
+
+    line-height:1.9;
+
+    white-space:pre-line;
+
+}
+
+
+.complete-box {
+
+    margin-top:30px;
+
+    padding:20px;
+
+    border-top:1px solid var(--border);
+
+}
+
+
+.status {
+
+    margin-top:15px;
+
+    color:#20d68a;
+
+    display:none;
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<header class="navbar">
+
+<div class="container nav-inner">
+
+<a
+href="student-dashboard.html"
+class="logo">
+
+<span>&lt;</span>
+
+TECH IZACK
+
+<span>/&gt;</span>
+
+</a>
+
+
+<a
+href="student-dashboard.html"
+class="btn btn-outline">
+
+Dashboard
+
+</a>
+
+</div>
+
+</header>
+
+
+<main class="lesson-page">
+
+
+<div class="lesson-container">
+
+
+<article class="lesson-card">
+
+
+<span
+id="course"
+class="section-tag">
+
+// ACADEMY
+
+</span>
+
+
+<h1
+id="title"
+class="lesson-title">
+
+Loading...
+
+</h1>
+
+
+<p
+id="description"
+style="color:var(--muted);">
+
+</p>
+
+
+<hr
+style="
+border-color:var(--border);
+margin:25px 0;
+">
+
+
+<div
+id="content"
+class="lesson-content">
+
+</div>
+
+
+<div class="complete-box">
+
+
+<button
+id="completeButton"
+class="btn btn-primary"
+onclick="completeLesson()">
+
+Mark Lesson Complete
+
+</button>
+
+
+<div
+id="status"
+class="status">
+
+✓ Lesson completed
+
+</div>
+
+
+</div>
+
+
+</article>
+
+
+</div>
+
+</main>
+
+
+<script
+src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+</script>
+
+
+<script>
+
+
+const SUPABASE_URL =
+"WEKA_PROJECT_URL_HAPA";
+
+
+const SUPABASE_KEY =
+"WEKA_PUBLISHABLE_KEY_HAPA";
+
+
+const supabaseClient =
+window.supabase.createClient(
+
+    SUPABASE_URL,
+
+    SUPABASE_KEY
+
+);
+
+
+let user = null;
+
+let lesson = null;
+
+
+async function init() {
+
+
+    const {
+        data
+    } =
+    await supabaseClient.auth
+        .getUser();
+
+
+    user =
+        data.user;
+
+
+    if (!user) {
+
+        location.href =
+            "login.html";
+
+        return;
+
+    }
+
+
+    const id =
+        new URLSearchParams(
+            location.search
+        ).get("id");
+
+
+    if (!id) {
+
+        document.getElementById(
+            "title"
+        ).textContent =
+            "Lesson not found.";
+
+        return;
+
+    }
+
+
+    const {
+        data: lessonData,
+        error
+    } =
+    await supabaseClient
+
+        .from("lessons")
+
+        .select("*")
+
+        .eq("id", id)
+
+        .eq(
+            "published",
+            true
+        )
+
+        .single();
+
+
+    if (error || !lessonData) {
+
+        document.getElementById(
+            "title"
+        ).textContent =
+            "Lesson not found.";
+
+        return;
+
+    }
+
+
+    lesson =
+        lessonData;
+
+
+    document.getElementById(
+        "course"
+    ).textContent =
+
+        "// " +
+        lesson.course_name;
+
+
+    document.getElementById(
+        "title"
+    ).textContent =
+
+        lesson.title;
+
+
+    document.getElementById(
+        "description"
+    ).textContent =
+
+        lesson.description || "";
+
+
+    document.getElementById(
+        "content"
+    ).textContent =
+
+        lesson.content || "";
+
+
+    await checkProgress();
+
+}
+
+
+async function checkProgress() {
+
+
+    const {
+        data
+    } =
+    await supabaseClient
+
+        .from("lesson_progress")
+
+        .select("*")
+
+        .eq(
+            "user_id",
+            user.id
+        )
+
+        .eq(
+            "lesson_id",
+            lesson.id
+        )
+
+        .maybeSingle();
+
+
+    if (
+        data &&
+        data.completed
+    ) {
+
+        showCompleted();
+
+    }
+
+}
+
+
+async function completeLesson() {
+
+
+    const {
+        error
+    } =
+    await supabaseClient
+
+        .from("lesson_progress")
+
+        .upsert(
+
+            {
+
+                user_id:
+                    user.id,
+
+                lesson_id:
+                    lesson.id,
+
+                completed:
+                    true,
+
+                completed_at:
+                    new Date()
+                    .toISOString()
+
+            },
+
+            {
+
+                onConflict:
+                    "user_id,lesson_id"
+
+            }
+
+        );
+
+
+    if (error) {
+
+        alert(
+            error.message
+        );
+
+        return;
+
+    }
+
+
+    showCompleted();
+
+}
+
+
+function showCompleted() {
+
+
+    const button =
+        document.getElementById(
+            "completeButton"
+        );
+
+
+    button.disabled =
+        true;
+
+
+    button.textContent =
+        "✓ Completed";
+
+
+    document.getElementById(
+        "status"
+    ).style.display =
+        "block";
+
+}
+
+
+init();
+
+</script>
+
+</body>
+
+</html>
+```

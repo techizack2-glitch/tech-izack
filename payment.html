@@ -1,0 +1,688 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0">
+
+<title>
+Payment | Tech Izack Academy
+</title>
+
+<link
+    rel="stylesheet"
+    href="style.css">
+
+<style>
+
+.payment-page {
+    min-height:100vh;
+    padding:120px 20px 70px;
+}
+
+.payment-container {
+    max-width:650px;
+    margin:auto;
+}
+
+.payment-card {
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:14px;
+    padding:30px;
+}
+
+.payment-card h1 {
+    font-family:Orbitron;
+}
+
+.course-box {
+    padding:18px;
+    border:1px solid var(--border);
+    border-radius:10px;
+    margin:20px 0;
+}
+
+.amount {
+    color:var(--cyan);
+    font-family:Orbitron;
+    font-size:25px;
+}
+
+.provider-grid {
+    display:grid;
+    grid-template-columns:
+        repeat(3, 1fr);
+    gap:12px;
+    margin:20px 0;
+}
+
+.provider {
+    padding:18px 10px;
+    background:#050c12;
+    color:white;
+    border:1px solid var(--border);
+    border-radius:9px;
+    cursor:pointer;
+    text-align:center;
+}
+
+.provider:hover,
+.provider.selected {
+    border-color:var(--cyan);
+    box-shadow:
+        0 0 15px
+        rgba(0,217,255,.12);
+}
+
+.form-group {
+    margin:18px 0;
+}
+
+.form-group label {
+    display:block;
+    margin-bottom:7px;
+    color:#9baab8;
+}
+
+.form-input {
+    width:100%;
+    box-sizing:border-box;
+    padding:14px;
+    background:#02070c;
+    border:1px solid var(--border);
+    border-radius:7px;
+    color:white;
+}
+
+.notice {
+    padding:15px;
+    background:
+        rgba(0,217,255,.06);
+    border-left:
+        3px solid var(--cyan);
+    margin:20px 0;
+    color:#aab8c4;
+    font-size:13px;
+    line-height:1.6;
+}
+
+#message {
+    margin-top:20px;
+}
+
+.success {
+    color:#20d68a;
+}
+
+.error {
+    color:#ff6475;
+}
+
+@media(max-width:600px) {
+
+    .provider-grid {
+        grid-template-columns:1fr;
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<header class="navbar">
+
+<div class="container nav-inner">
+
+<a
+href="index.html"
+class="logo">
+
+<span>&lt;</span>
+TECH IZACK
+<span>/&gt;</span>
+
+</a>
+
+<a
+href="student-dashboard.html"
+class="btn btn-outline">
+
+Dashboard
+
+</a>
+
+</div>
+
+</header>
+
+
+<main class="payment-page">
+
+<div class="payment-container">
+
+
+<div class="payment-card">
+
+
+<span class="section-tag">
+// SECURE PAYMENT</span>
+
+
+<h1>
+Enroll & Pay
+</h1>
+
+
+<div
+id="courseBox"
+class="course-box">
+
+Loading course...
+
+</div>
+
+
+<h3>
+Choose payment method
+</h3>
+
+
+<div class="provider-grid">
+
+
+<button
+class="provider"
+data-provider="tigo_pesa"
+onclick="selectProvider(this)">
+
+💙<br>
+Tigo Pesa
+
+</button>
+
+
+<button
+class="provider"
+data-provider="airtel_money"
+onclick="selectProvider(this)">
+
+🔴<br>
+Airtel Money
+
+</button>
+
+
+<button
+    class="provider"
+    data-provider="halopesa"
+    onclick="selectProvider(this)">
+
+    🟠<br>
+    HaloPesa
+
+</button>
+
+
+</div>
+
+
+<div class="form-group">
+
+<label>
+Mobile number
+</label>
+
+<input
+id="phone"
+class="form-input"
+type="tel"
+inputmode="numeric"
+placeholder="2557XXXXXXXX">
+
+
+</div>
+
+
+<div class="notice">
+
+🔐 Your payment will be verified
+through the payment provider before
+course access is granted.
+
+Do not share your PIN or OTP
+with anyone.
+
+</div>
+
+
+<button
+id="payButton"
+class="btn btn-primary"
+style="width:100%"
+onclick="startPayment()">
+
+Continue to Payment
+
+</button>
+
+
+<div
+id="message">
+</div>
+
+
+</div>
+
+</div>
+
+</main>
+
+
+<script
+src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+</script>
+
+
+<script>
+
+const SUPABASE_URL =
+"WEKA_PROJECT_URL_HAPA";
+
+const SUPABASE_KEY =
+"WEKA_PUBLISHABLE_KEY_HAPA";
+
+
+const supabaseClient =
+window.supabase.createClient(
+
+    SUPABASE_URL,
+
+    SUPABASE_KEY
+
+);
+
+
+const courseId =
+new URLSearchParams(
+    location.search
+).get("course");
+
+
+let user = null;
+
+let selectedProvider = null;
+
+
+/*
+===============================
+INIT
+===============================
+*/
+
+async function init() {
+
+    const {
+        data
+    } =
+    await supabaseClient.auth
+        .getUser();
+
+
+    user =
+        data.user;
+
+
+    if (!user) {
+
+        location.href =
+            "login.html";
+
+        return;
+
+    }
+
+
+    if (!courseId) {
+
+        showMessage(
+            "Course not specified.",
+            true
+        );
+
+        return;
+
+    }
+
+
+    const {
+        data: course,
+        error
+    } =
+    await supabaseClient
+
+        .from("courses")
+
+        .select(`
+            id,
+            title,
+            price,
+            currency
+        `)
+
+        .eq(
+            "id",
+            courseId
+        )
+
+        .single();
+
+
+    if (
+        error ||
+        !course
+    ) {
+
+        showMessage(
+            "Course not found.",
+            true
+        );
+
+        return;
+
+    }
+
+
+    document.getElementById(
+        "courseBox"
+    ).innerHTML = `
+
+        <strong>
+            ${escapeHTML(course.title)}
+        </strong>
+
+        <div class="amount">
+
+            ${Number(
+                course.price || 0
+            ).toLocaleString()}
+
+            ${escapeHTML(
+                course.currency || "TZS"
+            )}
+
+        </div>
+
+    `;
+
+}
+
+
+/*
+===============================
+PROVIDER
+===============================
+*/
+
+function selectProvider(
+    element
+) {
+
+    document
+        .querySelectorAll(
+            ".provider"
+        )
+        .forEach(
+            button =>
+                button.classList
+                    .remove("selected")
+        );
+
+
+    element.classList.add(
+        "selected"
+    );
+
+
+    selectedProvider =
+        element.dataset.provider;
+
+}
+
+
+/*
+===============================
+PAYMENT
+===============================
+*/
+
+async function startPayment() {
+
+    if (!selectedProvider) {
+
+        showMessage(
+            "Choose a payment method.",
+            true
+        );
+
+        return;
+
+    }
+
+
+    const phone =
+        document
+            .getElementById(
+                "phone"
+            )
+            .value
+            .trim();
+
+
+    if (!/^255\d{9}$/.test(phone)) {
+
+        showMessage(
+            "Enter a valid Tanzanian number, e.g. 2557XXXXXXXX.",
+            true
+        );
+
+        return;
+
+    }
+
+
+    const button =
+        document.getElementById(
+            "payButton"
+        );
+
+
+    button.disabled = true;
+
+    button.textContent =
+        "Creating payment...";
+
+
+    /*
+    IMPORTANT:
+
+    The real provider API call
+    will happen on the backend.
+
+    Frontend must NEVER contain
+    payment secret keys.
+    */
+
+
+    const {
+        data,
+        error
+    } =
+    await supabaseClient.functions
+        .invoke(
+            "create-payment",
+            {
+                body: {
+
+                    course_id:
+                        Number(courseId),
+
+                    provider:
+                        selectedProvider,
+
+                    phone_number:
+                        phone
+
+                }
+            }
+        );
+
+
+    if (error) {
+
+        console.error(error);
+
+        showMessage(
+            "Unable to create payment. Please try again.",
+            true
+        );
+
+        button.disabled = false;
+
+        button.textContent =
+            "Continue to Payment";
+
+        return;
+
+    }
+
+
+    if (
+        !data ||
+        !data.success
+    ) {
+
+        showMessage(
+            data?.error ||
+            "Payment could not be started.",
+            true
+        );
+
+        button.disabled = false;
+
+        button.textContent =
+            "Continue to Payment";
+
+        return;
+
+    }
+
+
+    showMessage(
+        "Payment request created. Complete the payment on your phone.",
+        false
+    );
+
+
+    setTimeout(
+        () => {
+
+            location.href =
+                `payment-status.html?id=${encodeURIComponent(
+                    data.payment_id
+                )}`;
+
+        },
+        1500
+    );
+
+}
+
+
+/*
+===============================
+MESSAGE
+===============================
+*/
+
+function showMessage(
+    message,
+    error
+) {
+
+    const element =
+        document.getElementById(
+            "message"
+        );
+
+
+    element.textContent =
+        message;
+
+
+    element.className =
+        error
+        ? "error"
+        : "success";
+
+}
+
+
+/*
+===============================
+ESCAPE
+===============================
+*/
+
+function escapeHTML(
+    text
+) {
+
+    return String(text)
+
+        .replaceAll(
+            "&",
+            "&amp;"
+        )
+
+        .replaceAll(
+            "<",
+            "&lt;"
+        )
+
+        .replaceAll(
+            ">",
+            "&gt;"
+        )
+
+        .replaceAll(
+            '"',
+            "&quot;"
+        )
+
+        .replaceAll(
+            "'",
+            "&#039;"
+        );
+
+}
+
+
+init();
+
+</script>
+
+</body>
+
+</html>
+```

@@ -1,0 +1,895 @@
+```html
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>
+Practical Lab | Tech Izack Academy
+</title>
+
+<link
+rel="stylesheet"
+href="style.css">
+
+
+<style>
+
+.lab-page {
+
+    padding:110px 20px 70px;
+
+}
+
+
+.lab-container {
+
+    max-width:900px;
+
+    margin:auto;
+
+}
+
+
+.lab-header,
+.lab-section,
+.flag-box,
+.result-box {
+
+    background:var(--card);
+
+    border:1px solid var(--border);
+
+    border-radius:12px;
+
+    padding:28px;
+
+    margin-bottom:20px;
+
+}
+
+
+.lab-title {
+
+    font-family:Orbitron;
+
+    font-size:32px;
+
+    margin:12px 0;
+
+}
+
+
+.lab-description {
+
+    color:var(--muted);
+
+    line-height:1.7;
+
+}
+
+
+.lab-section h2 {
+
+    margin-top:0;
+
+}
+
+
+.lab-content {
+
+    color:#c8d3dd;
+
+    line-height:1.8;
+
+    white-space:pre-wrap;
+
+}
+
+
+.flag-input {
+
+    width:100%;
+
+    box-sizing:border-box;
+
+    padding:15px;
+
+    background:#03080d;
+
+    color:#fff;
+
+    border:1px solid var(--border);
+
+    border-radius:7px;
+
+    margin:15px 0;
+
+    font-family:monospace;
+
+}
+
+
+.flag-input:focus {
+
+    outline:none;
+
+    border-color:var(--cyan);
+
+}
+
+
+.result-box {
+
+    display:none;
+
+}
+
+
+.correct {
+
+    color:#20d68a;
+
+}
+
+
+.incorrect {
+
+    color:#ff6475;
+
+}
+
+
+.lab-meta {
+
+    display:flex;
+
+    flex-wrap:wrap;
+
+    gap:8px;
+
+    margin-top:15px;
+
+}
+
+
+.meta {
+
+    padding:5px 10px;
+
+    border:1px solid var(--border);
+
+    border-radius:20px;
+
+    font-size:12px;
+
+    color:#b9c8d6;
+
+}
+
+
+.hint {
+
+    border-left:3px solid var(--cyan);
+
+    padding-left:15px;
+
+    color:#b9c8d6;
+
+}
+
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<header class="navbar">
+
+<div class="container nav-inner">
+
+
+<a
+href="student-dashboard.html"
+class="logo">
+
+<span>&lt;</span>
+
+TECH IZACK
+
+<span>/&gt;</span>
+
+</a>
+
+
+<a
+href="student-dashboard.html"
+class="btn btn-outline">
+
+← Dashboard
+
+</a>
+
+
+</div>
+
+</header>
+
+
+<main class="lab-page">
+
+
+<div class="lab-container">
+
+
+<section class="lab-header">
+
+<span class="section-tag">
+// PRACTICAL LAB
+</span>
+
+
+<h1
+id="labTitle"
+class="lab-title">
+
+Loading...
+
+</h1>
+
+
+<p
+id="labDescription"
+class="lab-description">
+
+</p>
+
+
+<div
+id="labMeta"
+class="lab-meta">
+
+</div>
+
+</section>
+
+
+<section class="lab-section">
+
+
+<h2>
+🎯 Objective
+</h2>
+
+
+<div
+id="objective"
+class="lab-content">
+
+Loading...
+
+</div>
+
+</section>
+
+
+<section class="lab-section">
+
+
+<h2>
+📋 Instructions
+</h2>
+
+
+<div
+id="instructions"
+class="lab-content">
+
+Loading...
+
+</div>
+
+</section>
+
+
+<section
+id="hintSection"
+class="lab-section">
+
+
+<h2>
+💡 Hint
+</h2>
+
+
+<div
+id="hint"
+class="hint">
+
+</div>
+
+</section>
+
+
+<section class="flag-box">
+
+
+<span class="section-tag">
+// CTF SUBMISSION
+</span>
+
+
+<h2>
+Submit Your Flag
+</h2>
+
+
+<p class="lab-description">
+
+Complete the authorized lab,
+find the flag, then submit it below.
+
+</p>
+
+
+<input
+id="flagInput"
+class="flag-input"
+type="text"
+placeholder="TI{your_flag_here}"
+autocomplete="off">
+
+
+<button
+id="submitButton"
+class="btn btn-primary"
+onclick="submitFlag()">
+
+Submit Flag →
+
+</button>
+
+
+</section>
+
+
+<section
+id="resultBox"
+class="result-box">
+
+
+<h2
+id="resultTitle">
+
+</h2>
+
+
+<p
+id="resultMessage">
+
+</p>
+
+
+<a
+href="student-dashboard.html"
+class="btn btn-outline">
+
+← Back to Dashboard
+
+</a>
+
+
+</section>
+
+
+</div>
+
+</main>
+
+
+<script
+src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+</script>
+
+
+<script>
+
+const SUPABASE_URL =
+"WEKA_PROJECT_URL_HAPA";
+
+const SUPABASE_KEY =
+"WEKA_PUBLISHABLE_KEY_HAPA";
+
+
+const supabaseClient =
+window.supabase.createClient(
+
+    SUPABASE_URL,
+
+    SUPABASE_KEY
+
+);
+
+
+let user = null;
+
+let lab = null;
+
+
+/*
+================================
+INIT
+================================
+*/
+
+async function init() {
+
+    const {
+        data
+    } =
+    await supabaseClient.auth
+        .getUser();
+
+
+    user =
+        data.user;
+
+
+    if (!user) {
+
+        location.href =
+            "login.html";
+
+        return;
+
+    }
+
+
+    const labId =
+        new URLSearchParams(
+            location.search
+        ).get("id");
+
+
+    if (!labId) {
+
+        showError(
+            "Lab ID missing."
+        );
+
+        return;
+
+    }
+
+
+    await loadLab(
+        labId
+    );
+
+}
+
+
+/*
+================================
+LOAD LAB
+================================
+*/
+
+async function loadLab(
+    id
+) {
+
+    const {
+        data,
+        error
+    } =
+    await supabaseClient
+
+        .from("labs")
+
+        .select(`
+            id,
+            title,
+            description,
+            objective,
+            instructions,
+            hint,
+            difficulty,
+            lab_order
+        `)
+
+        .eq(
+            "id",
+            id
+        )
+
+        .eq(
+            "published",
+            true
+        )
+
+        .single();
+
+
+    if (
+        error ||
+        !data
+    ) {
+
+        showError(
+            "Lab not found."
+        );
+
+        return;
+
+    }
+
+
+    lab =
+        data;
+
+
+    document.getElementById(
+        "labTitle"
+    ).textContent =
+        lab.title;
+
+
+    document.getElementById(
+        "labDescription"
+    ).textContent =
+        lab.description || "";
+
+
+    document.getElementById(
+        "objective"
+    ).textContent =
+        lab.objective || "";
+
+
+    document.getElementById(
+        "instructions"
+    ).textContent =
+        lab.instructions || "";
+
+
+    document.getElementById(
+        "hint"
+    ).textContent =
+        lab.hint || "";
+
+
+    document.getElementById(
+        "labMeta"
+    ).innerHTML = `
+
+        <span class="meta">
+
+            ${escapeHTML(
+                lab.difficulty
+            )}
+
+        </span>
+
+
+        <span class="meta">
+
+            Lab #${lab.lab_order}
+
+        </span>
+
+    `;
+
+
+    if (!lab.hint) {
+
+        document.getElementById(
+            "hintSection"
+        ).style.display =
+            "none";
+
+    }
+
+}
+
+
+/*
+================================
+SUBMIT FLAG
+================================
+*/
+
+async function submitFlag() {
+
+    const input =
+        document.getElementById(
+            "flagInput"
+        );
+
+
+    const button =
+        document.getElementById(
+            "submitButton"
+        );
+
+
+    const flag =
+        input.value.trim();
+
+
+    if (!flag) {
+
+        alert(
+            "Enter your flag first."
+        );
+
+        return;
+
+    }
+
+
+    button.disabled =
+        true;
+
+    button.textContent =
+        "Checking...";
+
+
+    try {
+
+        const {
+            data: sessionData
+        } =
+        await supabaseClient.auth
+            .getSession();
+
+
+        const session =
+            sessionData.session;
+
+
+        if (!session) {
+
+            location.href =
+                "login.html";
+
+            return;
+
+        }
+
+
+        const response =
+            await fetch(
+
+                `${SUPABASE_URL}/functions/v1/submit-lab`,
+
+                {
+
+                    method:"POST",
+
+                    headers: {
+
+                        "Content-Type":
+                            "application/json",
+
+                        "Authorization":
+                            `Bearer ${session.access_token}`
+
+                    },
+
+                    body: JSON.stringify({
+
+                        lab_id:
+                            lab.id,
+
+                        flag
+
+                    })
+
+                }
+
+            );
+
+
+        const result =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                result.error ||
+                "Submission failed."
+            );
+
+        }
+
+
+        showResult(
+            result.correct,
+            result.message
+        );
+
+
+    } catch (error) {
+
+        showResult(
+            false,
+            error.message
+        );
+
+    }
+
+
+    button.disabled =
+        false;
+
+    button.textContent =
+        "Submit Flag →";
+
+}
+
+
+/*
+================================
+RESULT
+================================
+*/
+
+function showResult(
+    correct,
+    message
+) {
+
+    const box =
+        document.getElementById(
+            "resultBox"
+        );
+
+
+    const title =
+        document.getElementById(
+            "resultTitle"
+        );
+
+
+    const text =
+        document.getElementById(
+            "resultMessage"
+        );
+
+
+    box.style.display =
+        "block";
+
+
+    if (correct) {
+
+        title.textContent =
+            "🎉 Lab Completed!";
+
+
+        title.className =
+            "correct";
+
+
+        text.textContent =
+            message +
+            " Your practical lab has been marked as completed.";
+
+    } else {
+
+        title.textContent =
+            "Try Again";
+
+
+        title.className =
+            "incorrect";
+
+
+        text.textContent =
+            message;
+
+    }
+
+
+    box.scrollIntoView({
+        behavior:"smooth"
+    });
+
+}
+
+
+/*
+================================
+ERROR
+================================
+*/
+
+function showError(
+    message
+) {
+
+    document.querySelector(
+        ".lab-container"
+    ).innerHTML = `
+
+        <section class="lab-header">
+
+            <h2>
+                ${escapeHTML(message)}
+            </h2>
+
+        </section>
+
+    `;
+
+}
+
+
+/*
+================================
+ESCAPE
+================================
+*/
+
+function escapeHTML(
+    text
+) {
+
+    return String(text)
+
+        .replaceAll(
+            "&",
+            "&amp;"
+        )
+
+        .replaceAll(
+            "<",
+            "&lt;"
+        )
+
+        .replaceAll(
+            ">",
+            "&gt;"
+        )
+
+        .replaceAll(
+            '"',
+            "&quot;"
+        )
+
+        .replaceAll(
+            "'",
+            "&#039;"
+        );
+
+}
+
+
+init();
+
+</script>
+
+</body>
+
+</html>
+
+<a
+    href="${labLink}"
+    class="btn btn-primary">
+
+    Start Lab →
+
+</a>
+```

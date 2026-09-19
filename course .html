@@ -1,0 +1,1320 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>Course | Tech Izack</title>
+
+<link rel="stylesheet" href="style.css">
+
+<style>
+
+.course-page {
+    padding:100px 0 60px;
+}
+
+.course-layout {
+    display:grid;
+    grid-template-columns:280px 1fr;
+    gap:25px;
+}
+
+/* SIDEBAR */
+
+.course-sidebar {
+
+    background:var(--card);
+
+    border:1px solid var(--border);
+
+    border-radius:10px;
+
+    padding:20px;
+
+    height:max-content;
+
+    position:sticky;
+
+    top:90px;
+
+}
+
+.course-sidebar h3 {
+
+    font-family:Orbitron;
+
+    margin-bottom:20px;
+
+}
+
+.lesson-item {
+
+    display:block;
+
+    padding:13px;
+
+    margin-bottom:8px;
+
+    border:1px solid transparent;
+
+    border-radius:6px;
+
+    color:#aebdcd;
+
+    cursor:pointer;
+
+}
+
+.lesson-item:hover {
+
+    border-color:var(--cyan);
+
+    color:white;
+
+}
+
+.lesson-item.active {
+
+    background:#071a29;
+
+    border-color:var(--cyan);
+
+    color:var(--cyan);
+
+}
+
+.lesson-item.completed {
+
+    color:#20d68a;
+
+}
+
+.progress {
+
+    margin-top:25px;
+
+}
+
+.progress-track {
+
+    height:8px;
+
+    background:#050b14;
+
+    border-radius:20px;
+
+    overflow:hidden;
+
+    margin-top:10px;
+
+}
+
+.progress-bar {
+
+    height:100%;
+
+    background:
+    linear-gradient(
+        90deg,
+        #00d9ff,
+        #168cff
+    );
+
+}
+
+/* CONTENT */
+
+.lesson-content {
+
+    background:var(--card);
+
+    border:1px solid var(--border);
+
+    border-radius:10px;
+
+    padding:35px;
+
+}
+
+.lesson-content h1 {
+
+    font-family:Orbitron;
+
+    margin:15px 0;
+
+}
+
+.lesson-content p {
+
+    color:#c2cfdd;
+
+    line-height:1.8;
+
+}
+
+.lesson-video {
+
+    width:100%;
+
+    aspect-ratio:16/9;
+
+    background:#02070d;
+
+    border:1px solid var(--border);
+
+    border-radius:8px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    margin:25px 0;
+
+}
+
+.lesson-video span {
+
+    font-size:50px;
+
+}
+
+.practical {
+
+    margin-top:30px;
+
+    padding:25px;
+
+    background:#061421;
+
+    border-left:3px solid var(--cyan);
+
+    border-radius:6px;
+
+}
+
+.practical h3 {
+
+    font-family:Orbitron;
+
+    color:var(--cyan);
+
+}
+
+.code-box {
+
+    margin-top:15px;
+
+    padding:20px;
+
+    background:#02070d;
+
+    border:1px solid var(--border);
+
+    border-radius:6px;
+
+    color:#7de7ff;
+
+    font-family:monospace;
+
+    overflow:auto;
+
+}
+
+.lesson-actions {
+
+    display:flex;
+
+    justify-content:space-between;
+
+    gap:15px;
+
+    margin-top:35px;
+
+}
+
+.quiz-link {
+
+    margin-top:20px;
+
+    padding:20px;
+
+    background:#07101c;
+
+    border:1px solid #18364d;
+
+    border-radius:8px;
+
+}
+
+.message {
+
+    margin-top:15px;
+
+    color:#20d68a;
+
+}
+
+@media(max-width:800px) {
+
+    .course-layout {
+
+        grid-template-columns:1fr;
+
+    }
+
+    .course-sidebar {
+
+        position:static;
+
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<header class="navbar">
+
+<div class="container nav-inner">
+
+<a
+href="student-dashboard.html"
+class="logo">
+
+<span>&lt;</span>
+TECH IZACK
+<span>/&gt;</span>
+
+</a>
+
+<a
+href="student-dashboard.html"
+class="btn btn-outline">
+
+Dashboard
+
+</a>
+
+</div>
+
+</header>
+
+
+<main class="course-page">
+
+<div class="container">
+
+
+<div class="course-layout">
+
+
+<!-- SIDEBAR -->
+
+<aside class="course-sidebar">
+
+<span class="section-tag">
+// COURSE
+
+</span>
+
+<h3 id="courseTitle">
+Loading...
+</h3>
+
+
+<div
+id="lessons">
+
+Loading lessons...
+
+</div>
+
+
+<div class="progress">
+
+<small>
+COURSE PROGRESS
+</small>
+
+<div class="progress-track">
+
+<div
+id="progressBar"
+class="progress-bar"
+style="width:0%">
+
+</div>
+
+</div>
+
+<p
+id="progressText"
+style="
+font-size:13px;
+color:#8ea1b5;
+margin-top:7px;
+">
+
+0% complete
+
+</p>
+
+</div>
+
+</aside>
+
+
+<!-- LESSON -->
+
+<section class="lesson-content">
+
+
+<span
+class="section-tag"
+id="lessonNumber">
+
+LESSON
+
+</span>
+
+
+<h1 id="lessonTitle">
+Loading...
+</h1>
+
+
+<div
+id="lessonDescription">
+
+</div>
+
+
+<!-- VIDEO -->
+
+<div
+id="videoContainer"
+class="lesson-video">
+
+<span>▶</span>
+
+</div>
+
+
+<!-- CONTENT -->
+
+<div id="lessonContent">
+
+Loading lesson...
+
+</div>
+
+
+<!-- PRACTICAL -->
+
+<div
+id="practicalBox"
+class="practical">
+
+<h3>
+🧪 Practical Lab
+</h3>
+
+<p id="practicalText">
+
+Practice this lesson inside your
+authorized VM/CTF environment.
+
+</p>
+
+<div
+id="codeBox"
+class="code-box"
+style="display:none">
+
+</div>
+
+</div>
+
+
+<!-- QUIZ -->
+
+<div
+id="quizBox"
+class="quiz-link"
+style="display:none">
+
+<strong>
+🧠 Lesson Quiz
+</strong>
+
+<p style="color:#9db0c4">
+
+Test what you learned from this lesson.
+
+</p>
+
+<a
+id="quizButton"
+class="btn btn-primary">
+
+Take Quiz →
+
+</a>
+
+</div>
+
+
+<!-- ACTIONS -->
+
+<div class="lesson-actions">
+
+<button
+id="previousBtn"
+class="btn btn-outline">
+
+← Previous
+
+</button>
+
+
+<button
+id="completeBtn"
+class="btn btn-primary">
+
+✓ Mark Complete
+
+</button>
+
+
+<button
+id="nextBtn"
+class="btn btn-outline">
+
+Next →
+
+</button>
+
+</div>
+
+
+<p
+id="message"
+class="message">
+
+</p>
+
+
+</section>
+
+</div>
+
+</div>
+
+</main>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
+<script>
+
+
+const SUPABASE_URL =
+"WEKA_PROJECT_URL_HAPA";
+
+
+const SUPABASE_KEY =
+"WEKA_PUBLISHABLE_KEY_HAPA";
+
+
+const supabaseClient =
+window.supabase.createClient(
+
+    SUPABASE_URL,
+
+    SUPABASE_KEY
+
+);
+
+
+const params =
+new URLSearchParams(
+    location.search
+);
+
+
+const courseId =
+params.get("id");
+
+
+let currentUser;
+
+let course;
+
+let lessons = [];
+
+let progress = [];
+
+let currentIndex = 0;
+
+
+// =====================================
+// INITIALIZE
+// =====================================
+
+async function initialize() {
+
+    const {
+        data:{user}
+    } =
+    await supabaseClient
+        .auth
+        .getUser();
+
+
+    if (!user) {
+
+        location.href =
+        "login.html";
+
+        return;
+
+    }
+
+
+    currentUser = user;
+
+
+    await loadCourse();
+
+}
+
+
+// =====================================
+// COURSE
+// =====================================
+
+async function loadCourse() {
+
+    const {
+        data,
+        error
+    } =
+    await supabaseClient
+        .from("courses")
+        .select("*")
+        .eq(
+            "id",
+            courseId
+        )
+        .single();
+
+
+    if (error || !data) {
+
+        document.getElementById(
+            "courseTitle"
+        ).textContent =
+        "Course not found";
+
+        return;
+
+    }
+
+
+    course = data;
+
+
+    document.getElementById(
+        "courseTitle"
+    ).textContent =
+    course.title;
+
+
+    await loadLessons();
+
+}
+
+
+// =====================================
+// LESSONS
+// =====================================
+
+async function loadLessons() {
+
+    const {
+        data
+    } =
+    await supabaseClient
+        .from("lessons")
+        .select("*")
+        .eq(
+            "course_id",
+            courseId
+        )
+        .order(
+            "lesson_order"
+        );
+
+
+    lessons =
+    data || [];
+
+
+    const {
+        data:progressData
+    } =
+    await supabaseClient
+        .from("lesson_progress")
+        .select("*")
+        .eq(
+            "user_id",
+            currentUser.id
+        );
+
+
+    progress =
+    progressData || [];
+
+
+    renderSidebar();
+
+
+    if (lessons.length) {
+
+        loadLesson(0);
+
+    }
+
+}
+
+
+// =====================================
+// SIDEBAR
+// =====================================
+
+function renderSidebar() {
+
+    const container =
+    document.getElementById(
+        "lessons"
+    );
+
+
+    container.innerHTML =
+    lessons.map(
+        (lesson,index) => {
+
+            const completed =
+            isCompleted(
+                lesson.id
+            );
+
+
+            return `
+
+            <div
+            class="
+            lesson-item
+            ${completed
+                ? "completed"
+                : ""}
+            "
+            data-index="${index}"
+            onclick="loadLesson(${index})">
+
+                ${
+                    completed
+                    ? "✓"
+                    : index + 1
+                }
+
+                &nbsp;
+
+                ${escapeHTML(
+                    lesson.title
+                )}
+
+            </div>
+
+            `;
+
+        }
+    ).join("");
+
+
+    updateProgress();
+
+}
+
+
+// =====================================
+// LOAD LESSON
+// =====================================
+
+async function loadLesson(index) {
+
+    if (
+        index < 0 ||
+        index >= lessons.length
+    ) return;
+
+
+    currentIndex = index;
+
+
+    const lesson =
+    lessons[index];
+
+
+    document.getElementById(
+        "lessonNumber"
+    ).textContent =
+    `LESSON ${index + 1}`;
+
+
+    document.getElementById(
+        "lessonTitle"
+    ).textContent =
+    lesson.title;
+
+
+    document.getElementById(
+        "lessonDescription"
+    ).innerHTML =
+    lesson.description
+    ? `<p>
+        ${escapeHTML(
+            lesson.description
+        )}
+       </p>`
+    : "";
+
+
+    // CONTENT
+
+    document.getElementById(
+        "lessonContent"
+    ).innerHTML =
+    lesson.content ||
+    `<p>
+        No lesson content available yet.
+     </p>`;
+
+
+    // VIDEO
+
+    const video =
+    document.getElementById(
+        "videoContainer"
+    );
+
+
+    if (lesson.video_url) {
+
+        video.innerHTML = `
+
+            <iframe
+
+                src="${escapeAttribute(
+                    lesson.video_url
+                )}"
+
+                width="100%"
+
+                height="100%"
+
+                frameborder="0"
+
+                allowfullscreen>
+
+            </iframe>
+
+        `;
+
+    } else {
+
+        video.innerHTML =
+        "<span>▶</span>";
+
+    }
+
+
+    // PRACTICAL
+
+    document.getElementById(
+        "practicalText"
+    ).textContent =
+    lesson.practical_task ||
+    "Practice this lesson inside your authorized lab environment.";
+
+
+    const codeBox =
+    document.getElementById(
+        "codeBox"
+    );
+
+
+    if (lesson.practical_command) {
+
+        codeBox.style.display =
+        "block";
+
+        codeBox.textContent =
+        lesson.practical_command;
+
+    } else {
+
+        codeBox.style.display =
+        "none";
+
+    }
+
+
+    // QUIZ
+
+    await loadQuiz(
+        lesson.id
+    );
+
+
+    // BUTTON
+
+    const completed =
+    isCompleted(
+        lesson.id
+    );
+
+
+    document.getElementById(
+        "completeBtn"
+    ).textContent =
+    completed
+    ? "✓ Completed"
+    : "✓ Mark Complete";
+
+
+    document.getElementById(
+        "completeBtn"
+    ).disabled =
+    completed;
+
+
+    document.querySelectorAll(
+        ".lesson-item"
+    ).forEach(item => {
+
+        item.classList.remove(
+            "active"
+        );
+
+    });
+
+
+    const active =
+    document.querySelector(
+        `.lesson-item[data-index="${index}"]`
+    );
+
+
+    active?.classList.add(
+        "active"
+    );
+
+
+    document.getElementById(
+        "previousBtn"
+    ).disabled =
+    index === 0;
+
+
+    document.getElementById(
+        "nextBtn"
+    ).disabled =
+    index === lessons.length - 1;
+
+
+    window.scrollTo({
+        top:0,
+        behavior:"smooth"
+    });
+
+}
+
+
+// =====================================
+// QUIZ
+// =====================================
+
+async function loadQuiz(
+    lessonId
+) {
+
+    const {
+        data
+    } =
+    await supabaseClient
+        .from("quizzes")
+        .select("id,title")
+        .eq(
+            "lesson_id",
+            lessonId
+        )
+        .eq(
+            "published",
+            true
+        )
+        .maybeSingle();
+
+
+    const box =
+    document.getElementById(
+        "quizBox"
+    );
+
+
+    if (!data) {
+
+        box.style.display =
+        "none";
+
+        return;
+
+    }
+
+
+    box.style.display =
+    "block";
+
+
+    document.getElementById(
+        "quizButton"
+    ).href =
+    `quiz.html?id=${data.id}`;
+
+}
+
+
+// =====================================
+// COMPLETE
+// =====================================
+
+document
+.getElementById(
+    "completeBtn"
+)
+.addEventListener(
+"click",
+completeLesson
+);
+
+
+async function completeLesson() {
+
+    const lesson =
+    lessons[currentIndex];
+
+
+    const {
+        error
+    } =
+    await supabaseClient
+        .from("lesson_progress")
+        .upsert({
+
+            user_id:
+            currentUser.id,
+
+            lesson_id:
+            lesson.id,
+
+            completed:true,
+
+            completed_at:
+            new Date().toISOString()
+
+        });
+
+
+    if (error) {
+
+        showMessage(
+            error.message,
+            true
+        );
+
+        return;
+
+    }
+
+
+    // Update local progress
+
+    const existing =
+    progress.find(
+        item =>
+        item.lesson_id ===
+        lesson.id
+    );
+
+
+    if (existing) {
+
+        existing.completed =
+        true;
+
+    } else {
+
+        progress.push({
+
+            lesson_id:
+            lesson.id,
+
+            completed:true
+
+        });
+
+    }
+
+
+    document.getElementById(
+        "completeBtn"
+    ).textContent =
+    "✓ Completed";
+
+
+    document.getElementById(
+        "completeBtn"
+    ).disabled =
+    true;
+
+
+    renderSidebar();
+
+
+    showMessage(
+        "✓ Lesson completed!",
+        false
+    );
+
+
+    updateProgress();
+
+}
+
+
+// =====================================
+// NAVIGATION
+// =====================================
+
+document
+.getElementById(
+    "previousBtn"
+)
+.addEventListener(
+    "click",
+    () => {
+
+        loadLesson(
+            currentIndex - 1
+        );
+
+    }
+);
+
+
+document
+.getElementById(
+    "nextBtn"
+)
+.addEventListener(
+    "click",
+    () => {
+
+        loadLesson(
+            currentIndex + 1
+        );
+
+    }
+);
+
+
+// =====================================
+// PROGRESS
+// =====================================
+
+function updateProgress() {
+
+    const completed =
+    lessons.filter(
+        lesson =>
+        isCompleted(
+            lesson.id
+        )
+    ).length;
+
+
+    const percentage =
+    lessons.length
+    ? Math.round(
+        (
+            completed /
+            lessons.length
+        ) * 100
+    )
+    : 0;
+
+
+    document.getElementById(
+        "progressBar"
+    ).style.width =
+    percentage + "%";
+
+
+    document.getElementById(
+        "progressText"
+    ).textContent =
+    `${percentage}% complete`;
+
+}
+
+
+// =====================================
+// CHECK COMPLETE
+// =====================================
+
+function isCompleted(
+    lessonId
+) {
+
+    return progress.some(
+        item =>
+        item.lesson_id ===
+        lessonId &&
+        item.completed
+    );
+
+}
+
+
+// =====================================
+// MESSAGE
+// =====================================
+
+function showMessage(
+    text,
+    error=false
+) {
+
+    const element =
+    document.getElementById(
+        "message"
+    );
+
+
+    element.textContent =
+    text;
+
+
+    element.style.color =
+    error
+    ? "#ff6475"
+    : "#20d68a";
+
+}
+
+
+// =====================================
+// SECURITY HELPERS
+// =====================================
+
+function escapeHTML(text) {
+
+    return String(text)
+
+        .replaceAll(
+            "&",
+            "&amp;"
+        )
+
+        .replaceAll(
+            "<",
+            "&lt;"
+        )
+
+        .replaceAll(
+            ">",
+            "&gt;"
+        )
+
+        .replaceAll(
+            '"',
+            "&quot;"
+        )
+
+        .replaceAll(
+            "'",
+            "&#039;"
+        );
+
+}
+
+
+function escapeAttribute(
+    text
+) {
+
+    return String(text)
+        .replaceAll(
+            '"',
+            "&quot;"
+        )
+        .replaceAll(
+            "<",
+            "&lt;"
+        )
+        .replaceAll(
+            ">",
+            "&gt;"
+        );
+
+}
+
+
+initialize();
+
+</script>
+
+</body>
+
+</html>
+```
+
+<a
+href="lab.html?id=1"
+class="btn btn-primary">
+
+🧪 Start Practical Lab →
+
+</a>
+<button
+    id="certificateButton"
+    class="btn btn-primary"
+    style="display:none"
+    onclick="generateCertificate()">
+
+    🎓 Get Certificate
+
+</button>

@@ -1,0 +1,480 @@
+```html
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>
+Verify Certificate | Tech Izack
+</title>
+
+<link
+rel="stylesheet"
+href="style.css">
+
+<style>
+
+.verify-page {
+
+    min-height:100vh;
+
+    padding:120px 20px;
+
+    display:flex;
+
+    justify-content:center;
+
+    background:
+    radial-gradient(
+        circle at top,
+        #071a2b,
+        #030810 70%
+    );
+
+}
+
+
+.verify-box {
+
+    width:100%;
+
+    max-width:650px;
+
+    background:var(--card);
+
+    border:1px solid var(--border);
+
+    border-radius:12px;
+
+    padding:40px;
+
+}
+
+
+.verify-box h1 {
+
+    font-family:Orbitron;
+
+    margin:15px 0;
+
+}
+
+
+.verify-form {
+
+    display:flex;
+
+    gap:10px;
+
+    margin-top:25px;
+
+}
+
+
+.verify-form input {
+
+    flex:1;
+
+    padding:14px;
+
+    background:#050b14;
+
+    color:white;
+
+    border:1px solid var(--border);
+
+    border-radius:6px;
+
+}
+
+
+.result {
+
+    margin-top:25px;
+
+    padding:25px;
+
+    border-radius:8px;
+
+    display:none;
+
+}
+
+
+.result.success {
+
+    display:block;
+
+    background:#061a14;
+
+    border:1px solid #20d68a;
+
+}
+
+
+.result.error {
+
+    display:block;
+
+    background:#1a080c;
+
+    border:1px solid #ff6475;
+
+}
+
+
+.result h2 {
+
+    font-family:Orbitron;
+
+}
+
+
+.row {
+
+    padding:12px 0;
+
+    border-bottom:
+    1px solid
+    rgba(255,255,255,.07);
+
+}
+
+
+@media(max-width:600px) {
+
+    .verify-form {
+
+        flex-direction:column;
+
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<main class="verify-page">
+
+
+<section class="verify-box">
+
+
+<span class="section-tag">
+// CERTIFICATE VERIFICATION
+</span>
+
+
+<h1>
+Verify Certificate
+</h1>
+
+
+<p style="color:var(--muted)">
+
+Enter the certificate number
+to verify its authenticity.
+
+</p>
+
+
+<form
+id="verifyForm"
+class="verify-form">
+
+<input
+id="certificateNumber"
+placeholder="TZ-CYBER-XXXXXXXXXX"
+required>
+
+<button
+class="btn btn-primary"
+type="submit">
+
+Verify
+
+</button>
+
+</form>
+
+
+<div
+id="result"
+class="result">
+
+</div>
+
+
+</section>
+
+</main>
+
+
+<script
+src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+</script>
+
+
+<script>
+
+
+const SUPABASE_URL =
+"WEKA_PROJECT_URL_HAPA";
+
+
+const SUPABASE_KEY =
+"WEKA_PUBLISHABLE_KEY_HAPA";
+
+
+const supabaseClient =
+window.supabase.createClient(
+
+    SUPABASE_URL,
+
+    SUPABASE_KEY
+
+);
+
+
+document
+.getElementById(
+    "verifyForm"
+)
+.addEventListener(
+    "submit",
+    async event => {
+
+        event.preventDefault();
+
+
+        const number =
+            document
+            .getElementById(
+                "certificateNumber"
+            )
+            .value
+            .trim()
+            .toUpperCase();
+
+
+        const result =
+            document.getElementById(
+                "result"
+            );
+
+
+        result.className =
+            "result";
+
+
+        result.style.display =
+            "block";
+
+
+        result.textContent =
+            "Checking...";
+
+
+        const {
+            data,
+            error
+        } =
+        await supabaseClient
+
+            .from("certificates")
+
+            .select(`
+                certificate_number,
+                student_name,
+                course_title,
+                final_score,
+                issued_at,
+                verification_code
+            `)
+
+            .eq(
+                "certificate_number",
+                number
+            )
+
+            .maybeSingle();
+
+
+        if (
+            error ||
+            !data
+        ) {
+
+            result.className =
+                "result error";
+
+
+            result.innerHTML = `
+
+                <h2>
+                    ✗ NOT VERIFIED
+                </h2>
+
+                <p>
+                    No certificate was found
+                    with this certificate number.
+                </p>
+
+            `;
+
+            return;
+
+        }
+
+
+        result.className =
+            "result success";
+
+
+        result.innerHTML = `
+
+            <h2>
+                ✓ VERIFIED
+            </h2>
+
+            <div class="row">
+
+                <strong>
+                    Student
+                </strong>
+
+                <br>
+
+                ${escapeHTML(
+                    data.student_name
+                )}
+
+            </div>
+
+
+            <div class="row">
+
+                <strong>
+                    Course
+                </strong>
+
+                <br>
+
+                ${escapeHTML(
+                    data.course_title
+                )}
+
+            </div>
+
+
+            <div class="row">
+
+                <strong>
+                    Final Score
+                </strong>
+
+                <br>
+
+                ${data.final_score}%
+
+            </div>
+
+
+            <div class="row">
+
+                <strong>
+                    Certificate Number
+                </strong>
+
+                <br>
+
+                ${escapeHTML(
+                    data.certificate_number
+                )}
+
+            </div>
+
+
+            <div class="row">
+
+                <strong>
+                    Issued
+                </strong>
+
+                <br>
+
+                ${new Date(
+                    data.issued_at
+                ).toLocaleDateString(
+                    "en-GB"
+                )}
+
+            </div>
+
+
+            <p style="
+                color:#20d68a;
+                margin-top:20px;
+            ">
+
+                ✓ Certificate exists
+                in the Tech Izack Academy
+                verification database.
+
+            </p>
+
+        `;
+
+    }
+);
+
+
+function escapeHTML(text) {
+
+    return String(text)
+
+        .replaceAll(
+            "&",
+            "&amp;"
+        )
+
+        .replaceAll(
+            "<",
+            "&lt;"
+        )
+
+        .replaceAll(
+            ">",
+            "&gt;"
+        )
+
+        .replaceAll(
+            '"',
+            "&quot;"
+        )
+
+        .replaceAll(
+            "'",
+            "&#039;"
+        );
+
+}
+
+</script>
+
+</body>
+
+</html>
+```

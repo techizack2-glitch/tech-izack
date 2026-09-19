@@ -1,0 +1,1181 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>Quiz Builder | Tech Izack</title>
+
+<link rel="stylesheet"
+href="style.css">
+
+<style>
+
+.builder-page {
+    padding:120px 0 80px;
+}
+
+.builder-card {
+    max-width:950px;
+    margin:auto;
+
+    background:var(--card);
+
+    border:1px solid var(--border);
+
+    border-radius:10px;
+
+    padding:35px;
+}
+
+.form-group {
+    margin-bottom:20px;
+}
+
+.form-group label {
+    display:block;
+
+    margin-bottom:8px;
+
+    color:#b9c6d6;
+}
+
+input,
+textarea,
+select {
+
+    width:100%;
+
+    padding:13px;
+
+    background:#050b14;
+
+    color:white;
+
+    border:1px solid var(--border);
+
+    border-radius:6px;
+
+}
+
+textarea {
+
+    min-height:130px;
+
+    resize:vertical;
+
+}
+
+.form-row {
+
+    display:grid;
+
+    grid-template-columns:
+    1fr 1fr;
+
+    gap:20px;
+
+}
+
+.question-card {
+
+    margin-top:25px;
+
+    padding:25px;
+
+    background:#07101c;
+
+    border:1px solid var(--border);
+
+    border-radius:8px;
+
+}
+
+.option-grid {
+
+    display:grid;
+
+    grid-template-columns:
+    1fr 1fr;
+
+    gap:15px;
+
+}
+
+.question-number {
+
+    color:var(--cyan);
+
+    font-family:Orbitron;
+
+    margin-bottom:20px;
+
+}
+
+.remove-btn {
+
+    background:transparent;
+
+    color:#ff6475;
+
+    border:1px solid #ff6475;
+
+    padding:8px 12px;
+
+    border-radius:5px;
+
+    cursor:pointer;
+
+}
+
+.message {
+
+    margin-top:20px;
+}
+
+.success {
+    color:#20d68a;
+}
+
+.error {
+    color:#ff6475;
+}
+
+
+@media(max-width:700px) {
+
+    .form-row,
+    .option-grid {
+
+        grid-template-columns:1fr;
+
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<header class="navbar">
+
+<div class="container nav-inner">
+
+<a
+href="admin-dashboard.html"
+class="logo">
+
+<span>&lt;</span>
+TECH IZACK
+<span>/&gt;</span>
+
+</a>
+
+
+<a
+href="admin-dashboard.html"
+class="btn btn-outline">
+
+Admin
+
+</a>
+
+</div>
+
+</header>
+
+
+<main class="builder-page">
+
+<div class="container">
+
+
+<div class="builder-card">
+
+<span class="section-tag">
+// ACADEMY / QUIZ BUILDER
+</span>
+
+
+<h1
+style="
+font-family:Orbitron;
+margin:15px 0 30px;
+">
+
+Create Quiz
+
+</h1>
+
+
+<form id="quizForm">
+
+
+<div class="form-group">
+
+<label>
+Course *
+</label>
+
+<select
+id="courseId"
+required>
+
+<option value="">
+Loading courses...
+</option>
+
+</select>
+
+</div>
+
+
+<div class="form-group">
+
+<label>
+Lesson
+</label>
+
+<select id="lessonId">
+
+<option value="">
+Select lesson
+</option>
+
+</select>
+
+</div>
+
+
+<div class="form-group">
+
+<label>
+Quiz Title *
+</label>
+
+<input
+id="quizTitle"
+placeholder="Kali Linux Fundamentals Quiz"
+required>
+
+</div>
+
+
+<div class="form-group">
+
+<label>
+Description
+</label>
+
+<textarea
+id="description"
+placeholder="What will this quiz test?">
+</textarea>
+
+</div>
+
+
+<div class="form-row">
+
+
+<div class="form-group">
+
+<label>
+Passing Score (%)
+</label>
+
+<input
+id="passingScore"
+type="number"
+min="1"
+max="100"
+value="70">
+
+</div>
+
+
+<div class="form-group">
+
+<label>
+Status
+</label>
+
+<select id="published">
+
+<option value="false">
+Draft
+</option>
+
+<option value="true">
+Published
+</option>
+
+</select>
+
+</div>
+
+</div>
+
+
+<hr
+style="
+border-color:var(--border);
+margin:35px 0;
+">
+
+
+<div
+style="
+display:flex;
+justify-content:space-between;
+align-items:center;
+gap:15px;
+">
+
+<h2>
+Questions
+</h2>
+
+<button
+type="button"
+class="btn btn-outline"
+onclick="addQuestion()">
+
++ Add Question
+
+</button>
+
+</div>
+
+
+<div id="questions"></div>
+
+
+<button
+type="submit"
+class="btn btn-primary"
+style="margin-top:30px">
+
+Save Quiz →
+
+</button>
+
+
+<p
+id="message"
+class="message">
+
+</p>
+
+
+</form>
+
+</div>
+
+</div>
+
+</main>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
+<script>
+
+
+const SUPABASE_URL =
+"WEKA_PROJECT_URL_HAPA";
+
+
+const SUPABASE_KEY =
+"WEKA_PUBLISHABLE_KEY_HAPA";
+
+
+const supabaseClient =
+window.supabase.createClient(
+
+    SUPABASE_URL,
+
+    SUPABASE_KEY
+
+);
+
+
+let questionCount = 0;
+
+
+// ==========================
+// ADMIN CHECK
+// ==========================
+
+async function checkAdmin() {
+
+    const {
+        data:{user}
+    } =
+    await supabaseClient
+        .auth
+        .getUser();
+
+
+    if (!user) {
+
+        location.href =
+        "index.html";
+
+        return false;
+
+    }
+
+
+    const {
+        data:profile
+    } =
+    await supabaseClient
+        .from("profiles")
+        .select("role")
+        .eq("id",user.id)
+        .single();
+
+
+    if (
+        !profile ||
+        profile.role !== "admin"
+    ) {
+
+        location.href =
+        "dashboard.html";
+
+        return false;
+
+    }
+
+
+    return true;
+
+}
+
+
+// ==========================
+// COURSES
+// ==========================
+
+async function loadCourses() {
+
+    const {
+        data,
+        error
+    } =
+    await supabaseClient
+        .from("courses")
+        .select("id,title")
+        .order("title");
+
+
+    if (error) {
+
+        showMessage(
+            error.message,
+            true
+        );
+
+        return;
+
+    }
+
+
+    const select =
+    document.getElementById(
+        "courseId"
+    );
+
+
+    select.innerHTML = `
+
+        <option value="">
+            Select course
+        </option>
+
+    `;
+
+
+    data.forEach(course => {
+
+        select.innerHTML += `
+
+            <option
+            value="${course.id}">
+
+                ${escapeHTML(
+                    course.title
+                )}
+
+            </option>
+
+        `;
+
+    });
+
+}
+
+
+// ==========================
+// LESSONS
+// ==========================
+
+document
+.getElementById("courseId")
+.addEventListener(
+"change",
+loadLessons
+);
+
+
+async function loadLessons() {
+
+    const courseId =
+    document
+    .getElementById(
+        "courseId"
+    )
+    .value;
+
+
+    const select =
+    document.getElementById(
+        "lessonId"
+    );
+
+
+    select.innerHTML = `
+
+        <option value="">
+            Select lesson
+        </option>
+
+    `;
+
+
+    if (!courseId) return;
+
+
+    const {
+        data
+    } =
+    await supabaseClient
+        .from("lessons")
+        .select("id,title")
+        .eq(
+            "course_id",
+            courseId
+        )
+        .order(
+            "lesson_order"
+        );
+
+
+    data?.forEach(
+    lesson => {
+
+        select.innerHTML += `
+
+            <option
+            value="${lesson.id}">
+
+                ${escapeHTML(
+                    lesson.title
+                )}
+
+            </option>
+
+        `;
+
+    });
+
+}
+
+
+// ==========================
+// ADD QUESTION
+// ==========================
+
+function addQuestion() {
+
+    questionCount++;
+
+
+    const container =
+    document.getElementById(
+        "questions"
+    );
+
+
+    const card =
+    document.createElement(
+        "div"
+    );
+
+
+    card.className =
+    "question-card";
+
+
+    card.dataset.question =
+    questionCount;
+
+
+    card.innerHTML = `
+
+        <div
+        class="question-number">
+
+            QUESTION
+            ${questionCount}
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label>
+                Question *
+            </label>
+
+            <textarea
+            class="question-text"
+            placeholder="Example: Which command displays the current directory?"
+            required></textarea>
+
+        </div>
+
+
+        <div class="option-grid">
+
+
+            <div class="form-group">
+
+                <label>
+                    Option A
+                </label>
+
+                <input
+                class="option-a"
+                placeholder="pwd"
+                required>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Option B
+                </label>
+
+                <input
+                class="option-b"
+                placeholder="cd"
+                required>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Option C
+                </label>
+
+                <input
+                class="option-c"
+                placeholder="ls"
+                required>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Option D
+                </label>
+
+                <input
+                class="option-d"
+                placeholder="mkdir"
+                required>
+
+            </div>
+
+        </div>
+
+
+        <div class="form-row">
+
+
+            <div class="form-group">
+
+                <label>
+                    Correct Answer
+                </label>
+
+                <select
+                class="correct-answer">
+
+                    <option value="A">
+                        A
+                    </option>
+
+                    <option value="B">
+                        B
+                    </option>
+
+                    <option value="C">
+                        C
+                    </option>
+
+                    <option value="D">
+                        D
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Points
+                </label>
+
+                <input
+                class="points"
+                type="number"
+                min="1"
+                value="10">
+
+            </div>
+
+        </div>
+
+
+        <button
+        type="button"
+        class="remove-btn"
+        onclick="removeQuestion(this)">
+
+            Remove Question
+
+        </button>
+
+    `;
+
+
+    container.appendChild(
+        card
+    );
+
+}
+
+
+// ==========================
+// REMOVE QUESTION
+// ==========================
+
+function removeQuestion(
+    button
+) {
+
+    button
+    .closest(
+        ".question-card"
+    )
+    .remove();
+
+}
+
+
+// ==========================
+// SAVE QUIZ
+// ==========================
+
+document
+.getElementById("quizForm")
+.addEventListener(
+"submit",
+async function(event) {
+
+    event.preventDefault();
+
+
+    const courseId =
+    document
+    .getElementById(
+        "courseId"
+    )
+    .value;
+
+
+    const lessonId =
+    document
+    .getElementById(
+        "lessonId"
+    )
+    .value;
+
+
+    const title =
+    document
+    .getElementById(
+        "quizTitle"
+    )
+    .value
+    .trim();
+
+
+    const description =
+    document
+    .getElementById(
+        "description"
+    )
+    .value
+    .trim();
+
+
+    const passingScore =
+    Number(
+        document
+        .getElementById(
+            "passingScore"
+        )
+        .value
+    );
+
+
+    const published =
+    document
+    .getElementById(
+        "published"
+    )
+    .value === "true";
+
+
+    if (!courseId || !title) {
+
+        showMessage(
+            "Course and quiz title are required.",
+            true
+        );
+
+        return;
+
+    }
+
+
+    const cards =
+    document.querySelectorAll(
+        ".question-card"
+    );
+
+
+    if (!cards.length) {
+
+        showMessage(
+            "Add at least one question.",
+            true
+        );
+
+        return;
+
+    }
+
+
+    // CREATE QUIZ
+
+    const {
+        data:quiz,
+        error
+    } =
+    await supabaseClient
+        .from("quizzes")
+        .insert({
+
+            course_id:
+            Number(courseId),
+
+            lesson_id:
+            lessonId
+            ? Number(lessonId)
+            : null,
+
+            title,
+
+            description,
+
+            passing_score:
+            passingScore,
+
+            published
+
+        })
+        .select()
+        .single();
+
+
+    if (error) {
+
+        showMessage(
+            error.message,
+            true
+        );
+
+        return;
+
+    }
+
+
+    // CREATE QUESTIONS
+
+    for (
+        let i = 0;
+        i < cards.length;
+        i++
+    ) {
+
+        const card =
+        cards[i];
+
+
+        const question =
+        card
+        .querySelector(
+            ".question-text"
+        )
+        .value
+        .trim();
+
+
+        const optionA =
+        card
+        .querySelector(
+            ".option-a"
+        )
+        .value
+        .trim();
+
+
+        const optionB =
+        card
+        .querySelector(
+            ".option-b"
+        )
+        .value
+        .trim();
+
+
+        const optionC =
+        card
+        .querySelector(
+            ".option-c"
+        )
+        .value
+        .trim();
+
+
+        const optionD =
+        card
+        .querySelector(
+            ".option-d"
+        )
+        .value
+        .trim();
+
+
+        const correct =
+        card
+        .querySelector(
+            ".correct-answer"
+        )
+        .value;
+
+
+        const points =
+        Number(
+            card
+            .querySelector(
+                ".points"
+            )
+            .value
+        );
+
+
+        const {
+            error:questionError
+        } =
+        await supabaseClient
+            .from(
+                "quiz_questions"
+            )
+            .insert({
+
+                quiz_id:
+                quiz.id,
+
+                question_order:
+                i + 1,
+
+                question,
+
+                option_a:
+                optionA,
+
+                option_b:
+                optionB,
+
+                option_c:
+                optionC,
+
+                option_d:
+                optionD,
+
+                correct_answer:
+                correct,
+
+                points
+
+            });
+
+
+        if (questionError) {
+
+            console.error(
+                questionError
+            );
+
+        }
+
+    }
+
+
+    showMessage(
+        "✓ Quiz created successfully!",
+        false
+    );
+
+
+    setTimeout(
+        () => {
+
+            location.href =
+            "admin-dashboard.html";
+
+        },
+        1200
+    );
+
+});
+
+
+// ==========================
+// MESSAGE
+// ==========================
+
+function showMessage(
+    text,
+    error
+) {
+
+    const element =
+    document.getElementById(
+        "message"
+    );
+
+
+    element.textContent =
+    text;
+
+
+    element.className =
+    "message " +
+    (
+        error
+        ? "error"
+        : "success"
+    );
+
+}
+
+
+// ==========================
+// ESCAPE
+// ==========================
+
+function escapeHTML(text) {
+
+    return String(text)
+
+        .replaceAll(
+            "&",
+            "&amp;"
+        )
+
+        .replaceAll(
+            "<",
+            "&lt;"
+        )
+
+        .replaceAll(
+            ">",
+            "&gt;"
+        )
+
+        .replaceAll(
+            '"',
+            "&quot;"
+        )
+
+        .replaceAll(
+            "'",
+            "&#039;"
+        );
+
+}
+
+
+// ==========================
+// INIT
+// ==========================
+
+(async()=>{
+
+    const allowed =
+    await checkAdmin();
+
+
+    if (!allowed)
+        return;
+
+
+    await loadCourses();
+
+
+    // Start with one question
+    addQuestion();
+
+})();
+
+</script>
+
+</body>
+</html>
+```

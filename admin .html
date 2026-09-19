@@ -1,0 +1,2004 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>Admin Panel | Tech Izack</title>
+
+<link rel="stylesheet" href="style.css">
+
+<style>
+
+.admin-page {
+    padding:110px 0 70px;
+}
+
+.admin-header {
+    margin-bottom:30px;
+}
+
+.admin-header h1 {
+    font-family:Orbitron;
+    margin:12px 0;
+}
+
+.admin-grid {
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:18px;
+    margin-bottom:30px;
+}
+
+.admin-stat {
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:22px;
+}
+
+.admin-number {
+    font-family:Orbitron;
+    font-size:30px;
+    color:var(--cyan);
+    margin-top:8px;
+}
+
+.admin-layout {
+    display:grid;
+    grid-template-columns:280px 1fr;
+    gap:25px;
+}
+
+.admin-sidebar {
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:20px;
+    height:max-content;
+}
+
+.admin-sidebar button {
+    width:100%;
+    text-align:left;
+    margin-bottom:8px;
+}
+
+.admin-content {
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:28px;
+}
+
+.admin-section {
+    display:none;
+}
+
+.admin-section.active {
+    display:block;
+}
+
+.admin-form {
+    display:grid;
+    gap:15px;
+    margin-top:20px;
+}
+
+.admin-form input,
+.admin-form textarea,
+.admin-form select {
+
+    width:100%;
+    padding:13px;
+
+    background:#050b14;
+
+    border:1px solid var(--border);
+
+    border-radius:6px;
+
+    color:white;
+
+    font-family:inherit;
+
+}
+
+.admin-form textarea {
+    min-height:120px;
+    resize:vertical;
+}
+
+.admin-list {
+    margin-top:25px;
+}
+
+.admin-item {
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:15px;
+
+    padding:18px;
+
+    margin-bottom:10px;
+
+    background:#050b14;
+
+    border:1px solid var(--border);
+
+    border-radius:8px;
+}
+
+.admin-item-info h3 {
+    margin-bottom:6px;
+}
+
+.admin-item-info p {
+    color:var(--muted);
+    font-size:14px;
+}
+
+.admin-actions {
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+}
+
+.message {
+    margin-top:15px;
+    color:#20d68a;
+}
+
+.error {
+    color:#ff6475;
+}
+
+@media(max-width:900px) {
+
+    .admin-grid {
+        grid-template-columns:1fr 1fr;
+    }
+
+    .admin-layout {
+        grid-template-columns:1fr;
+    }
+
+}
+
+@media(max-width:600px) {
+
+    .admin-grid {
+        grid-template-columns:1fr;
+    }
+
+    .admin-item {
+        flex-direction:column;
+        align-items:flex-start;
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<header class="navbar">
+
+<div class="container nav-inner">
+
+<a
+href="index.html"
+class="logo">
+
+<span>&lt;</span>
+TECH IZACK
+<span>/&gt;</span>
+
+</a>
+
+<nav>
+
+<a href="student-dashboard.html">
+Student
+</a>
+
+<button
+class="btn btn-outline"
+onclick="logout()">
+
+Logout
+
+</button>
+
+</nav>
+
+</div>
+
+</header>
+
+
+<main class="admin-page">
+
+<div class="container">
+
+
+<div class="admin-header">
+
+<span class="section-tag">
+// ADMIN CONTROL CENTER
+</span>
+
+<h1>
+Academy Management
+</h1>
+
+<p style="color:var(--muted)">
+Manage courses, lessons and practical labs.
+</p>
+
+</div>
+
+
+<!-- STATS -->
+
+<div class="admin-grid">
+
+<div class="admin-stat">
+
+<span class="section-tag">
+COURSES
+</span>
+
+<div
+id="courseCount"
+class="admin-number">
+
+0
+
+</div>
+
+</div>
+
+
+<div class="admin-stat">
+
+<span class="section-tag">
+LESSONS
+</span>
+
+<div
+id="lessonCount"
+class="admin-number">
+
+0
+
+</div>
+
+</div>
+
+
+<div class="admin-stat">
+
+<span class="section-tag">
+LABS
+</span>
+
+<div
+id="labCount"
+class="admin-number">
+
+0
+
+</div>
+
+</div>
+
+
+<div class="admin-stat">
+
+<span class="section-tag">
+STUDENTS
+</span>
+
+<div
+id="studentCount"
+class="admin-number">
+
+0
+
+</div>
+
+</div>
+
+</div>
+
+
+<div class="admin-layout">
+
+
+<!-- SIDEBAR -->
+
+<aside class="admin-sidebar">
+
+<button
+class="btn btn-primary"
+onclick="showSection('courses')">
+
+📚 Courses
+
+</button>
+
+<button
+class="btn btn-outline"
+onclick="showSection('lessons')">
+
+📖 Lessons
+
+</button>
+
+<button
+class="btn btn-outline"
+onclick="showSection('labs')">
+
+🧪 Labs
+
+</button>
+
+<button
+class="btn btn-outline"
+onclick="showSection('tasks')">
+
+🎯 Lab Tasks
+
+</button>
+
+</aside>
+
+
+<!-- CONTENT -->
+
+<section class="admin-content">
+
+
+<!-- COURSES -->
+
+<div
+id="coursesSection"
+class="admin-section active">
+
+<span class="section-tag">
+// COURSES
+
+</span>
+
+<h2>
+Create Course
+</h2>
+
+
+<form
+id="courseForm"
+class="admin-form">
+
+
+<input
+id="courseTitle"
+placeholder="Course title"
+required>
+
+
+<textarea
+id="courseDescription"
+placeholder="Course description">
+</textarea>
+
+
+<select id="courseLevel">
+
+<option>
+Beginner
+</option>
+
+<option>
+Intermediate
+</option>
+
+<option>
+Advanced
+</option>
+
+</select>
+
+
+<input
+id="courseCategory"
+placeholder="Category e.g. Kali Linux">
+
+
+<button
+class="btn btn-primary"
+type="submit">
+
++ Create Course
+
+</button>
+
+</form>
+
+
+<p
+id="courseMessage"
+class="message">
+
+</p>
+
+
+<div
+id="courseList"
+class="admin-list">
+
+Loading...
+
+</div>
+
+</div>
+
+
+<!-- LESSONS -->
+
+<div
+id="lessonsSection"
+class="admin-section">
+
+<span class="section-tag">
+// LESSONS
+
+</span>
+
+<h2>
+Create Lesson
+</h2>
+
+
+<form
+id="lessonForm"
+class="admin-form">
+
+
+<select
+id="lessonCourse"
+required>
+
+<option value="">
+Select Course
+</option>
+
+</select>
+
+
+<input
+id="lessonTitle"
+placeholder="Lesson title"
+required>
+
+
+<input
+id="lessonOrder"
+type="number"
+placeholder="Lesson order"
+value="1">
+
+
+<textarea
+id="lessonDescription"
+placeholder="Lesson description">
+</textarea>
+
+
+<textarea
+id="lessonContent"
+placeholder="Lesson content">
+</textarea>
+
+
+<input
+id="lessonVideo"
+placeholder="Video URL">
+
+
+<textarea
+id="lessonPractical"
+placeholder="Practical task">
+</textarea>
+
+
+<textarea
+id="lessonCommand"
+placeholder="Safe lab command/example">
+</textarea>
+
+
+<button
+class="btn btn-primary"
+type="submit">
+
++ Create Lesson
+
+</button>
+
+</form>
+
+
+<p
+id="lessonMessage"
+class="message">
+
+</p>
+
+
+<div
+id="lessonList"
+class="admin-list">
+
+</div>
+
+</div>
+
+
+<!-- LABS -->
+
+<div
+id="labsSection"
+class="admin-section">
+
+<span class="section-tag">
+// PRACTICAL LABS
+
+</span>
+
+<h2>
+Create Lab
+</h2>
+
+
+<form
+id="labForm"
+class="admin-form">
+
+
+<select
+id="labCourse"
+required>
+
+<option value="">
+Select Course
+</option>
+
+</select>
+
+
+<select
+id="labLesson">
+
+<option value="">
+Select Lesson
+</option>
+
+</select>
+
+
+<input
+id="labTitle"
+placeholder="Lab title"
+required>
+
+
+<textarea
+id="labDescription"
+placeholder="Lab description">
+</textarea>
+
+
+<textarea
+id="labObjective"
+placeholder="Learning objective">
+</textarea>
+
+
+<select id="labDifficulty">
+
+<option>
+Beginner
+</option>
+
+<option>
+Intermediate
+</option>
+
+<option>
+Advanced
+</option>
+
+</select>
+
+
+<input
+id="labMinutes"
+type="number"
+value="30"
+placeholder="Estimated minutes">
+
+
+<input
+id="labPoints"
+type="number"
+value="100"
+placeholder="Total points">
+
+
+<textarea
+id="labInstructions"
+placeholder="Lab instructions">
+</textarea>
+
+
+<input
+id="labEnvironment"
+value="Authorized VM / CTF"
+placeholder="Environment">
+
+
+<label>
+
+<input
+id="labPublished"
+type="checkbox">
+
+Publish lab
+
+</label>
+
+
+<button
+class="btn btn-primary"
+type="submit">
+
++ Create Lab
+
+</button>
+
+</form>
+
+
+<p
+id="labMessage"
+class="message">
+
+</p>
+
+
+<div
+id="labList"
+class="admin-list">
+
+</div>
+
+</div>
+
+
+<!-- TASKS -->
+
+<div
+id="tasksSection"
+class="admin-section">
+
+<span class="section-tag">
+// LAB TASKS
+
+</span>
+
+<h2>
+Create Lab Task
+</h2>
+
+
+<form
+id="taskForm"
+class="admin-form">
+
+
+<select
+id="taskLab"
+required>
+
+<option value="">
+Select Lab
+</option>
+
+</select>
+
+
+<input
+id="taskTitle"
+placeholder="Task title"
+required>
+
+
+<input
+id="taskOrder"
+type="number"
+value="1">
+
+
+<textarea
+id="taskDescription"
+placeholder="Task description">
+</textarea>
+
+
+<textarea
+id="taskHint"
+placeholder="Optional hint">
+</textarea>
+
+
+<input
+id="taskPoints"
+type="number"
+value="20">
+
+
+<button
+class="btn btn-primary"
+type="submit">
+
++ Create Task
+
+</button>
+
+</form>
+
+
+<p
+id="taskMessage"
+class="message">
+
+</p>
+
+
+<div
+id="taskList"
+class="admin-list">
+
+</div>
+
+</div>
+
+
+</section>
+
+</div>
+
+</div>
+
+</main>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
+<script>
+
+
+const SUPABASE_URL =
+"WEKA_PROJECT_URL_HAPA";
+
+
+const SUPABASE_KEY =
+"WEKA_PUBLISHABLE_KEY_HAPA";
+
+
+const supabaseClient =
+window.supabase.createClient(
+
+    SUPABASE_URL,
+
+    SUPABASE_KEY
+
+);
+
+
+let courses = [];
+
+let lessons = [];
+
+let labs = [];
+
+
+// =================================
+// SECURITY
+// =================================
+
+async function checkAdmin() {
+
+    const {
+        data:{user}
+    } =
+    await supabaseClient
+        .auth
+        .getUser();
+
+
+    if (!user) {
+
+        location.href =
+        "login.html";
+
+        return false;
+
+    }
+
+
+    const {
+        data:profile
+    } =
+    await supabaseClient
+        .from("profiles")
+        .select("role")
+        .eq(
+            "id",
+            user.id
+        )
+        .single();
+
+
+    if (
+        !profile ||
+        profile.role !== "admin"
+    ) {
+
+        document.body.innerHTML = `
+
+            <div
+            style="
+            padding:100px;
+            text-align:center;
+            color:white;
+            ">
+
+                <h1>
+                Access Denied
+                </h1>
+
+                <p>
+                Admin access required.
+                </p>
+
+                <br>
+
+                <a
+                href="index.html"
+                class="btn btn-primary">
+
+                Go Home
+
+                </a>
+
+            </div>
+
+        `;
+
+        return false;
+
+    }
+
+
+    return true;
+
+}
+
+
+// =================================
+// LOAD DATA
+// =================================
+
+async function loadData() {
+
+    await loadCourses();
+
+    await loadLessons();
+
+    await loadLabs();
+
+    await loadStudents();
+
+}
+
+
+// =================================
+// COURSES
+// =================================
+
+async function loadCourses() {
+
+    const {
+        data,
+        error
+    } =
+    await supabaseClient
+        .from("courses")
+        .select("*")
+        .order(
+            "id",
+            {ascending:false}
+        );
+
+
+    if (error) {
+
+        console.error(error);
+
+        return;
+
+    }
+
+
+    courses =
+    data || [];
+
+
+    document.getElementById(
+        "courseCount"
+    ).textContent =
+    courses.length;
+
+
+    renderCourses();
+
+    fillCourseSelects();
+
+}
+
+
+// =================================
+// RENDER COURSES
+// =================================
+
+function renderCourses() {
+
+    document.getElementById(
+        "courseList"
+    ).innerHTML =
+
+    courses.map(
+        course => `
+
+        <div class="admin-item">
+
+            <div class="admin-item-info">
+
+                <h3>
+                    ${escapeHTML(
+                        course.title
+                    )}
+                </h3>
+
+                <p>
+                    ${escapeHTML(
+                        course.level ||
+                        "Beginner"
+                    )}
+                    ·
+                    ${escapeHTML(
+                        course.category ||
+                        "Cybersecurity"
+                    )}
+                </p>
+
+            </div>
+
+            <div class="admin-actions">
+
+                <button
+                class="btn btn-outline"
+                onclick="
+                deleteCourse(${course.id})
+                ">
+
+                    Delete
+
+                </button>
+
+            </div>
+
+        </div>
+
+        `
+    ).join("");
+
+}
+
+
+// =================================
+// CREATE COURSE
+// =================================
+
+document
+.getElementById(
+    "courseForm"
+)
+.addEventListener(
+    "submit",
+    async event => {
+
+        event.preventDefault();
+
+
+        const {
+            error
+        } =
+        await supabaseClient
+            .from("courses")
+            .insert({
+
+                title:
+                document.getElementById(
+                    "courseTitle"
+                ).value,
+
+                description:
+                document.getElementById(
+                    "courseDescription"
+                ).value,
+
+                level:
+                document.getElementById(
+                    "courseLevel"
+                ).value,
+
+                category:
+                document.getElementById(
+                    "courseCategory"
+                ).value
+
+            });
+
+
+        if (error) {
+
+            show(
+                "courseMessage",
+                error.message,
+                true
+            );
+
+            return;
+
+        }
+
+
+        event.target.reset();
+
+
+        show(
+            "courseMessage",
+            "✓ Course created.",
+            false
+        );
+
+
+        await loadCourses();
+
+    }
+);
+
+
+// =================================
+// LESSONS
+// =================================
+
+async function loadLessons() {
+
+    const {
+        data
+    } =
+    await supabaseClient
+        .from("lessons")
+        .select("*")
+        .order(
+            "lesson_order"
+        );
+
+
+    lessons =
+    data || [];
+
+
+    document.getElementById(
+        "lessonCount"
+    ).textContent =
+    lessons.length;
+
+
+    renderLessons();
+
+    fillLessonSelect();
+
+}
+
+
+// =================================
+// CREATE LESSON
+// =================================
+
+document
+.getElementById(
+    "lessonForm"
+)
+.addEventListener(
+    "submit",
+    async event => {
+
+        event.preventDefault();
+
+
+        const {
+            error
+        } =
+        await supabaseClient
+            .from("lessons")
+            .insert({
+
+                course_id:
+                Number(
+                    document.getElementById(
+                        "lessonCourse"
+                    ).value
+                ),
+
+                title:
+                document.getElementById(
+                    "lessonTitle"
+                ).value,
+
+                lesson_order:
+                Number(
+                    document.getElementById(
+                        "lessonOrder"
+                    ).value
+                ),
+
+                description:
+                document.getElementById(
+                    "lessonDescription"
+                ).value,
+
+                content:
+                document.getElementById(
+                    "lessonContent"
+                ).value,
+
+                video_url:
+                document.getElementById(
+                    "lessonVideo"
+                ).value,
+
+                practical_task:
+                document.getElementById(
+                    "lessonPractical"
+                ).value,
+
+                practical_command:
+                document.getElementById(
+                    "lessonCommand"
+                ).value
+
+            });
+
+
+        if (error) {
+
+            show(
+                "lessonMessage",
+                error.message,
+                true
+            );
+
+            return;
+
+        }
+
+
+        event.target.reset();
+
+
+        show(
+            "lessonMessage",
+            "✓ Lesson created.",
+            false
+        );
+
+
+        await loadLessons();
+
+    }
+);
+
+
+// =================================
+// LABS
+// =================================
+
+async function loadLabs() {
+
+    const {
+        data
+    } =
+    await supabaseClient
+        .from("labs")
+        .select("*")
+        .order(
+            "id",
+            {ascending:false}
+        );
+
+
+    labs =
+    data || [];
+
+
+    document.getElementById(
+        "labCount"
+    ).textContent =
+    labs.length;
+
+
+    renderLabs();
+
+    fillLabSelect();
+
+}
+
+
+// =================================
+// CREATE LAB
+// =================================
+
+document
+.getElementById(
+    "labForm"
+)
+.addEventListener(
+    "submit",
+    async event => {
+
+        event.preventDefault();
+
+
+        const {
+            error
+        } =
+        await supabaseClient
+            .from("labs")
+            .insert({
+
+                course_id:
+                Number(
+                    document.getElementById(
+                        "labCourse"
+                    ).value
+                ),
+
+                lesson_id:
+                Number(
+                    document.getElementById(
+                        "labLesson"
+                    ).value
+                ) || null,
+
+                title:
+                document.getElementById(
+                    "labTitle"
+                ).value,
+
+                description:
+                document.getElementById(
+                    "labDescription"
+                ).value,
+
+                objective:
+                document.getElementById(
+                    "labObjective"
+                ).value,
+
+                difficulty:
+                document.getElementById(
+                    "labDifficulty"
+                ).value,
+
+                estimated_minutes:
+                Number(
+                    document.getElementById(
+                        "labMinutes"
+                    ).value
+                ),
+
+                points:
+                Number(
+                    document.getElementById(
+                        "labPoints"
+                    ).value
+                ),
+
+                instructions:
+                document.getElementById(
+                    "labInstructions"
+                ).value,
+
+                environment:
+                document.getElementById(
+                    "labEnvironment"
+                ).value,
+
+                published:
+                document.getElementById(
+                    "labPublished"
+                ).checked
+
+            });
+
+
+        if (error) {
+
+            show(
+                "labMessage",
+                error.message,
+                true
+            );
+
+            return;
+
+        }
+
+
+        event.target.reset();
+
+
+        show(
+            "labMessage",
+            "✓ Lab created.",
+            false
+        );
+
+
+        await loadLabs();
+
+    }
+);
+
+
+// =================================
+// TASKS
+// =================================
+
+async function loadTasks() {
+
+    const {
+        data
+    } =
+    await supabaseClient
+        .from("lab_tasks")
+        .select("*")
+        .order(
+            "task_order"
+        );
+
+
+    const tasks =
+    data || [];
+
+
+    document.getElementById(
+        "taskList"
+    ).innerHTML =
+
+    tasks.map(
+        task => `
+
+        <div class="admin-item">
+
+            <div class="admin-item-info">
+
+                <h3>
+                    ${escapeHTML(
+                        task.title
+                    )}
+                </h3>
+
+                <p>
+                    ${task.points} points
+                </p>
+
+            </div>
+
+        </div>
+
+        `
+    ).join("");
+
+}
+
+
+// =================================
+// CREATE TASK
+// =================================
+
+document
+.getElementById(
+    "taskForm"
+)
+.addEventListener(
+    "submit",
+    async event => {
+
+        event.preventDefault();
+
+
+        const {
+            error
+        } =
+        await supabaseClient
+            .from("lab_tasks")
+            .insert({
+
+                lab_id:
+                Number(
+                    document.getElementById(
+                        "taskLab"
+                    ).value
+                ),
+
+                title:
+                document.getElementById(
+                    "taskTitle"
+                ).value,
+
+                task_order:
+                Number(
+                    document.getElementById(
+                        "taskOrder"
+                    ).value
+                ),
+
+                description:
+                document.getElementById(
+                    "taskDescription"
+                ).value,
+
+                hint:
+                document.getElementById(
+                    "taskHint"
+                ).value,
+
+                points:
+                Number(
+                    document.getElementById(
+                        "taskPoints"
+                    ).value
+                )
+
+            });
+
+
+        if (error) {
+
+            show(
+                "taskMessage",
+                error.message,
+                true
+            );
+
+            return;
+
+        }
+
+
+        event.target.reset();
+
+
+        show(
+            "taskMessage",
+            "✓ Task created.",
+            false
+        );
+
+
+        await loadTasks();
+
+    }
+);
+
+
+// =================================
+// SELECTS
+// =================================
+
+function fillCourseSelects() {
+
+    const selects = [
+
+        "lessonCourse",
+        "labCourse"
+
+    ];
+
+
+    selects.forEach(
+        id => {
+
+            const select =
+            document.getElementById(
+                id
+            );
+
+
+            select.innerHTML =
+            `<option value="">
+            Select Course
+            </option>`;
+
+
+            courses.forEach(
+                course => {
+
+                    select.innerHTML += `
+
+                    <option value="${course.id}">
+
+                        ${escapeHTML(
+                            course.title
+                        )}
+
+                    </option>
+
+                    `;
+
+                }
+            );
+
+        }
+    );
+
+}
+
+
+// =================================
+// LESSON SELECT
+// =================================
+
+function fillLessonSelect() {
+
+    const select =
+    document.getElementById(
+        "labLesson"
+    );
+
+
+    select.innerHTML =
+    `<option value="">
+    Select Lesson
+    </option>`;
+
+
+    lessons.forEach(
+        lesson => {
+
+            select.innerHTML += `
+
+            <option value="${lesson.id}">
+
+                ${escapeHTML(
+                    lesson.title
+                )}
+
+            </option>
+
+            `;
+
+        }
+    );
+
+}
+
+
+// =================================
+// LAB SELECT
+// =================================
+
+function fillLabSelect() {
+
+    const select =
+    document.getElementById(
+        "taskLab"
+    );
+
+
+    select.innerHTML =
+    `<option value="">
+    Select Lab
+    </option>`;
+
+
+    labs.forEach(
+        lab => {
+
+            select.innerHTML += `
+
+            <option value="${lab.id}">
+
+                ${escapeHTML(
+                    lab.title
+                )}
+
+            </option>
+
+            `;
+
+        }
+    );
+
+}
+
+
+// =================================
+// STUDENTS
+// =================================
+
+async function loadStudents() {
+
+    /*
+      Supabase Auth users cannot normally
+      be queried directly from the browser.
+
+      Count profiles instead.
+    */
+
+    const {
+        count
+    } =
+    await supabaseClient
+        .from("profiles")
+        .select(
+            "id",
+            {
+                count:"exact",
+                head:true
+            }
+        )
+        .eq(
+            "role",
+            "student"
+        );
+
+
+    document.getElementById(
+        "studentCount"
+    ).textContent =
+    count || 0;
+
+}
+
+
+// =================================
+// DELETE COURSE
+// =================================
+
+async function deleteCourse(
+    id
+) {
+
+    const confirmed =
+    confirm(
+        "Delete this course and its related content?"
+    );
+
+
+    if (!confirmed)
+        return;
+
+
+    const {
+        error
+    } =
+    await supabaseClient
+        .from("courses")
+        .delete()
+        .eq(
+            "id",
+            id
+        );
+
+
+    if (error) {
+
+        alert(
+            error.message
+        );
+
+        return;
+
+    }
+
+
+    await loadData();
+
+}
+
+
+// =================================
+// NAVIGATION
+// =================================
+
+function showSection(
+    section
+) {
+
+    document
+    .querySelectorAll(
+        ".admin-section"
+    )
+    .forEach(
+        element =>
+        element.classList.remove(
+            "active"
+        )
+    );
+
+
+    document
+    .getElementById(
+        section + "Section"
+    )
+    .classList.add(
+        "active"
+    );
+
+}
+
+
+// =================================
+// RENDER LESSONS
+// =================================
+
+function renderLessons() {
+
+    const container =
+    document.getElementById(
+        "lessonList"
+    );
+
+
+    container.innerHTML =
+    lessons.map(
+        lesson => {
+
+            const course =
+            courses.find(
+                c =>
+                c.id ===
+                lesson.course_id
+            );
+
+
+            return `
+
+            <div class="admin-item">
+
+                <div class="admin-item-info">
+
+                    <h3>
+                        ${escapeHTML(
+                            lesson.title
+                        )}
+                    </h3>
+
+                    <p>
+                        ${
+                            course
+                            ? escapeHTML(
+                                course.title
+                            )
+                            : "Unknown course"
+                        }
+                    </p>
+
+                </div>
+
+            </div>
+
+            `;
+
+        }
+    ).join("");
+
+}
+
+
+// =================================
+// RENDER LABS
+// =================================
+
+function renderLabs() {
+
+    const container =
+    document.getElementById(
+        "labList"
+    );
+
+
+    container.innerHTML =
+    labs.map(
+        lab => `
+
+        <div class="admin-item">
+
+            <div class="admin-item-info">
+
+                <h3>
+                    ${escapeHTML(
+                        lab.title
+                    )}
+                </h3>
+
+                <p>
+
+                    ${escapeHTML(
+                        lab.difficulty ||
+                        "Beginner"
+                    )}
+
+                    ·
+
+                    ${lab.points}
+                    points
+
+                    ·
+
+                    ${
+                        lab.published
+                        ? "Published"
+                        : "Draft"
+                    }
+
+                </p>
+
+            </div>
+
+        </div>
+
+        `
+    ).join("");
+
+}
+
+
+// =================================
+// MESSAGE
+// =================================
+
+function show(
+    elementId,
+    message,
+    error
+) {
+
+    const element =
+    document.getElementById(
+        elementId
+    );
+
+
+    element.textContent =
+    message;
+
+
+    element.className =
+    error
+    ? "message error"
+    : "message";
+
+}
+
+
+// =================================
+// LOGOUT
+// =================================
+
+async function logout() {
+
+    await supabaseClient
+        .auth
+        .signOut();
+
+
+    location.href =
+    "index.html";
+
+}
+
+
+// =================================
+// ESCAPE
+// =================================
+
+function escapeHTML(text) {
+
+    return String(text)
+
+        .replaceAll(
+            "&",
+            "&amp;"
+        )
+
+        .replaceAll(
+            "<",
+            "&lt;"
+        )
+
+        .replaceAll(
+            ">",
+            "&gt;"
+        )
+
+        .replaceAll(
+            '"',
+            "&quot;"
+        )
+
+        .replaceAll(
+            "'",
+            "&#039;"
+        );
+
+}
+
+
+// =================================
+// START
+// =================================
+
+(async function() {
+
+    const allowed =
+    await checkAdmin();
+
+
+    if (allowed) {
+
+        await loadData();
+
+        await loadTasks();
+
+    }
+
+})();
+
+</script>
+
+</body>
+
+</html>
+```
+<div id="courses">
+    Loading...
+</div>

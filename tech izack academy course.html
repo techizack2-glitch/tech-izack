@@ -1,0 +1,982 @@
+```html id="4jq7cs"
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>
+Course | Tech Izack Academy
+</title>
+
+<link
+rel="stylesheet"
+href="style.css">
+
+<style>
+
+.course-page {
+
+    padding:110px 20px 70px;
+
+}
+
+
+.course-container {
+
+    max-width:1050px;
+
+    margin:auto;
+
+}
+
+
+.course-hero {
+
+    background:
+    linear-gradient(
+        135deg,
+        #071a2b,
+        #050b14
+    );
+
+    border:1px solid var(--border);
+
+    border-radius:12px;
+
+    padding:40px;
+
+    margin-bottom:25px;
+
+}
+
+
+.course-title {
+
+    font-family:Orbitron;
+
+    font-size:40px;
+
+    margin:15px 0;
+
+}
+
+
+.course-description {
+
+    color:var(--muted);
+
+    line-height:1.8;
+
+    max-width:750px;
+
+}
+
+
+.meta {
+
+    display:flex;
+
+    gap:10px;
+
+    flex-wrap:wrap;
+
+    margin-top:20px;
+
+}
+
+
+.badge {
+
+    display:inline-block;
+
+    padding:6px 10px;
+
+    border-radius:20px;
+
+    border:1px solid
+    rgba(0,217,255,.3);
+
+    color:var(--cyan);
+
+    font-size:12px;
+
+}
+
+
+.progress-panel {
+
+    background:var(--card);
+
+    border:1px solid var(--border);
+
+    border-radius:10px;
+
+    padding:25px;
+
+    margin-bottom:25px;
+
+}
+
+
+.progress-bar {
+
+    height:10px;
+
+    background:#07101b;
+
+    border-radius:20px;
+
+    overflow:hidden;
+
+    margin:15px 0 8px;
+
+}
+
+
+.progress-fill {
+
+    height:100%;
+
+    width:0%;
+
+    background:
+    linear-gradient(
+        90deg,
+        #00d9ff,
+        #20d68a
+    );
+
+    transition:.5s;
+
+}
+
+
+.content-grid {
+
+    display:grid;
+
+    grid-template-columns:
+    2fr 1fr;
+
+    gap:20px;
+
+}
+
+
+.panel {
+
+    background:var(--card);
+
+    border:1px solid var(--border);
+
+    border-radius:10px;
+
+    padding:25px;
+
+    margin-bottom:20px;
+
+}
+
+
+.lesson {
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    gap:15px;
+
+    padding:18px 0;
+
+    border-bottom:
+    1px solid var(--border);
+
+}
+
+
+.lesson:last-child {
+
+    border-bottom:0;
+
+}
+
+
+.lesson-info h3 {
+
+    margin:0 0 7px;
+
+}
+
+
+.lesson-info p {
+
+    margin:0;
+
+    color:var(--muted);
+
+    font-size:14px;
+
+}
+
+
+.completed {
+
+    color:#20d68a;
+
+    font-size:13px;
+
+}
+
+
+.course-sidebar {
+
+    height:max-content;
+
+}
+
+
+.sidebar-item {
+
+    padding:13px 0;
+
+    border-bottom:
+    1px solid var(--border);
+
+    color:var(--muted);
+
+}
+
+
+@media(max-width:800px) {
+
+    .content-grid {
+
+        grid-template-columns:1fr;
+
+    }
+
+}
+
+
+@media(max-width:600px) {
+
+    .course-title {
+
+        font-size:30px;
+
+    }
+
+    .course-hero {
+
+        padding:25px;
+
+    }
+
+    .lesson {
+
+        align-items:flex-start;
+
+        flex-direction:column;
+
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<header class="navbar">
+
+<div class="container nav-inner">
+
+
+<a
+href="student-dashboard.html"
+class="logo">
+
+<span>&lt;</span>
+
+TECH IZACK
+
+<span>/&gt;</span>
+
+</a>
+
+
+<a
+href="student-dashboard.html"
+class="btn btn-outline">
+
+Dashboard
+
+</a>
+
+
+</div>
+
+</header>
+
+
+<main class="course-page">
+
+
+<div class="course-container">
+
+
+<!-- COURSE HERO -->
+
+
+<section
+id="courseHero"
+class="course-hero">
+
+
+<span
+id="courseLevel"
+class="badge">
+
+Loading...
+
+</span>
+
+
+<h1
+id="courseTitle"
+class="course-title">
+
+Loading...
+
+</h1>
+
+
+<p
+id="courseDescription"
+class="course-description">
+
+</p>
+
+
+<div class="meta">
+
+<span
+id="lessonCount"
+class="badge">
+
+0 Lessons
+
+</span>
+
+
+<span
+id="labCount"
+class="badge">
+
+0 Labs
+
+</span>
+
+
+</div>
+
+
+</section>
+
+
+<!-- PROGRESS -->
+
+
+<section class="progress-panel">
+
+
+<span class="section-tag">
+// YOUR PROGRESS
+</span>
+
+
+<div class="progress-bar">
+
+<div
+id="progressFill"
+class="progress-fill">
+
+</div>
+
+</div>
+
+
+<p
+id="progressText"
+style="color:var(--muted);">
+
+Loading progress...
+
+</p>
+
+
+</section>
+
+
+<!-- CONTENT -->
+
+
+<div class="content-grid">
+
+
+<section class="panel">
+
+
+<span class="section-tag">
+// LESSONS
+</span>
+
+
+<h2>
+Course Lessons
+</h2>
+
+
+<div id="lessons">
+
+Loading lessons...
+
+</div>
+
+
+</section>
+
+
+<aside
+class="panel course-sidebar">
+
+
+<span class="section-tag">
+// COURSE INFO
+</span>
+
+
+<div class="sidebar-item">
+
+🎓 Certificate
+
+</div>
+
+
+<div class="sidebar-item">
+
+🧪 Practical Labs
+
+</div>
+
+
+<div class="sidebar-item">
+
+🧠 Knowledge Checks
+
+</div>
+
+
+<div class="sidebar-item">
+
+🏆 Progress Tracking
+
+</div>
+
+
+</aside>
+
+
+</div>
+
+
+</div>
+
+</main>
+
+
+<script
+src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+</script>
+
+
+<script>
+
+
+const SUPABASE_URL =
+"WEKA_PROJECT_URL_HAPA";
+
+
+const SUPABASE_KEY =
+"WEKA_PUBLISHABLE_KEY_HAPA";
+
+
+const supabaseClient =
+window.supabase.createClient(
+
+    SUPABASE_URL,
+
+    SUPABASE_KEY
+
+);
+
+
+let user = null;
+
+let course = null;
+
+let lessons = [];
+
+
+/*
+================================
+INITIALIZE
+================================
+*/
+
+async function init() {
+
+
+    const {
+        data
+    } =
+    await supabaseClient.auth
+        .getUser();
+
+
+    user =
+        data.user;
+
+
+    if (!user) {
+
+        location.href =
+            "login.html";
+
+        return;
+
+    }
+
+
+    const slug =
+        new URLSearchParams(
+            location.search
+        ).get("slug");
+
+
+    if (!slug) {
+
+        showError(
+            "Course not specified."
+        );
+
+        return;
+
+    }
+
+
+    await loadCourse(
+        slug
+    );
+
+}
+
+
+/*
+================================
+LOAD COURSE
+================================
+*/
+
+async function loadCourse(
+    slug
+) {
+
+
+    const {
+        data,
+        error
+    } =
+    await supabaseClient
+
+        .from("courses")
+
+        .select("*")
+
+        .eq(
+            "slug",
+            slug
+        )
+
+        .eq(
+            "published",
+            true
+        )
+
+        .single();
+
+
+    if (error || !data) {
+
+        showError(
+            "Course not found."
+        );
+
+        return;
+
+    }
+
+
+    course =
+        data;
+
+
+    document.getElementById(
+        "courseTitle"
+    ).textContent =
+        course.title;
+
+
+    document.getElementById(
+        "courseDescription"
+    ).textContent =
+        course.description || "";
+
+
+    document.getElementById(
+        "courseLevel"
+    ).textContent =
+        course.level;
+
+
+    await loadLessons();
+
+}
+
+
+/*
+================================
+LOAD LESSONS
+================================
+*/
+
+async function loadLessons() {
+
+
+    const {
+        data,
+        error
+    } =
+    await supabaseClient
+
+        .from("lessons")
+
+        .select("*")
+
+        .eq(
+            "course_id",
+            course.id
+        )
+
+        .eq(
+            "published",
+            true
+        )
+
+        .order(
+            "lesson_order"
+        );
+
+
+    if (error) {
+
+        showError(
+            error.message
+        );
+
+        return;
+
+    }
+
+
+    lessons =
+        data || [];
+
+
+    document.getElementById(
+        "lessonCount"
+    ).textContent =
+
+        `${lessons.length} Lessons`;
+
+
+    renderLessons();
+
+    await loadProgress();
+
+}
+
+
+/*
+================================
+RENDER LESSONS
+================================
+*/
+
+function renderLessons() {
+
+
+    const container =
+        document.getElementById(
+            "lessons"
+        );
+
+
+    if (!lessons.length) {
+
+        container.innerHTML = `
+
+            <p style="
+                color:var(--muted);
+            ">
+
+                No lessons available yet.
+
+            </p>
+
+        `;
+
+        return;
+
+    }
+
+
+    container.innerHTML =
+
+        lessons.map(
+            (lesson, index) => `
+
+            <article class="lesson">
+
+                <div
+                class="lesson-info">
+
+                    <h3>
+
+                        ${index + 1}.
+                        ${escapeHTML(
+                            lesson.title
+                        )}
+
+                    </h3>
+
+                    <p>
+
+                        ${escapeHTML(
+                            lesson.description || ""
+                        )}
+
+                    </p>
+
+                </div>
+
+
+                <a
+                href="lesson.html?id=${lesson.id}"
+                class="btn btn-outline">
+
+                    Open →
+
+                </a>
+
+            </article>
+
+            `
+        ).join("");
+
+}
+
+
+/*
+================================
+LOAD PROGRESS
+================================
+*/
+
+async function loadProgress() {
+
+
+    const {
+        data: completed,
+        error
+    } =
+    await supabaseClient
+
+        .from("lesson_progress")
+
+        .select("lesson_id")
+
+        .eq(
+            "user_id",
+            user.id
+        )
+
+        .eq(
+            "completed",
+            true
+        );
+
+
+    if (error) {
+
+        console.error(error);
+
+        return;
+
+    }
+
+
+    const completedIds =
+        new Set(
+            (completed || [])
+            .map(
+                item =>
+                    item.lesson_id
+            )
+        );
+
+
+    const done =
+        lessons.filter(
+            lesson =>
+                completedIds.has(
+                    lesson.id
+                )
+        ).length;
+
+
+    const total =
+        lessons.length;
+
+
+    const percentage =
+        total === 0
+        ? 0
+        : Math.round(
+            done / total * 100
+        );
+
+
+    document.getElementById(
+        "progressFill"
+    ).style.width =
+
+        `${percentage}%`;
+
+
+    document.getElementById(
+        "progressText"
+    ).textContent =
+
+        `${done} of ${total} lessons completed — ${percentage}%`;
+
+}
+
+
+/*
+================================
+ERROR
+================================
+*/
+
+function showError(
+    message
+) {
+
+    document.body.innerHTML = `
+
+        <div style="
+            color:white;
+            text-align:center;
+            padding:100px 20px;
+        ">
+
+            <h1>
+                ${escapeHTML(
+                    message
+                )}
+            </h1>
+
+            <a
+            href="student-dashboard.html"
+            class="btn btn-primary">
+
+                Back to Dashboard
+
+            </a>
+
+        </div>
+
+    `;
+
+}
+
+
+/*
+================================
+ESCAPE HTML
+================================
+*/
+
+function escapeHTML(text) {
+
+    return String(text)
+
+        .replaceAll(
+            "&",
+            "&amp;"
+        )
+
+        .replaceAll(
+            "<",
+            "&lt;"
+        )
+
+        .replaceAll(
+            ">",
+            "&gt;"
+        )
+
+        .replaceAll(
+            '"',
+            "&quot;"
+        )
+
+        .replaceAll(
+            "'",
+            "&#039;"
+        );
+
+}
+
+
+init();
+
+</script>
+
+</body>
+
+</html>
+```

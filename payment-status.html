@@ -1,0 +1,733 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0">
+
+<title>
+Payment Status | Tech Izack Academy
+</title>
+
+<link
+    rel="stylesheet"
+    href="style.css">
+
+<style>
+
+.status-page {
+    min-height:100vh;
+    padding:120px 20px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+.status-card {
+    width:100%;
+    max-width:560px;
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:16px;
+    padding:40px 30px;
+    text-align:center;
+}
+
+.status-icon {
+    width:80px;
+    height:80px;
+    margin:0 auto 20px;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:40px;
+    background:#07141d;
+}
+
+.status-title {
+    font-family:Orbitron;
+    font-size:26px;
+    margin:10px 0;
+}
+
+.status-description {
+    color:var(--muted);
+    line-height:1.7;
+}
+
+.reference {
+    margin:25px 0;
+    padding:15px;
+    background:#02070c;
+    border:1px solid var(--border);
+    border-radius:8px;
+    font-family:monospace;
+    color:var(--cyan);
+}
+
+.success {
+    color:#20d68a;
+}
+
+.pending {
+    color:#ffc857;
+}
+
+.failed {
+    color:#ff6475;
+}
+
+.spinner {
+    width:35px;
+    height:35px;
+    border:3px solid #17303d;
+    border-top-color:var(--cyan);
+    border-radius:50%;
+    animation:spin 1s linear infinite;
+    margin:25px auto;
+}
+
+@keyframes spin {
+
+    to {
+        transform:rotate(360deg);
+    }
+
+}
+
+.actions {
+    display:flex;
+    justify-content:center;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-top:25px;
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<header class="navbar">
+
+<div class="container nav-inner">
+
+<a
+href="index.html"
+class="logo">
+
+<span>&lt;</span>
+TECH IZACK
+<span>/&gt;</span>
+
+</a>
+
+<a
+href="student-dashboard.html"
+class="btn btn-outline">
+
+Dashboard
+
+</a>
+
+</div>
+
+</header>
+
+
+<main class="status-page">
+
+
+<div class="status-card">
+
+
+<div
+id="statusIcon"
+class="status-icon">
+
+⏳
+
+</div>
+
+
+<div
+id="statusTitle"
+class="status-title">
+
+Checking payment...
+
+</div>
+
+
+<p
+id="statusDescription"
+class="status-description">
+
+Please wait while we confirm
+your payment.
+
+</p>
+
+
+<div
+id="reference"
+class="reference">
+
+</div>
+
+
+<div
+id="spinner"
+class="spinner">
+
+</div>
+
+
+<div
+id="actions"
+class="actions">
+
+</div>
+
+
+</div>
+
+
+</main>
+
+
+<script
+src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+</script>
+
+
+<script>
+
+
+const SUPABASE_URL =
+"WEKA_PROJECT_URL_HAPA";
+
+
+const SUPABASE_KEY =
+"WEKA_PUBLISHABLE_KEY_HAPA";
+
+
+const supabaseClient =
+window.supabase.createClient(
+
+    SUPABASE_URL,
+
+    SUPABASE_KEY
+
+);
+
+
+const paymentId =
+new URLSearchParams(
+    location.search
+).get("id");
+
+
+let attempts = 0;
+
+const MAX_ATTEMPTS = 60;
+
+
+/*
+================================
+INIT
+================================
+*/
+
+async function init() {
+
+    const {
+        data
+    } =
+    await supabaseClient.auth
+        .getUser();
+
+
+    if (!data.user) {
+
+        location.href =
+            "login.html";
+
+        return;
+
+    }
+
+
+    if (!paymentId) {
+
+        showError(
+            "Payment ID is missing."
+        );
+
+        return;
+
+    }
+
+
+    checkPayment();
+
+}
+
+
+/*
+================================
+CHECK PAYMENT
+================================
+*/
+
+async function checkPayment() {
+
+    attempts++;
+
+
+    const {
+        data: payment,
+        error
+    } =
+    await supabaseClient
+
+        .from("payments")
+
+        .select(`
+            id,
+            user_id,
+            course_id,
+            amount,
+            currency,
+            provider,
+            reference,
+            status,
+            paid_at,
+            courses(
+                id,
+                title
+            )
+        `)
+
+        .eq(
+            "id",
+            paymentId
+        )
+
+        .single();
+
+
+    if (error) {
+
+        console.error(error);
+
+        showError(
+            "Unable to check payment."
+        );
+
+        return;
+
+    }
+
+
+    /*
+    Security check:
+    payment must belong to
+    current authenticated user.
+    */
+
+    const {
+        data: {
+            user
+        }
+    } =
+    await supabaseClient.auth
+        .getUser();
+
+
+    if (
+        !user ||
+        payment.user_id !== user.id
+    ) {
+
+        showError(
+            "You are not authorized to view this payment."
+        );
+
+        return;
+
+    }
+
+
+    document.getElementById(
+        "reference"
+    ).textContent =
+        `Reference: ${payment.reference}`;
+
+
+    /*
+    ============================
+    PAID
+    ============================
+    */
+
+    if (
+        payment.status === "paid"
+    ) {
+
+        showPaid(
+            payment
+        );
+
+        return;
+
+    }
+
+
+    /*
+    ============================
+    FAILED
+    ============================
+    */
+
+    if (
+        payment.status === "failed" ||
+        payment.status === "cancelled"
+    ) {
+
+        showFailed(
+            payment
+        );
+
+        return;
+
+    }
+
+
+    /*
+    ============================
+    PENDING
+    ============================
+    */
+
+    showPending();
+
+
+    /*
+    Poll every 5 seconds.
+    */
+
+    if (
+        attempts < MAX_ATTEMPTS
+    ) {
+
+        setTimeout(
+            checkPayment,
+            5000
+        );
+
+    } else {
+
+        showPendingTimeout();
+
+    }
+
+}
+
+
+/*
+================================
+PAID
+================================
+*/
+
+function showPaid(
+    payment
+) {
+
+    document.getElementById(
+        "statusIcon"
+    ).textContent = "✅";
+
+
+    document.getElementById(
+        "statusIcon"
+    ).className =
+        "status-icon success";
+
+
+    document.getElementById(
+        "statusTitle"
+    ).textContent =
+        "Payment Successful";
+
+
+    document.getElementById(
+        "statusTitle"
+    ).className =
+        "status-title success";
+
+
+    document.getElementById(
+        "statusDescription"
+    ).textContent =
+
+        `Your payment for ${
+            payment.courses?.title
+            || "the course"
+        } has been confirmed. Your course access is now active.`;
+
+
+    document.getElementById(
+        "spinner"
+    ).style.display =
+        "none";
+
+
+    document.getElementById(
+        "actions"
+    ).innerHTML = `
+
+        <a
+        href="course.html?id=${encodeURIComponent(
+            payment.course_id
+        )}"
+        class="btn btn-primary">
+
+            🚀 Start Course
+
+        </a>
+
+
+        <a
+        href="student-dashboard.html"
+        class="btn btn-outline">
+
+            Dashboard
+
+        </a>
+
+    `;
+
+}
+
+
+/*
+================================
+PENDING
+================================
+*/
+
+function showPending() {
+
+    document.getElementById(
+        "statusIcon"
+    ).textContent =
+        "⏳";
+
+
+    document.getElementById(
+        "statusTitle"
+    ).textContent =
+        "Payment Pending";
+
+
+    document.getElementById(
+        "statusTitle"
+    ).className =
+        "status-title pending";
+
+
+    document.getElementById(
+        "statusDescription"
+    ).textContent =
+
+        "Complete the payment on your phone. We are waiting for confirmation from the payment provider.";
+
+
+    document.getElementById(
+        "spinner"
+    ).style.display =
+        "block";
+
+}
+
+
+/*
+================================
+TIMEOUT
+================================
+*/
+
+function showPendingTimeout() {
+
+    document.getElementById(
+        "spinner"
+    ).style.display =
+        "none";
+
+
+    document.getElementById(
+        "statusDescription"
+    ).textContent =
+
+        "The payment is still pending. Do not pay again immediately. Check your mobile-money messages or return to the dashboard later.";
+
+}
+
+
+/*
+================================
+FAILED
+================================
+*/
+
+function showFailed(
+    payment
+) {
+
+    document.getElementById(
+        "statusIcon"
+    ).textContent =
+        "❌";
+
+
+    document.getElementById(
+        "statusIcon"
+    ).className =
+        "status-icon failed";
+
+
+    document.getElementById(
+        "statusTitle"
+    ).textContent =
+        "Payment Not Completed";
+
+
+    document.getElementById(
+        "statusTitle"
+    ).className =
+        "status-title failed";
+
+
+    document.getElementById(
+        "statusDescription"
+    ).textContent =
+
+        "The payment was not completed or was cancelled. You can return to the payment page and try again.";
+
+
+    document.getElementById(
+        "spinner"
+    ).style.display =
+        "none";
+
+
+    document.getElementById(
+        "actions"
+    ).innerHTML = `
+
+        <a
+        href="payment.html?course=${encodeURIComponent(
+            payment.course_id
+        )}"
+        class="btn btn-primary">
+
+            Try Again
+
+        </a>
+
+
+        <a
+        href="student-dashboard.html"
+        class="btn btn-outline">
+
+            Dashboard
+
+        </a>
+
+    `;
+
+}
+
+
+/*
+================================
+ERROR
+================================
+*/
+
+function showError(
+    message
+) {
+
+    document.getElementById(
+        "statusIcon"
+    ).textContent =
+        "⚠️";
+
+
+    document.getElementById(
+        "statusIcon"
+    ).className =
+        "status-icon failed";
+
+
+    document.getElementById(
+        "statusTitle"
+    ).textContent =
+        "Something Went Wrong";
+
+
+    document.getElementById(
+        "statusTitle"
+    ).className =
+        "status-title failed";
+
+
+    document.getElementById(
+        "statusDescription"
+    ).textContent =
+        message;
+
+
+    document.getElementById(
+        "spinner"
+    ).style.display =
+        "none";
+
+
+    document.getElementById(
+        "actions"
+    ).innerHTML = `
+
+        <a
+        href="student-dashboard.html"
+        class="btn btn-outline">
+
+            Back to Dashboard
+
+        </a>
+
+    `;
+
+}
+
+
+init();
+
+</script>
+
+</body>
+
+</html>
+```

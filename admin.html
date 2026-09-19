@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Admin Panel | Tech Izack</title>
+
+    <link rel="preconnect"
+          href="https://fonts.googleapis.com">
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Orbitron:wght@500;700;800&display=swap"
+          rel="stylesheet">
+
+    <link rel="stylesheet"
+          href="style.css">
+
+    <style>
+
+        .admin-page {
+            padding: 130px 0 80px;
+        }
+
+        .admin-header {
+            margin-bottom: 35px;
+        }
+
+        .admin-header h1 {
+            font-family: "Orbitron";
+            font-size: 35px;
+            margin: 10px 0;
+        }
+
+        .admin-grid {
+            display: grid;
+            grid-template-columns: 240px 1fr;
+            gap: 25px;
+        }
+
+        .admin-menu {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 15px;
+            height: fit-content;
+        }
+
+        .admin-menu button {
+            width: 100%;
+            padding: 13px;
+            margin-bottom: 5px;
+            border: 0;
+            background: transparent;
+            color: var(--muted);
+            text-align: left;
+            cursor: pointer;
+            border-radius: 6px;
+        }
+
+        .admin-menu button:hover,
+        .admin-menu button.active {
+            background: rgba(0,174,255,.08);
+            color: var(--cyan);
+        }
+
+        .admin-content {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 30px;
+        }
+
+        .admin-content h2 {
+            font-family: "Orbitron";
+            margin-bottom: 25px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group.full {
+            grid-column: 1 / -1;
+        }
+
+        .form-group label {
+            display: block;
+            color: var(--muted);
+            font-size: 12px;
+            margin-bottom: 7px;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 13px;
+            border: 1px solid var(--border);
+            background: #07101e;
+            color: white;
+            border-radius: 6px;
+            outline: none;
+        }
+
+        .form-group textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .course-admin-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            padding: 18px;
+            margin-bottom: 10px;
+            border: 1px solid var(--border);
+            border-radius: 7px;
+        }
+
+        .course-admin-card h3 {
+            margin-bottom: 5px;
+        }
+
+        .course-admin-card small {
+            color: var(--muted);
+        }
+
+        .danger {
+            background: rgba(255,60,80,.1);
+            border: 1px solid rgba(255,60,80,.3);
+            color: #ff6475;
+        }
+
+        .danger:hover {
+            background: rgba(255,60,80,.2);
+        }
+
+        @media(max-width: 800px) {
+
+            .admin-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-group.full {
+                grid-column: auto;
+            }
+
+            .course-admin-card {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+<header class="navbar">
+
+    <div class="container nav-inner">
+
+        <a href="dashboard.html"
+           class="logo">
+
+            <span>&lt;</span>
+            TECH IZACK
+            <span>/&gt;</span>
+
+        </a>
+
+        <button class="btn btn-outline"
+                onclick="logout()">
+
+            Logout
+
+        </button>
+
+    </div>
+
+</header>
+
+
+<main class="admin-page">
+
+    <div class="container">
+
+        <div class="admin-header">
+
+            <span class="section-tag">
+                // ADMIN CONTROL CENTER
+            </span>
+
+            <h1>
+                Academy <span style="color:var(--cyan)">
+                Admin
+                </span>
+            </h1>
+
+            <p style="color:var(--muted)">
+                Manage courses, lessons and quizzes.
+            </p>
+
+        </div>
+
+
+        <div class="admin-grid">
+
+            <aside class="admin-menu">
+
+                <button
+                    class="active"
+                    onclick="showSection('courses', this)">
+
+                    📚 Courses
+
+                </button>
+
+                <button
+                    onclick="showSection('add-course', this)">
+
+                    ➕ Add Course
+
+                </button>
+
+                <button
+                    onclick="showSection('lessons', this)">
+
+                    📝 Lessons
+
+                </button>
+
+                <button
+                    onclick="showSection('quizzes', this)">
+
+                    🧠 Quizzes
+
+                </button>
+
+                <button
+                    onclick="showSection('students', this)">
+
+                    👨‍🎓 Students
+
+                </button>
+
+            </aside>
+
+
+            <section class="admin-content">
+
+                <!-- COURSES -->
+
+                <div id="courses">
+
+                    <h2>
+                        Courses
+                    </h2>
+
+                    <div id="courseAdminList">
+                        Loading...
+                    </div>
+
+                </div>
+
+
+                <!-- ADD COURSE -->
+
+                <div id="add-course"
+                     style="display:none">
+
+                    <h2>
+                        Add New Course
+                    </h2>
+
+                    <form id="courseForm">
+
+                        <div class="form-grid">
+
+                            <div class="form-group">
+
+                                <label>
+                                    Course title
+                                </label>
+
+                                <input
+                                    id="courseTitle"
+                                    required>
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label>
+                                    Level
+                                </label>
+
+                                <select id="courseLevel">
+
+                                    <option>
+                                        Beginner
+                                    </option>
+
+                                    <option>
+                                        Intermediate
+                                    </option>
+
+                                    <option>
+                                        Advanced
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+
+                            <div class="form-group full">
+
+                                <label>
+                                    Description
+                                </label>
+
+                                <textarea
+                                    id="courseDescription"
+                                    required>
+                                </textarea>
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label>
+                                    Number of lessons
+                                </label>
+
+                                <input
+                                    type="number"
+                                    id="courseLessons"
+                                    value="0"
+                                    min="0">
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label>
+                                    Number of labs
+                                </label>
+
+                                <input
+                                    type="number"
+                                    id="courseLabs"
+                                    value="0"
+                                    min="0">
+
+                            </div>
+
+                        </div>
+
+
+                        <button
+                            class="btn btn-primary"
+                            type="submit">
+
+                            Create Course
+
+                        </button>
+
+                    </form>
+
+                </div>
+
+
+                <!-- LESSONS -->
+
+                <div id="lessons"
+                     style="display:none">
+
+                    <h2>
+                        Lessons
+                    </h2>
+
+                    <p style="color:var(--muted)">
+                        Lesson management itaongezwa hapa.
+                    </p>
+
+                </div>
+
+
+                <!-- QUIZZES -->
+
+                <div id="quizzes"
+                     style="display:none">
+
+                    <h2>
+                        Quizzes
+                    </h2>
+
+                    <p style="color:var(--muted)">
+                        Quiz management itaongezwa hapa.
+                    </p>
+
+                </div>
+
+
+                <!-- STUDENTS -->
+
+                <div id="students"
+                     style="display:none">
+
+                    <h2>
+                        Students
+                    </h2>
+
+                    <p style="color:var(--muted)">
+                        Student management itaongezwa hapa.
+                    </p>
+
+                </div>
+
+            </section>
+
+        </div>
+
+    </div>
+
+</main>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+
+const SUPABASE_URL =
+    "WEKA_PROJECT_URL_HAPA";
+
+const SUPABASE_KEY =
+    "WEKA_PUBLISHABLE_KEY_HAPA";
+
+
+const supabaseClient =
+    window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+    );
+
+
+// =================================
+// SECURITY CHECK
+// =================================
+
+async function checkAdmin() {
+
+    const {
+        data: { user }
+    } = await supabaseClient
+        .auth
+        .getUser();
+
+
+    if (!user) {
+
+        window.location.href =
+            "index.html";
+
+        return false;
+    }
+
+
+    const {
+        data: profile,
+        error
+    } = await supabaseClient
+        .from("profiles")
+        .select("role")
+        .eq("id", user.id)
+        .single();
+
+
+    if (
+        error ||
+        !profile ||
+        profile.role !== "admin"
+    ) {
+
+        alert(
+            "Access denied. Admin only."
+        );
+
+        window.location.href =
+            "dashboard.html";
+
+        return false;
+    }
+
+
+    return true;
+}
+
+
+// =================================
+// NAVIGATION
+// =================================
+
+function showSection(sectionId, button) {
+
+    document
+        .querySelectorAll(".admin-content > div")
+        .forEach(section => {
+
+            section.style.display = "none";
+
+        });
+
+
+    document
+        .getElementById(sectionId)
+        .style.display = "block";
+
+
+    document
+        .querySelectorAll(".admin-menu button")
+        .forEach(btn => {
+
+            btn.classList.remove("active");
+
+        });
+
+
+    button.classList.add("active");
+
+}
+
+
+// =================================
+// LOAD COURSES
+// =================================
+
+async function loadCourses() {
+
+    const {
+        data,
+        error
+    } = await supabaseClient
+        .from("courses")
+        .select("*")
+        .order("id", {
+            ascending: false
+        });
+
+
+    const container =
+        document.getElementById(
+            "courseAdminList"
+        );
+
+
+    if (error) {
+
+        container.innerHTML =
+            `<p>${error.message}</p>`;
+
+        return;
+    }
+
+
+    if (!data.length) {
+
+        container.innerHTML =
+            "<p>No courses yet.</p>";
+
+        return;
+    }
+
+
+    container.innerHTML =
+        data.map(course => `
+
+            <div class="course-admin-card">
+
+                <div>
+
+                    <h3>
+                        ${escapeHTML(course.title)}
+                    </h3>
+
+                    <small>
+                        ${escapeHTML(course.level)}
+                        ·
+                        ${course.lessons} lessons
+                        ·
+                        ${course.labs} labs
+                    </small>
+
+                </div>
+
+                <button
+                    class="btn danger"
+                    onclick="deleteCourse(${course.id})">
+
+                    Delete
+
+                </button>
+
+            </div>
+
+        `).join("");
+
+}
+
+
+// =================================
+// CREATE COURSE
+// =================================
+
+document
+    .getElementById("courseForm")
+    .addEventListener(
+        "submit",
+        async function(event) {
+
+            event.preventDefault();
+
+
+            const title =
+                document
+                    .getElementById("courseTitle")
+                    .value
+                    .trim();
+
+
+            const description =
+                document
+                    .getElementById("courseDescription")
+                    .value
+                    .trim();
+
+
+            const level =
+                document
+                    .getElementById("courseLevel")
+                    .value;
+
+
+            const lessons =
+                Number(
+                    document
+                        .getElementById("courseLessons")
+                        .value
+                );
+
+
+            const labs =
+                Number(
+                    document
+                        .getElementById("courseLabs")
+                        .value
+                );
+
+
+            const {
+                error
+            } = await supabaseClient
+                .from("courses")
+                .insert({
+
+                    title,
+                    description,
+                    level,
+                    lessons,
+                    labs
+
+                });
+
+
+            if (error) {
+
+                alert(error.message);
+
+                return;
+            }
+
+
+            alert(
+                "Course created successfully!"
+            );
+
+
+            this.reset();
+
+
+            await loadCourses();
+
+
+            document
+                .querySelector(
+                    ".admin-menu button"
+                )
+                .click();
+
+        });
+
+
+// =================================
+// DELETE COURSE
+// =================================
+
+async function deleteCourse(id) {
+
+    const confirmed =
+        confirm(
+            "Delete this course and its lessons?"
+        );
+
+
+    if (!confirmed) return;
+
+
+    const {
+        error
+    } = await supabaseClient
+        .from("courses")
+        .delete()
+        .eq("id", id);
+
+
+    if (error) {
+
+        alert(error.message);
+
+        return;
+    }
+
+
+    await loadCourses();
+
+}
+
+
+// =================================
+// LOGOUT
+// =================================
+
+async function logout() {
+
+    await supabaseClient.auth.signOut();
+
+    window.location.href =
+        "index.html";
+
+}
+
+
+// =================================
+// ESCAPE HTML
+// =================================
+
+function escapeHTML(text) {
+
+    return String(text)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+
+}
+
+
+// =================================
+
+(async function() {
+
+    const allowed =
+        await checkAdmin();
+
+    if (allowed) {
+
+        await loadCourses();
+
+    }
+
+})();
+</script>
+
+</body>
+
+</html>
+<button onclick="location.href='lesson-builder.html'">
+
+    📖 Create Lesson
+
+</button>
+
+<button onclick="location.href='quiz-builder.html'">
+
+    🧠 Create Quiz
+
+</button>
+<button
+onclick="location.href='lab-builder.html'">
+
+🧪 Create Practical Lab
+
+</button>
+<a
+href="admin-labs.html?course_id=${course.id}"
+class="btn btn-primary">
+
+    Labs
+
+</a>
+<a
+    href="admin-quizzes.html?course_id=${course.id}"
+    class="btn btn-primary">
+
+    Quiz
+
+</a>

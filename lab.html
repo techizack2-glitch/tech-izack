@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Practical Lab | Tech Izack</title>
+
+    <link rel="stylesheet"
+          href="style.css">
+
+    <style>
+
+        .lab-page {
+            padding: 130px 0 80px;
+        }
+
+        .lab-container {
+            max-width: 900px;
+            margin: auto;
+        }
+
+        .lab-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 35px;
+        }
+
+        .lab-card h1 {
+            font-family: "Orbitron";
+            margin: 12px 0 20px;
+        }
+
+        .lab-description {
+            color: var(--muted);
+            line-height: 1.8;
+            margin-bottom: 25px;
+        }
+
+        .lab-instructions {
+            background: #050b14;
+            border: 1px solid var(--border);
+            border-left: 3px solid var(--cyan);
+            padding: 20px;
+            border-radius: 6px;
+            color: #b8c5d8;
+            line-height: 1.8;
+            margin-bottom: 25px;
+        }
+
+        .lab-answer {
+            width: 100%;
+            min-height: 130px;
+            background: #050b14;
+            color: white;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 15px;
+            resize: vertical;
+            margin-bottom: 15px;
+        }
+
+        .lab-result {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 7px;
+            display: none;
+        }
+
+        .lab-success {
+            display: block;
+            border: 1px solid #20d68a;
+            background: rgba(32,214,138,.08);
+            color: #20d68a;
+        }
+
+        .lab-failed {
+            display: block;
+            border: 1px solid #ff6575;
+            background: rgba(255,101,117,.08);
+            color: #ff6575;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+<header class="navbar">
+
+    <div class="container nav-inner">
+
+        <a href="dashboard.html"
+           class="logo">
+
+            <span>&lt;</span>
+            TECH IZACK
+            <span>/&gt;</span>
+
+        </a>
+
+        <a href="dashboard.html"
+           class="btn btn-outline">
+
+            Dashboard
+
+        </a>
+
+    </div>
+
+</header>
+
+
+<main class="lab-page">
+
+    <div class="container lab-container">
+
+        <div class="lab-card">
+
+            <span class="section-tag">
+                // PRACTICAL LAB
+            </span>
+
+            <h1 id="labTitle">
+                Loading...
+            </h1>
+
+            <p id="labDescription"
+               class="lab-description">
+                Loading...
+            </p>
+
+            <h3>
+                Lab Instructions
+            </h3>
+
+            <div id="labInstructions"
+                 class="lab-instructions">
+
+                Loading...
+
+            </div>
+
+            <h3>
+                Submit Your Answer
+            </h3>
+
+            <textarea
+                id="labAnswer"
+                class="lab-answer"
+                placeholder="Enter your answer here...">
+            </textarea>
+
+            <button
+                class="btn btn-primary"
+                onclick="submitLab()">
+
+                Submit Lab
+
+            </button>
+
+            <div id="labResult"
+                 class="lab-result">
+
+            </div>
+
+        </div>
+
+    </div>
+
+</main>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+
+const SUPABASE_URL =
+    "WEKA_PROJECT_URL_HAPA";
+
+const SUPABASE_KEY =
+    "WEKA_PUBLISHABLE_KEY_HAPA";
+
+
+const supabaseClient =
+    window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+    );
+
+
+const params =
+    new URLSearchParams(
+        window.location.search
+    );
+
+const labId =
+    params.get("id");
+
+
+let currentUser = null;
+let currentLab = null;
+
+
+// ============================
+// LOAD USER
+// ============================
+
+async function initialize() {
+
+    const {
+        data: { user }
+    } = await supabaseClient
+        .auth
+        .getUser();
+
+
+    if (!user) {
+
+        window.location.href =
+            "index.html";
+
+        return;
+    }
+
+
+    currentUser = user;
+
+    await loadLab();
+
+}
+
+
+// ============================
+// LOAD LAB
+// ============================
+
+async function loadLab() {
+
+    const {
+        data,
+        error
+    } = await supabaseClient
+        .from("labs")
+        .select("*")
+        .eq("id", labId)
+        .single();
+
+
+    if (error) {
+
+        document.getElementById(
+            "labTitle"
+        ).textContent =
+            "Lab not found.";
+
+        return;
+    }
+
+
+    currentLab = data;
+
+
+    document.getElementById(
+        "labTitle"
+    ).textContent =
+        data.title;
+
+
+    document.getElementById(
+        "labDescription"
+    ).textContent =
+        data.description || "";
+
+
+    document.getElementById(
+        "labInstructions"
+    ).textContent =
+        data.instructions || "";
+
+
+    await loadPreviousSubmission();
+
+}
+
+
+// ============================
+// PREVIOUS SUBMISSION
+// ============================
+
+async function loadPreviousSubmission() {
+
+    const {
+        data
+    } = await supabaseClient
+        .from("lab_submissions")
+        .select("*")
+        .eq("lab_id", labId)
+        .eq("user_id", currentUser.id)
+        .maybeSingle();
+
+
+    if (!data) return;
+
+
+    document.getElementById(
+        "labAnswer"
+    ).value =
+        data.answer || "";
+
+
+    if (data.completed) {
+
+        showResult(
+            true,
+            `Lab completed. Points earned: ${data.points_earned}`
+        );
+
+    }
+
+}
+
+
+// ============================
+// SUBMIT
+// ============================
+
+async function submitLab() {
+
+    const answer =
+        document
+            .getElementById("labAnswer")
+            .value
+            .trim();
+
+
+    if (!answer) {
+
+        alert(
+            "Please enter your answer."
+        );
+
+        return;
+    }
+
+
+    /*
+      Demo lab verification.
+
+      Kwa production, verification
+      ya labs inaweza kuhamishiwa
+      kwenye backend/Edge Function.
+    */
+
+    const expected =
+        currentLab.expected_answer
+            ?.trim()
+            .toLowerCase();
+
+
+    const submitted =
+        answer.toLowerCase();
+
+
+    const correct =
+        expected &&
+        submitted === expected;
+
+
+    const points =
+        correct
+            ? currentLab.points
+            : 0;
+
+
+    const {
+        error
+    } = await supabaseClient
+        .from("lab_submissions")
+        .upsert({
+
+            lab_id: currentLab.id,
+
+            user_id: currentUser.id,
+
+            answer: answer,
+
+            points_earned: points,
+
+            completed: correct,
+
+            submitted_at:
+                new Date().toISOString()
+
+        }, {
+
+            onConflict:
+                "lab_id,user_id"
+
+        });
+
+
+    if (error) {
+
+        console.error(error);
+
+        showResult(
+            false,
+            "Could not submit your lab."
+        );
+
+        return;
+    }
+
+
+    if (correct) {
+
+        showResult(
+            true,
+            `Correct! You earned ${points} points.`
+        );
+
+    } else {
+
+        showResult(
+            false,
+            "Not quite. Review the lesson and try again."
+        );
+
+    }
+
+}
+
+
+// ============================
+// RESULT
+// ============================
+
+function showResult(
+    success,
+    message
+) {
+
+    const result =
+        document.getElementById(
+            "labResult"
+        );
+
+
+    result.className =
+        success
+            ? "lab-result lab-success"
+            : "lab-result lab-failed";
+
+
+    result.textContent =
+        message;
+
+}
+
+
+initialize();
+
+</script>
+
+</body>
+
+</html>

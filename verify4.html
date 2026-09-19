@@ -1,0 +1,381 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>Verify Certificate | Tech Izack Academy</title>
+
+<link rel="stylesheet" href="style.css">
+
+<style>
+
+.verify-page {
+
+    min-height:100vh;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    padding:30px;
+
+}
+
+.verify-card {
+
+    width:100%;
+
+    max-width:600px;
+
+    background:#071018;
+
+    border:1px solid #173442;
+
+    border-radius:15px;
+
+    padding:40px;
+
+    text-align:center;
+
+}
+
+.verified {
+
+    color:#20d68a;
+
+}
+
+.not-found {
+
+    color:#ff6475;
+
+}
+
+.details {
+
+    margin-top:25px;
+
+    text-align:left;
+
+}
+
+.detail {
+
+    padding:15px 0;
+
+    border-bottom:1px solid #173442;
+
+}
+
+.detail span {
+
+    display:block;
+
+    color:#81909c;
+
+    font-size:13px;
+
+}
+
+.detail strong {
+
+    display:block;
+
+    color:white;
+
+    margin-top:5px;
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<main class="verify-page">
+
+
+<div class="verify-card">
+
+
+<div
+style="font-size:55px">
+
+🛡️
+
+</div>
+
+
+<h1>
+
+Certificate Verification
+
+</h1>
+
+
+<div
+id="result">
+
+Checking certificate...
+
+</div>
+
+
+</div>
+
+
+</main>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
+<script>
+
+const SUPABASE_URL =
+"WEKA_PROJECT_URL_HAPA";
+
+const SUPABASE_KEY =
+"WEKA_PUBLISHABLE_KEY_HAPA";
+
+
+const supabaseClient =
+window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
+
+
+const params =
+new URLSearchParams(
+    location.search
+);
+
+
+const id =
+params.get("id");
+
+
+async function verify() {
+
+    if (!id) {
+
+        showInvalid();
+
+        return;
+
+    }
+
+
+    const {
+        data,
+        error
+    } =
+    await supabaseClient
+
+        .from("certificates")
+
+        .select(`
+            certificate_id,
+            student_name,
+            course_title,
+            score,
+            issued_at
+        `)
+
+        .eq(
+            "certificate_id",
+            id
+        )
+
+        .single();
+
+
+    if (
+        error ||
+        !data
+    ) {
+
+        showInvalid();
+
+        return;
+
+    }
+
+
+    const date =
+        new Date(
+            data.issued_at
+        )
+        .toLocaleDateString(
+            "en-GB",
+            {
+                day:"2-digit",
+                month:"long",
+                year:"numeric"
+            }
+        );
+
+
+    document.getElementById(
+        "result"
+    ).innerHTML = `
+
+        <h2 class="verified">
+
+            ✓ Certificate Verified
+
+        </h2>
+
+
+        <p style="color:#9baab8">
+
+            This certificate is registered
+            in the Tech Izack Academy
+            verification system.
+
+        </p>
+
+
+        <div class="details">
+
+
+            <div class="detail">
+
+                <span>
+                    Certificate ID
+                </span>
+
+                <strong>
+                    ${escapeHTML(
+                        data.certificate_id
+                    )}
+                </strong>
+
+            </div>
+
+
+            <div class="detail">
+
+                <span>
+                    Student
+                </span>
+
+                <strong>
+                    ${escapeHTML(
+                        data.student_name
+                    )}
+                </strong>
+
+            </div>
+
+
+            <div class="detail">
+
+                <span>
+                    Course
+                </span>
+
+                <strong>
+                    ${escapeHTML(
+                        data.course_title
+                    )}
+                </strong>
+
+            </div>
+
+
+            <div class="detail">
+
+                <span>
+                    Score
+                </span>
+
+                <strong>
+                    ${
+                        data.score !== null
+                        ? data.score + "%"
+                        : "Completed"
+                    }
+                </strong>
+
+            </div>
+
+
+            <div class="detail">
+
+                <span>
+                    Issued
+                </span>
+
+                <strong>
+                    ${date}
+                </strong>
+
+            </div>
+
+
+        </div>
+
+    `;
+
+}
+
+
+function showInvalid() {
+
+    document.getElementById(
+        "result"
+    ).innerHTML = `
+
+        <h2 class="not-found">
+
+            ✕ Certificate Not Found
+
+        </h2>
+
+        <p style="color:#9baab8">
+
+            No valid certificate was found
+            for this certificate ID.
+
+        </p>
+
+    `;
+
+}
+
+
+function escapeHTML(text) {
+
+    return String(text)
+
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+
+}
+
+
+verify();
+
+</script>
+
+</body>
+
+</html>
+```

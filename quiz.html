@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>Quiz | Tech Izack Academy</title>
+
+<link rel="stylesheet"
+href="style.css">
+
+<style>
+
+.quiz-page {
+    padding:120px 0 80px;
+}
+
+.quiz-card {
+    max-width:850px;
+    margin:auto;
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:35px;
+}
+
+.question-card {
+    margin-top:25px;
+    padding:25px;
+    border:1px solid var(--border);
+    border-radius:8px;
+}
+
+.option {
+    display:block;
+    padding:14px;
+    margin-top:10px;
+    border:1px solid var(--border);
+    border-radius:6px;
+    cursor:pointer;
+    color:#c2cede;
+}
+
+.option:hover {
+    border-color:var(--cyan);
+    color:white;
+}
+
+.option input {
+    margin-right:10px;
+}
+
+.result-box {
+    margin-top:30px;
+    padding:25px;
+    border-radius:8px;
+    display:none;
+}
+
+.pass {
+    border:1px solid #20d68a;
+    background:rgba(32,214,138,.08);
+}
+
+.fail {
+    border:1px solid #ff6475;
+    background:rgba(255,100,117,.08);
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+<header class="navbar">
+
+<div class="container nav-inner">
+
+<a href="dashboard.html"
+class="logo">
+
+<span>&lt;</span>
+TECH IZACK
+<span>/&gt;</span>
+
+</a>
+
+<a href="dashboard.html"
+class="btn btn-outline">
+
+Dashboard
+
+</a>
+
+</div>
+
+</header>
+
+
+<main class="quiz-page">
+
+<div class="container">
+
+<div class="quiz-card">
+
+<span class="section-tag">
+// KNOWLEDGE CHECK
+</span>
+
+<h1
+id="quizTitle"
+style="font-family:Orbitron;margin:15px 0">
+
+Loading...
+
+</h1>
+
+<p id="quizInfo"
+style="color:var(--muted)">
+</p>
+
+
+<form id="quizForm">
+
+<div id="questions">
+
+Loading questions...
+
+</div>
+
+
+<button
+type="submit"
+class="btn btn-primary"
+style="margin-top:30px">
+
+Submit Quiz →
+
+</button>
+
+</form>
+
+
+<div
+id="result"
+class="result-box">
+
+</div>
+
+</div>
+
+</div>
+
+</main>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+
+const SUPABASE_URL =
+"WEKA_PROJECT_URL_HAPA";
+
+const SUPABASE_KEY =
+"WEKA_PUBLISHABLE_KEY_HAPA";
+
+
+const supabaseClient =
+window.supabase.createClient(
+SUPABASE_URL,
+SUPABASE_KEY
+);
+
+
+const params =
+new URLSearchParams(
+window.location.search
+);
+
+const quizId =
+params.get("id");
+
+
+let currentUser = null;
+let quiz = null;
+let questions = [];
+
+
+// ==========================
+// INIT
+// ==========================
+
+async function initialize() {
+
+const {
+data:{user}
+} =
+await supabaseClient
+.auth
+.getUser();
+
+
+if (!user) {
+
+location.href =
+"index.html";
+
+return;
+
+}
+
+
+currentUser = user;
+
+
+await loadQuiz();
+
+}
+
+
+// ==========================
+// LOAD QUIZ
+// ==========================
+
+async function loadQuiz() {
+
+const {
+data,
+error
+} =
+await supabaseClient
+.from("quizzes")
+.select("*")
+.eq("id",quizId)
+.single();
+
+
+if (error || !data) {
+
+document.getElementById(
+"quizTitle"
+).textContent =
+"Quiz not found.";
+
+return;
+
+}
+
+
+quiz = data;
+
+
+document.getElementById(
+"quizTitle"
+).textContent =
+quiz.title;
+
+
+document.getElementById(
+"quizInfo"
+).textContent =
+`Passing score: ${quiz.passing_score}%`;
+
+
+await loadQuestions();
+
+}
+
+
+// ==========================
+// LOAD QUESTIONS
+// ==========================
+
+async function loadQuestions() {
+
+const {
+data,
+error
+} =
+await supabaseClient
+.from("quiz_questions")
+.select("*")
+.eq("quiz_id",quizId)
+.order("id");
+
+
+if (error) {
+
+console.error(error);
+
+return;
+
+}
+
+
+questions =
+data || [];
+
+
+renderQuestions();
+
+}
+
+
+// ==========================
+// RENDER
+// ==========================
+
+function renderQuestions() {
+
+const container =
+document.getElementById(
+"questions"
+);
+
+
+if (!questions.length) {
+
+container.innerHTML =
+"<p>No questions available.</p>";
+
+return;
+
+}
+
+
+container.innerHTML =
+questions.map(
+(question,index)=>`
+
+<div class="question-card">
+
+<h3>
+${index + 1}.
+${escapeHTML(question.question)}
+</h3>
+
+
+<label class="option">
+
+<input
+type="radio"
+name="question-${question.id}"
+value="A"
+required>
+
+A.
+${escapeHTML(question.option_a)}
+
+</label>
+
+
+<label class="option">
+
+<input
+type="radio"
+name="question-${question.id}"
+value="B">
+
+B.
+${escapeHTML(question.option_b)}
+
+</label>
+
+
+<label class="option">
+
+<input
+type="radio"
+name="question-${question.id}"
+value="C">
+
+C.
+${escapeHTML(question.option_c)}
+
+</label>
+
+
+<label class="option">
+
+<input
+type="radio"
+name="question-${question.id}"
+value="D">
+
+D.
+${escapeHTML(question.option_d)}
+
+</label>
+
+</div>
+
+`).join("");
+
+}
+
+
+// ==========================
+// SUBMIT
+// ==========================
+
+document
+.getElementById("quizForm")
+.addEventListener(
+"submit",
+async function(event) {
+
+event.preventDefault();
+
+
+let earnedPoints = 0;
+let totalPoints = 0;
+
+
+questions.forEach(
+question => {
+
+totalPoints +=
+Number(question.points || 1);
+
+
+const selected =
+document.querySelector(
+`input[name="question-${question.id}"]:checked`
+);
+
+
+if (
+selected &&
+selected.value ===
+question.correct_answer
+) {
+
+earnedPoints +=
+Number(question.points || 1);
+
+}
+
+});
+
+
+const score =
+totalPoints > 0
+? Math.round(
+(earnedPoints / totalPoints) * 100
+)
+: 0;
+
+
+const passed =
+score >=
+quiz.passing_score;
+
+
+// Save attempt
+
+const {
+error
+} =
+await supabaseClient
+.from("quiz_attempts")
+.insert({
+
+user_id:
+currentUser.id,
+
+quiz_id:
+quiz.id,
+
+score,
+
+passed
+
+});
+
+
+if (error) {
+
+console.error(error);
+
+}
+
+
+showResult(
+score,
+passed
+);
+
+});
+
+
+// ==========================
+// RESULT
+// ==========================
+
+function showResult(
+score,
+passed
+) {
+
+const result =
+document.getElementById(
+"result"
+);
+
+
+result.style.display =
+"block";
+
+
+if (passed) {
+
+result.className =
+"result-box pass";
+
+
+result.innerHTML = `
+
+<h2>
+🎉 Quiz Passed!
+</h2>
+
+<p>
+Your score:
+<strong>${score}%</strong>
+</p>
+
+<p>
+You passed the required
+${quiz.passing_score}%.
+</p>
+
+<a
+href="course-player.html?id=${quiz.course_id}"
+class="btn btn-primary">
+
+Continue Course →
+
+</a>
+
+`;
+
+} else {
+
+result.className =
+"result-box fail";
+
+
+result.innerHTML = `
+
+<h2>
+Quiz Not Passed
+</h2>
+
+<p>
+Your score:
+<strong>${score}%</strong>
+</p>
+
+<p>
+You need at least
+${quiz.passing_score}%.
+</p>
+
+<button
+class="btn btn-outline"
+onclick="location.reload()">
+
+Try Again
+
+</button>
+
+`;
+
+}
+
+
+window.scrollTo({
+top:document.body.scrollHeight,
+behavior:"smooth"
+});
+
+}
+
+
+// ==========================
+// ESCAPE
+// ==========================
+
+function escapeHTML(text) {
+
+return String(text)
+.replaceAll("&","&amp;")
+.replaceAll("<","&lt;")
+.replaceAll(">","&gt;")
+.replaceAll('"',"&quot;")
+.replaceAll("'","&#039;");
+
+}
+
+
+initialize();
+
+</script>
+
+</body>
+
+</html>

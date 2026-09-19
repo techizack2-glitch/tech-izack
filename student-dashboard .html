@@ -1,0 +1,970 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>Student Dashboard | Tech Izack</title>
+
+<link rel="stylesheet" href="style.css">
+
+<style>
+
+.dashboard {
+    padding:110px 0 70px;
+}
+
+.dashboard-header {
+    margin-bottom:30px;
+}
+
+.dashboard-header h1 {
+    font-family:Orbitron;
+    margin:12px 0;
+}
+
+.stats {
+    display:grid;
+    grid-template-columns:
+    repeat(4,1fr);
+
+    gap:18px;
+
+    margin-bottom:30px;
+}
+
+.stat {
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:22px;
+}
+
+.stat-number {
+    font-family:Orbitron;
+    font-size:30px;
+    color:var(--cyan);
+    margin-top:10px;
+}
+
+.course-card {
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:25px;
+    margin-bottom:18px;
+}
+
+.course-card h2 {
+    font-family:Orbitron;
+    margin-bottom:10px;
+}
+
+.course-description {
+    color:var(--muted);
+    line-height:1.7;
+}
+
+.progress-track {
+    height:10px;
+    background:#050b14;
+    border-radius:20px;
+    overflow:hidden;
+    margin:15px 0;
+}
+
+.progress-bar {
+    height:100%;
+    background:
+    linear-gradient(
+        90deg,
+        #00d9ff,
+        #168cff
+    );
+}
+
+.course-footer {
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:15px;
+    flex-wrap:wrap;
+}
+
+.certificate {
+    background:
+    linear-gradient(
+        135deg,
+        #071b2b,
+        #07101c
+    );
+
+    border:1px solid
+    rgba(0,217,255,.35);
+
+    border-radius:10px;
+
+    padding:25px;
+
+    margin-top:20px;
+}
+
+.certificate h3 {
+    font-family:Orbitron;
+    color:var(--cyan);
+}
+
+.empty {
+    color:var(--muted);
+    padding:20px 0;
+}
+
+@media(max-width:850px) {
+
+    .stats {
+        grid-template-columns:1fr 1fr;
+    }
+
+}
+
+@media(max-width:550px) {
+
+    .stats {
+        grid-template-columns:1fr;
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<header class="navbar">
+
+<div class="container nav-inner">
+
+<a
+href="index.html"
+class="logo">
+
+<span>&lt;</span>
+TECH IZACK
+<span>/&gt;</span>
+
+</a>
+
+
+<nav>
+
+<a href="index.html">
+Home
+</a>
+
+<button
+class="btn btn-outline"
+onclick="logout()">
+
+Logout
+
+</button>
+
+</nav>
+
+</div>
+
+</header>
+
+
+<main class="dashboard">
+
+<div class="container">
+
+
+<section class="dashboard-header">
+
+<span class="section-tag">
+// STUDENT COMMAND CENTER
+</span>
+
+<h1>
+Welcome back, <span id="studentName">Student</span>
+</h1>
+
+<p style="color:var(--muted)">
+Track your cybersecurity learning journey.
+</p>
+
+</section>
+
+
+<!-- STATS -->
+
+<section class="stats">
+
+
+<div class="stat">
+
+<span class="section-tag">
+POINTS
+</span>
+
+<div
+id="points"
+class="stat-number">
+
+0
+
+</div>
+
+</div>
+
+
+<div class="stat">
+
+<span class="section-tag">
+LESSONS
+</span>
+
+<div
+id="lessons"
+class="stat-number">
+
+0
+
+</div>
+
+</div>
+
+
+<div class="stat">
+
+<span class="section-tag">
+LABS
+</span>
+
+<div
+id="labs"
+class="stat-number">
+
+0
+
+</div>
+
+</div>
+
+
+<div class="stat">
+
+<span class="section-tag">
+CERTIFICATES
+</span>
+
+<div
+id="certificates"
+class="stat-number">
+
+0
+
+</div>
+
+</div>
+
+
+</section>
+
+
+<!-- COURSES -->
+
+<section>
+
+<span class="section-tag">
+// MY ACADEMY
+
+</span>
+
+<h2>
+My Courses
+</h2>
+
+
+<div id="courses">
+
+Loading courses...
+
+</div>
+
+</section>
+
+
+<!-- CERTIFICATES -->
+
+<section style="margin-top:40px">
+
+<span class="section-tag">
+// ACHIEVEMENTS
+
+</span>
+
+<h2>
+My Certificates
+</h2>
+
+
+<div id="certificateList">
+
+Loading certificates...
+
+</div>
+
+</section>
+
+
+</div>
+
+</main>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
+<script>
+
+
+const SUPABASE_URL =
+"WEKA_PROJECT_URL_HAPA";
+
+
+const SUPABASE_KEY =
+"WEKA_PUBLISHABLE_KEY_HAPA";
+
+
+const supabaseClient =
+window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
+
+
+let user;
+
+let courses = [];
+
+let lessons = [];
+
+let lessonProgress = [];
+
+let labs = [];
+
+let labProgress = [];
+
+let certificates = [];
+
+let attempts = [];
+
+
+// ======================================
+// INIT
+// ======================================
+
+async function init() {
+
+    const {
+        data:{user:currentUser}
+    } =
+    await supabaseClient
+        .auth
+        .getUser();
+
+
+    if (!currentUser) {
+
+        location.href =
+        "login.html";
+
+        return;
+
+    }
+
+
+    user =
+    currentUser;
+
+
+    await loadProfile();
+
+    await loadAllData();
+
+}
+
+
+// ======================================
+// PROFILE
+// ======================================
+
+async function loadProfile() {
+
+    const {
+        data
+    } =
+    await supabaseClient
+        .from("profiles")
+        .select("*")
+        .eq(
+            "id",
+            user.id
+        )
+        .single();
+
+
+    if (data) {
+
+        document.getElementById(
+            "studentName"
+        ).textContent =
+        data.full_name ||
+        data.name ||
+        user.email
+        .split("@")[0];
+
+    }
+
+}
+
+
+// ======================================
+// DATA
+// ======================================
+
+async function loadAllData() {
+
+    const courseResult =
+    await supabaseClient
+        .from("courses")
+        .select("*")
+        .order("id");
+
+
+    courses =
+    courseResult.data || [];
+
+
+    const lessonResult =
+    await supabaseClient
+        .from("lessons")
+        .select("*");
+
+
+    lessons =
+    lessonResult.data || [];
+
+
+    const lessonProgressResult =
+    await supabaseClient
+        .from("lesson_progress")
+        .select("*")
+        .eq(
+            "user_id",
+            user.id
+        );
+
+
+    lessonProgress =
+    lessonProgressResult.data || [];
+
+
+    const labResult =
+    await supabaseClient
+        .from("labs")
+        .select("*");
+
+
+    labs =
+    labResult.data || [];
+
+
+    const labProgressResult =
+    await supabaseClient
+        .from("lab_progress")
+        .select("*")
+        .eq(
+            "user_id",
+            user.id
+        );
+
+
+    labProgress =
+    labProgressResult.data || [];
+
+
+    const certificateResult =
+    await supabaseClient
+        .from("certificates")
+        .select(`
+            *,
+            courses(title)
+        `)
+        .eq(
+            "user_id",
+            user.id
+        )
+        .order(
+            "issued_at",
+            {
+                ascending:false
+            }
+        );
+
+
+    certificates =
+    certificateResult.data || [];
+
+
+    const attemptResult =
+    await supabaseClient
+        .from("quiz_attempts")
+        .select("*")
+        .eq(
+            "user_id",
+            user.id
+        );
+
+
+    attempts =
+    attemptResult.data || [];
+
+
+    renderCourses();
+
+    renderCertificates();
+
+    updateStats();
+
+}
+
+
+// ======================================
+// COURSES
+// ======================================
+
+function renderCourses() {
+
+    const container =
+    document.getElementById(
+        "courses"
+    );
+
+
+    if (!courses.length) {
+
+        container.innerHTML = `
+
+            <p class="empty">
+                No courses available yet.
+            </p>
+
+        `;
+
+        return;
+
+    }
+
+
+    container.innerHTML =
+    courses.map(
+        course => {
+
+            const courseLessons =
+            lessons.filter(
+                lesson =>
+                lesson.course_id ===
+                course.id
+            );
+
+
+            const completedLessons =
+            courseLessons.filter(
+                lesson =>
+                lessonProgress.some(
+                    progress =>
+                    progress.lesson_id ===
+                    lesson.id &&
+                    progress.completed
+                )
+            );
+
+
+            const courseLabs =
+            labs.filter(
+                lab =>
+                lab.course_id ===
+                course.id
+            );
+
+
+            const completedLabs =
+            courseLabs.filter(
+                lab =>
+                labProgress.some(
+                    progress =>
+                    progress.lab_id ===
+                    lab.id &&
+                    progress.completed
+                )
+            );
+
+
+            const totalItems =
+            courseLessons.length +
+            courseLabs.length;
+
+
+            const completedItems =
+            completedLessons.length +
+            completedLabs.length;
+
+
+            const percentage =
+            totalItems
+            ? Math.round(
+                (
+                    completedItems /
+                    totalItems
+                ) * 100
+            )
+            : 0;
+
+
+            return `
+
+            <div class="course-card">
+
+                <h2>
+                    ${escapeHTML(
+                        course.title
+                    )}
+                </h2>
+
+
+                <p
+                class="course-description">
+
+                    ${escapeHTML(
+                        course.description ||
+                        ""
+                    )}
+
+                </p>
+
+
+                <div
+                class="progress-track">
+
+                    <div
+                    class="progress-bar"
+                    style="
+                    width:${percentage}%;
+                    ">
+
+                    </div>
+
+                </div>
+
+
+                <div
+                class="course-footer">
+
+                    <span>
+
+                        ${percentage}%
+                        complete
+
+                    </span>
+
+
+                    <a
+                    href="
+                    course.html?id=${course.id}
+                    "
+                    class="btn btn-primary">
+
+                        Continue Course →
+
+                    </a>
+
+                </div>
+<div
+    id="course-progress-1">
+</div>
+            </div>
+
+            `;
+
+        }
+    ).join("");
+
+}
+
+
+// ======================================
+// CERTIFICATES
+// ======================================
+
+function renderCertificates() {
+
+    const container =
+    document.getElementById(
+        "certificateList"
+    );
+
+
+    if (!certificates.length) {
+
+        container.innerHTML = `
+
+            <p class="empty">
+
+                Complete a course to earn
+                your certificate.
+
+            </p>
+
+        `;
+
+        return;
+
+    }
+
+
+    container.innerHTML =
+    certificates.map(
+        certificate => `
+
+        <div class="certificate">
+
+            <span class="section-tag">
+                VERIFIED ACHIEVEMENT
+            </span>
+
+            <h3>
+
+                🎓
+                ${escapeHTML(
+                    certificate.courses?.title ||
+                    "Cybersecurity Course"
+                )}
+
+            </h3>
+
+
+            <p>
+
+                Certificate No:
+
+                <strong>
+                    ${escapeHTML(
+                        certificate.certificate_number
+                    )}
+                </strong>
+
+            </p>
+
+
+            <p>
+
+                Final Score:
+                ${certificate.final_score}%
+
+            </p>
+
+
+            <p style="color:var(--muted)">
+
+                Issued:
+                ${formatDate(
+                    certificate.issued_at
+                )}
+
+            </p>
+
+
+            <br>
+
+
+            <a
+            href="
+            certificate.html?id=${certificate.id}
+            "
+            class="btn btn-outline">
+
+                View Certificate
+
+            </a>
+
+        </div>
+
+        `
+    ).join("");
+
+}
+
+
+// ======================================
+// STATS
+// ======================================
+
+function updateStats() {
+
+    const completedLessons =
+    lessonProgress.filter(
+        item =>
+        item.completed
+    );
+
+
+    const completedLabs =
+    labProgress.filter(
+        item =>
+        item.completed
+    );
+
+
+    const totalPoints =
+    labProgress.reduce(
+        (
+            total,
+            item
+        ) =>
+        total +
+        Number(
+            item.points_earned || 0
+        ),
+        0
+    );
+
+
+    const quizPoints =
+    attempts.reduce(
+        (
+            total,
+            item
+        ) =>
+        total +
+        Number(
+            item.score || 0
+        ),
+        0
+    );
+
+
+    document.getElementById(
+        "points"
+    ).textContent =
+    totalPoints +
+    quizPoints;
+
+
+    document.getElementById(
+        "lessons"
+    ).textContent =
+    completedLessons.length;
+
+
+    document.getElementById(
+        "labs"
+    ).textContent =
+    completedLabs.length;
+
+
+    document.getElementById(
+        "certificates"
+    ).textContent =
+    certificates.length;
+
+}
+
+
+// ======================================
+// DATE
+// ======================================
+
+function formatDate(date) {
+
+    return new Date(
+        date
+    ).toLocaleDateString(
+        "en-GB"
+    );
+
+}
+
+
+// ======================================
+// ESCAPE
+// ======================================
+
+function escapeHTML(text) {
+
+    return String(text)
+
+        .replaceAll(
+            "&",
+            "&amp;"
+        )
+
+        .replaceAll(
+            "<",
+            "&lt;"
+        )
+
+        .replaceAll(
+            ">",
+            "&gt;"
+        )
+
+        .replaceAll(
+            '"',
+            "&quot;"
+        )
+
+        .replaceAll(
+            "'",
+            "&#039;"
+        );
+
+}
+
+
+// ======================================
+// LOGOUT
+// ======================================
+
+async function logout() {
+
+    await supabaseClient
+        .auth
+        .signOut();
+
+
+    location.href =
+    "index.html";
+
+}
+
+
+init();
+
+</script>
+
+</body>
+
+</html>
+```

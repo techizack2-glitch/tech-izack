@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Certificate | Tech Izack Academy</title>
+
+    <link rel="stylesheet"
+          href="style.css">
+
+    <style>
+
+        .certificate-page {
+            padding: 120px 20px 80px;
+        }
+
+        .certificate {
+            max-width: 900px;
+            margin: auto;
+            padding: 60px;
+            text-align: center;
+            background:
+                linear-gradient(
+                    135deg,
+                    #07111f,
+                    #0a182b
+                );
+            border: 2px solid #16bfff;
+            box-shadow:
+                0 0 40px rgba(0,174,255,.12);
+            position: relative;
+        }
+
+        .certificate::before {
+            content: "";
+            position: absolute;
+            inset: 12px;
+            border: 1px solid rgba(0,174,255,.25);
+            pointer-events: none;
+        }
+
+        .certificate-logo {
+            font-family: "Orbitron";
+            color: var(--cyan);
+            font-size: 22px;
+            font-weight: 800;
+        }
+
+        .certificate h1 {
+            font-family: "Orbitron";
+            font-size: 42px;
+            margin: 40px 0 15px;
+        }
+
+        .certificate .subtitle {
+            color: var(--muted);
+        }
+
+        .student-name {
+            color: var(--cyan);
+            font-size: 34px;
+            font-weight: 800;
+            margin: 25px 0;
+        }
+
+        .course-name {
+            font-size: 25px;
+            font-weight: 700;
+        }
+
+        .certificate-meta {
+            display: flex;
+            justify-content: center;
+            gap: 50px;
+            margin-top: 45px;
+            color: var(--muted);
+        }
+
+        .certificate-id {
+            margin-top: 35px;
+            color: var(--cyan);
+            font-family: monospace;
+        }
+
+        .verify-link {
+            margin-top: 25px;
+        }
+
+        @media(max-width: 650px) {
+
+            .certificate {
+                padding: 40px 20px;
+            }
+
+            .certificate h1 {
+                font-size: 30px;
+            }
+
+            .student-name {
+                font-size: 25px;
+            }
+
+            .certificate-meta {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+        }
+
+        @media print {
+
+            .navbar,
+            .print-button {
+                display: none !important;
+            }
+
+            .certificate-page {
+                padding: 20px;
+            }
+
+            body {
+                background: white;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+<header class="navbar">
+
+    <div class="container nav-inner">
+
+        <a href="dashboard.html"
+           class="logo">
+
+            <span>&lt;</span>
+            TECH IZACK
+            <span>/&gt;</span>
+
+        </a>
+
+    </div>
+
+</header>
+
+
+<main class="certificate-page">
+
+    <div class="certificate">
+
+        <div class="certificate-logo">
+            TECH IZACK ACADEMY
+        </div>
+
+        <h1>
+            CERTIFICATE
+        </h1>
+
+        <p class="subtitle">
+            OF COMPLETION
+        </p>
+
+        <p style="margin-top:35px">
+            This certificate is proudly presented to
+        </p>
+
+        <div id="studentName"
+             class="student-name">
+
+            Loading...
+
+        </div>
+
+        <p>
+            for successfully completing
+        </p>
+
+        <div id="courseName"
+             class="course-name">
+
+            Loading...
+
+        </div>
+
+        <div class="certificate-meta">
+
+            <div>
+                <small>Issued</small>
+                <br>
+                <strong id="issueDate">
+                    -
+                </strong>
+            </div>
+
+            <div>
+                <small>Certificate ID</small>
+                <br>
+                <strong id="certificateId">
+                    -
+                </strong>
+            </div>
+
+        </div>
+
+        <div class="verify-link">
+
+            <a id="verifyLink"
+               href="#"
+               style="color:var(--cyan)">
+
+                Verify Certificate
+
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <div style="text-align:center;margin-top:25px">
+
+        <button
+            class="btn btn-primary print-button"
+            onclick="window.print()">
+
+            Print / Save PDF
+
+        </button>
+
+    </div>
+
+</main>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+
+const SUPABASE_URL =
+    "WEKA_PROJECT_URL_HAPA";
+
+const SUPABASE_KEY =
+    "WEKA_PUBLISHABLE_KEY_HAPA";
+
+
+const supabaseClient =
+    window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+    );
+
+
+async function loadCertificate() {
+
+    const params =
+        new URLSearchParams(
+            window.location.search
+        );
+
+    const certificateId =
+        params.get("id");
+
+
+    if (!certificateId) {
+
+        document.getElementById(
+            "studentName"
+        ).textContent =
+            "Certificate not found.";
+
+        return;
+    }
+
+
+    const {
+        data,
+        error
+    } = await supabaseClient
+        .from("certificates")
+        .select("*")
+        .eq(
+            "certificate_id",
+            certificateId
+        )
+        .single();
+
+
+    if (error || !data) {
+
+        document.getElementById(
+            "studentName"
+        ).textContent =
+            "Certificate not found.";
+
+        return;
+    }
+
+
+    document.getElementById(
+        "studentName"
+    ).textContent =
+        data.student_name;
+
+
+    document.getElementById(
+        "courseName"
+    ).textContent =
+        data.course_title;
+
+
+    document.getElementById(
+        "certificateId"
+    ).textContent =
+        data.certificate_id;
+
+
+    document.getElementById(
+        "issueDate"
+    ).textContent =
+        new Date(
+            data.issued_at
+        ).toLocaleDateString();
+
+
+    document.getElementById(
+        "verifyLink"
+    ).href =
+        `verify.html?id=${data.certificate_id}`;
+
+}
+
+
+loadCertificate();
+
+</script>
+
+</body>
+
+</html>
+<button
+    id="certificateButton"
+    class="btn btn-primary"
+    style="display:none"
+    onclick="generateCertificate()">
+
+    🎓 Get Certificate
+
+</button>

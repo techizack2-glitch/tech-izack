@@ -1,0 +1,493 @@
+```html
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>
+Certificate | Tech Izack Academy
+</title>
+
+<link
+rel="stylesheet"
+href="style.css">
+
+<style>
+
+.certificate-page {
+
+    min-height:100vh;
+
+    padding:110px 20px 70px;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+}
+
+
+.certificate {
+
+    width:900px;
+
+    max-width:100%;
+
+    padding:55px;
+
+    position:relative;
+
+    background:
+
+        linear-gradient(
+            135deg,
+            #081827,
+            #03070d
+        );
+
+    border:2px solid #00d9ff;
+
+    box-shadow:
+        0 0 35px
+        rgba(0,217,255,.15);
+
+    text-align:center;
+
+}
+
+
+.certificate::before {
+
+    content:"";
+
+    position:absolute;
+
+    inset:10px;
+
+    border:1px solid
+    rgba(32,214,138,.35);
+
+    pointer-events:none;
+
+}
+
+
+.cert-logo {
+
+    font-family:Orbitron;
+
+    color:#00d9ff;
+
+    letter-spacing:3px;
+
+}
+
+
+.cert-title {
+
+    font-family:Orbitron;
+
+    font-size:42px;
+
+    margin:35px 0 15px;
+
+}
+
+
+.cert-subtitle {
+
+    color:#91a4b7;
+
+}
+
+
+.student-name {
+
+    font-size:35px;
+
+    color:#20d68a;
+
+    font-family:Orbitron;
+
+    margin:30px 0;
+
+}
+
+
+.course-name {
+
+    font-size:25px;
+
+    color:white;
+
+    margin:20px 0;
+
+}
+
+
+.cert-meta {
+
+    display:flex;
+
+    justify-content:center;
+
+    gap:40px;
+
+    flex-wrap:wrap;
+
+    margin-top:35px;
+
+    color:#91a4b7;
+
+}
+
+
+.cert-id {
+
+    margin-top:35px;
+
+    font-family:monospace;
+
+    color:#00d9ff;
+
+}
+
+
+.actions {
+
+    margin-top:30px;
+
+}
+
+
+@media print {
+
+    .navbar,
+    .actions {
+
+        display:none;
+
+    }
+
+
+    .certificate-page {
+
+        padding:0;
+
+    }
+
+
+    .certificate {
+
+        box-shadow:none;
+
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<header class="navbar">
+
+<div class="container nav-inner">
+
+<a
+href="student-dashboard.html"
+class="logo">
+
+<span>&lt;</span>
+
+TECH IZACK
+
+<span>/&gt;</span>
+
+</a>
+
+
+<a
+href="verify.html"
+class="btn btn-outline">
+
+Verify Certificate
+
+</a>
+
+</div>
+
+</header>
+
+
+<main class="certificate-page">
+
+
+<section class="certificate">
+
+
+<div class="cert-logo">
+
+TECH IZACK ACADEMY
+
+</div>
+
+
+<h1 class="cert-title">
+
+CERTIFICATE
+
+</h1>
+
+
+<p class="cert-subtitle">
+
+OF COMPLETION
+
+</p>
+
+
+<p>
+
+This certificate is proudly presented to
+
+</p>
+
+
+<div
+id="studentName"
+class="student-name">
+
+Loading...
+
+</div>
+
+
+<p>
+
+for successfully completing
+
+</p>
+
+
+<div
+id="courseName"
+class="course-name">
+
+Loading...
+
+</div>
+
+
+<div class="cert-meta">
+
+
+<div>
+
+<strong>Issued</strong>
+
+<br>
+
+<span id="issuedDate">
+-
+</span>
+
+</div>
+
+
+<div>
+
+<strong>Status</strong>
+
+<br>
+
+<span
+style="color:#20d68a">
+
+VALID
+
+</span>
+
+</div>
+
+
+</div>
+
+
+<div class="cert-id">
+
+Certificate ID:
+<span id="certificateId">
+-
+</span>
+
+</div>
+
+
+<div class="actions">
+
+<button
+class="btn btn-primary"
+onclick="window.print()">
+
+🖨 Print / Save PDF
+
+</button>
+
+</div>
+
+
+</section>
+
+
+</main>
+
+
+<script
+src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+</script>
+
+
+<script>
+
+const SUPABASE_URL =
+"WEKA_PROJECT_URL_HAPA";
+
+
+const SUPABASE_KEY =
+"WEKA_PUBLISHABLE_KEY_HAPA";
+
+
+const supabaseClient =
+window.supabase.createClient(
+
+    SUPABASE_URL,
+
+    SUPABASE_KEY
+
+);
+
+
+async function init() {
+
+
+    const {
+        data
+    } =
+    await supabaseClient.auth
+        .getUser();
+
+
+    if (!data.user) {
+
+        location.href =
+            "login.html";
+
+        return;
+
+    }
+
+
+    const certificateId =
+        new URLSearchParams(
+            location.search
+        ).get("id");
+
+
+    if (!certificateId) {
+
+        alert(
+            "Certificate ID missing."
+        );
+
+        return;
+
+    }
+
+
+    const {
+        data: certificate,
+        error
+    } =
+    await supabaseClient
+
+        .from("certificates")
+
+        .select("*")
+
+        .eq(
+            "certificate_id",
+            certificateId
+        )
+
+        .eq(
+            "user_id",
+            data.user.id
+        )
+
+        .single();
+
+
+    if (error || !certificate) {
+
+        alert(
+            "Certificate not found."
+        );
+
+        return;
+
+    }
+
+
+    document.getElementById(
+        "studentName"
+    ).textContent =
+
+        certificate.student_name;
+
+
+    document.getElementById(
+        "courseName"
+    ).textContent =
+
+        certificate.course_title;
+
+
+    document.getElementById(
+        "certificateId"
+    ).textContent =
+
+        certificate.certificate_id;
+
+
+    document.getElementById(
+        "issuedDate"
+    ).textContent =
+
+        new Date(
+            certificate.issued_at
+        ).toLocaleDateString();
+
+}
+
+
+init();
+
+</script>
+
+</body>
+
+</html>
+```

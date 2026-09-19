@@ -1,0 +1,1106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Tech Izack | Cybersecurity Academy</title>
+    <meta name="description"
+          content="Tech Izack Cybersecurity Academy - Learn Kali Linux, ethical hacking, defensive security and security awareness through practical training.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Orbitron:wght@500;600;700;800&display=swap"
+          rel="stylesheet">
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<!-- ================= NAVBAR ================= -->
+
+<header class="navbar">
+    <div class="container nav-inner">
+
+        <a href="#home" class="logo">
+            <span>&lt;</span>TECH IZACK<span>/&gt;</span>
+        </a>
+
+        <nav id="mainNav">
+            <a href="#home">Home</a>
+            <a href="#about">About</a>
+            <a href="#services">Services</a>
+            <a href="#academy">Academy</a>
+            <a href="#kali">Kali Linux</a>
+            <a href="#social">Social Engineering</a>
+            <a href="#blog">Blog</a>
+            <a href="#contact">Contact</a>
+        </nav>
+
+        <div class="nav-actions">
+            <button class="btn btn-outline" onclick="openModal('loginModal')">
+                Login
+            </button>
+
+            <button class="btn btn-primary" onclick="openModal('signupModal')">
+                Sign Up
+            </button>
+        </div>
+
+        <button class="menu-btn" onclick="toggleMenu()">
+            <i class="fas fa-bars"></i>
+        </button>
+
+    </div>
+</header>
+
+
+<!-- ================= HERO ================= -->
+
+<section id="home" class="hero">
+
+    <div class="hero-grid"></div>
+
+    <div class="container hero-content">
+
+        <div class="hero-text">
+
+            <div class="badge">
+                <span class="pulse"></span>
+                CYBERSECURITY ACADEMY
+            </div>
+
+            <h1>
+                SECURE.<br>
+                <span>LEARN.</span><br>
+                DEFEND.
+            </h1>
+
+            <p>
+                Master cybersecurity, Kali Linux, ethical hacking,
+                defensive security and security awareness through
+                practical training and authorized labs.
+            </p>
+
+            <div class="hero-buttons">
+                <a href="#academy" class="btn btn-primary big-btn">
+                    Start Learning <i class="fas fa-arrow-right"></i>
+                </a>
+
+                <a href="#kali" class="btn btn-outline big-btn">
+                    Explore Kali Linux
+                </a>
+            </div>
+
+            <div class="hero-stats">
+
+                <div>
+                    <strong>300+</strong>
+                    <small>Security Tools</small>
+                </div>
+
+                <div>
+                    <strong>50+</strong>
+                    <small>Practical Labs</small>
+                </div>
+
+                <div>
+                    <strong>100%</strong>
+                    <small>Authorized Training</small>
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="terminal">
+
+            <div class="terminal-top">
+                <span class="dot red"></span>
+                <span class="dot yellow"></span>
+                <span class="dot green"></span>
+                <span class="terminal-title">tech-izack@academy:~</span>
+            </div>
+
+            <div class="terminal-body">
+
+                <p>
+                    <span class="green-text">tech-izack</span>@academy:~$
+                    whoami
+                </p>
+
+                <p class="white">Cybersecurity Student</p>
+
+                <p>
+                    <span class="green-text">tech-izack</span>@academy:~$
+                    skills
+                </p>
+
+                <p class="blue-text">
+                    [✓] Linux<br>
+                    [✓] Networking<br>
+                    [✓] Web Security<br>
+                    [✓] Digital Forensics<br>
+                    [✓] Defensive Security
+                </p>
+
+                <p>
+                    <span class="green-text">tech-izack</span>@academy:~$
+                    ./start-learning.sh
+                </p>
+
+                <p class="green-text">
+                    Access granted...
+                </p>
+
+                <span class="cursor"></span>
+
+            </div>
+        </div>
+
+    </div>
+</section>
+
+
+<!-- ================= ABOUT ================= -->
+
+<section id="about" class="section">
+
+    <div class="container">
+
+        <div class="section-heading">
+            <span class="section-tag">// ABOUT TECH IZACK</span>
+
+            <h2>
+                Learn Cybersecurity.<br>
+                <span>Build Real Skills.</span>
+            </h2>
+
+            <p>
+                Tech Izack is a cybersecurity learning platform designed
+                to help students build practical security skills from
+                beginner to advanced level.
+            </p>
+        </div>
+
+        <div class="about-grid">
+
+            <div class="about-card">
+                <i class="fas fa-shield-halved"></i>
+                <h3>Defensive Security</h3>
+                <p>
+                    Learn how systems, networks and organizations
+                    can detect and defend against cyber threats.
+                </p>
+            </div>
+
+            <div class="about-card">
+                <i class="fas fa-terminal"></i>
+                <h3>Hands-On Learning</h3>
+                <p>
+                    Practice through authorized labs, simulations
+                    and CTF challenges.
+                </p>
+            </div>
+
+            <div class="about-card">
+                <i class="fas fa-graduation-cap"></i>
+                <h3>Cyber Academy</h3>
+                <p>
+                    Follow structured learning paths from beginner
+                    through advanced cybersecurity concepts.
+                </p>
+            </div>
+
+        </div>
+
+    </div>
+</section>
+
+
+<!-- ================= SERVICES ================= -->
+
+<section id="services" class="section dark-section">
+
+    <div class="container">
+
+        <div class="section-heading center">
+            <span class="section-tag">// SERVICES</span>
+            <h2>Cybersecurity <span>Services</span></h2>
+            <p>
+                Security-focused services and educational solutions.
+            </p>
+        </div>
+
+        <div class="service-grid">
+
+            <div class="service-card">
+                <div class="icon-box">
+                    <i class="fas fa-network-wired"></i>
+                </div>
+
+                <h3>Security Assessment</h3>
+
+                <p>
+                    Authorized security assessment and security
+                    posture review.
+                </p>
+
+                <a href="#contact">Learn More →</a>
+            </div>
+
+            <div class="service-card">
+                <div class="icon-box">
+                    <i class="fas fa-code"></i>
+                </div>
+
+                <h3>Web Security</h3>
+
+                <p>
+                    Learn web security concepts through controlled
+                    environments and training labs.
+                </p>
+
+                <a href="#kali">Explore →</a>
+            </div>
+
+            <div class="service-card">
+                <div class="icon-box">
+                    <i class="fas fa-users"></i>
+                </div>
+
+                <h3>Security Awareness</h3>
+
+                <p>
+                    Help organizations understand phishing,
+                    social engineering and human-factor risks.
+                </p>
+
+                <a href="#social">Learn More →</a>
+            </div>
+
+        </div>
+
+    </div>
+</section>
+
+
+<!-- ================= ACADEMY ================= -->
+
+<section id="academy" class="section">
+
+    <div class="container">
+
+        <div class="section-heading">
+            <span class="section-tag">// CYBERSECURITY ACADEMY</span>
+
+            <h2>
+                Learn. Practice.<br>
+                <span>Become Security Ready.</span>
+            </h2>
+
+            <p>
+                Structured courses with lessons, practical labs,
+                quizzes, CTF challenges and progress tracking.
+            </p>
+        </div>
+
+        <div class="level-tabs">
+
+            <button class="active">Beginner</button>
+            <button>Intermediate</button>
+            <button>Advanced</button>
+
+        </div>
+
+        <div class="course-grid">
+
+            <article class="course-card">
+
+                <div class="course-icon">
+                    <i class="fab fa-linux"></i>
+                </div>
+
+                <span class="level">BEGINNER</span>
+
+                <h3>Linux Fundamentals</h3>
+
+                <p>
+                    Learn Linux filesystem, permissions,
+                    processes and basic administration.
+                </p>
+
+                <div class="course-info">
+                    <span><i class="fas fa-book"></i> 12 Lessons</span>
+                    <span><i class="fas fa-flask"></i> 5 Labs</span>
+                </div>
+
+                <button class="course-btn">
+                    Start Course
+                </button>
+
+            </article>
+
+
+            <article class="course-card">
+
+                <div class="course-icon">
+                    <i class="fas fa-network-wired"></i>
+                </div>
+
+                <span class="level">BEGINNER</span>
+
+                <h3>Networking Basics</h3>
+
+                <p>
+                    Understand IP addresses, ports, protocols,
+                    DNS, TCP/IP and network troubleshooting.
+                </p>
+
+                <div class="course-info">
+                    <span><i class="fas fa-book"></i> 15 Lessons</span>
+                    <span><i class="fas fa-flask"></i> 6 Labs</span>
+                </div>
+
+                <button class="course-btn">
+                    Start Course
+                </button>
+
+            </article>
+ 
+
+            <article class="course-card">
+
+                <div class="course-icon">
+                    <i class="fas fa-globe"></i>
+                </div>
+
+                <span class="level">INTERMEDIATE</span>
+
+                <h3>Web Security Fundamentals</h3>
+
+                <p>
+                    Study HTTP, authentication, sessions,
+                    common vulnerabilities and defensive controls.
+                </p>
+
+                <div class="course-info">
+                    <span><i class="fas fa-book"></i> 18 Lessons</span>
+                    <span><i class="fas fa-flask"></i> 10 Labs</span>
+                </div>
+
+                <button class="course-btn">
+                    Start Course
+                </button>
+
+            </article>
+
+
+            <a
+href="social-engineering.html"
+class="course-card">
+
+    <span class="section-tag">
+        // AWARENESS
+    </span>
+
+    <h3>
+        Social Engineering
+    </h3>
+
+    <p>
+        Learn how to recognize phishing,
+        manipulation, suspicious messages
+        and human-factor security risks.
+    </p>
+
+    <span class="btn btn-outline">
+        Start Training →
+    </span>
+
+</a>
+        </div>
+
+    </div>
+</section>
+                
+<!-- ================= KALI LINUX ================= -->
+
+<section id="kali" class="section kali-section">
+
+    <div class="container">
+
+        <div class="section-heading center">
+
+            <span class="section-tag">// KALI LINUX TRAINING</span>
+
+            <h2>
+                Master <span>Kali Linux.</span>
+            </h2>
+
+            <p>
+                Practical cybersecurity training using controlled
+                labs and authorized CTF environments.
+            </p>
+
+        </div>
+
+
+        <div class="kali-grid">
+
+            <div class="kali-card">
+
+                <div class="number">01</div>
+
+                <i class="fas fa-terminal"></i>
+
+                <h3>Terminal & Command Line</h3>
+
+                <p>
+                    Navigate Linux, manage files, processes,
+                    permissions and packages.
+                </p>
+
+                <a href="#">Open Lab →</a>
+
+            </div>
+
+
+            <div class="kali-card">
+
+                <div class="number">02</div>
+
+                <i class="fas fa-network-wired"></i>
+
+                <h3>Nmap Fundamentals</h3>
+
+                <p>
+                    Learn network discovery and port scanning
+                    inside authorized training labs.
+                </p>
+
+                <a href="#">Open Lab →</a>
+
+            </div>
+
+
+            <div class="kali-card">
+
+                <div class="number">03</div>
+
+                <i class="fas fa-eye"></i>
+
+                <h3>Wireshark</h3>
+
+                <p>
+                    Learn packet capture and network traffic
+                    analysis using safe sample traffic.
+                </p>
+
+                <a href="#">Open Lab →</a>
+
+            </div>
+
+
+            <div class="kali-card">
+
+                <div class="number">04</div>
+
+                <i class="fas fa-globe"></i>
+
+                <h3>Burp Suite</h3>
+
+                <p>
+                    Explore web requests, responses and web
+                    security testing in controlled applications.
+                </p>
+
+                <a href="#">Open Lab →</a>
+
+            </div>
+
+
+            <div class="kali-card">
+
+                <div class="number">05</div>
+
+                <i class="fas fa-bug"></i>
+
+                <h3>Metasploit Lab</h3>
+
+                <p>
+                    Learn exploitation concepts using intentionally
+                    vulnerable machines.
+                </p>
+
+                <a href="#">Open Lab →</a>
+
+            </div>
+
+
+            <div class="kali-card">
+
+                <div class="number">06</div>
+
+                <i class="fas fa-flag"></i>
+
+                <h3>CTF Challenges</h3>
+
+                <p>
+                    Solve cybersecurity challenges covering
+                    networking, web security and forensics.
+                </p>
+
+                <a href="#">Enter CTF →</a>
+
+            </div>
+
+        </div>
+
+
+        <div class="tools-banner">
+
+            <div>
+                <span class="section-tag">// SECURITY TOOLKIT</span>
+                <h3>300+ Cybersecurity Tools</h3>
+                <p>
+                    Explore tools organized by reconnaissance,
+                    web security, networking, forensics, reverse
+                    engineering and more.
+                </p>
+            </div>
+
+            <button class="btn btn-primary">
+                Explore Tools
+            </button>
+
+        </div>
+
+    </div>
+</section>
+
+
+<!-- ================= SOCIAL ENGINEERING ================= -->
+
+<section id="social" class="section">
+
+    <div class="container">
+
+        <div class="social-layout">
+
+            <div class="social-text">
+
+                <span class="section-tag">// SOCIAL ENGINEERING TRAINING</span>
+
+                <h2>
+                    Understand the<br>
+                    <span>Human Factor.</span>
+                </h2>
+
+                <p>
+                    Learn how social engineering works and how
+                    individuals and organizations can recognize
+                    and defend against manipulation attempts.
+                </p>
+
+                <a href="#contact" class="btn btn-primary">
+                    Start Awareness Training
+                </a>
+
+            </div>
+
+
+            <div class="social-list">
+
+                <div class="social-item">
+                    <span>01</span>
+                    <div>
+                        <h3>Social Engineering Basics</h3>
+                        <p>
+                            Understand common manipulation techniques
+                            and risk factors.
+                        </p>
+                    </div>
+                </div>
+
+
+                <div class="social-item">
+                    <span>02</span>
+                    <div>
+                        <h3>Phishing Awareness</h3>
+                        <p>
+                            Learn to identify suspicious emails,
+                            links and messages.
+                        </p>
+                    </div>
+                </div>
+
+
+                <div class="social-item">
+                    <span>03</span>
+                    <div>
+                        <h3>Password & Account Security</h3>
+                        <p>
+                            Learn strong authentication and account
+                            protection practices.
+                        </p>
+                    </div>
+                </div>
+
+
+                <div class="social-item">
+                    <span>04</span>
+                    <div>
+                        <h3>OSINT Awareness</h3>
+                        <p>
+                            Understand what information can be
+                            publicly exposed and how to reduce risk.
+                        </p>
+                    </div>
+                </div>
+
+
+                <div class="social-item">
+                    <span>05</span>
+                    <div>
+                        <h3>Security Awareness Exercises</h3>
+                        <p>
+                            Safe simulations designed to improve
+                            organizational awareness.
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+</section>
+
+
+<!-- ================= BLOG ================= -->
+
+<section id="blog" class="section dark-section">
+
+    <div class="container">
+
+        <div class="section-heading center">
+
+            <span class="section-tag">// CYBERSECURITY BLOG</span>
+
+            <h2>
+                Learn Something <span>New.</span>
+            </h2>
+
+        </div>
+
+
+        <div class="blog-grid">
+
+            <article class="blog-card">
+
+                <div class="blog-image">
+                    <i class="fab fa-linux"></i>
+                </div>
+
+                <div class="blog-content">
+
+                    <span>KALI LINUX</span>
+
+                    <h3>
+                        Getting Started With Kali Linux
+                    </h3>
+
+                    <p>
+                        Learn the fundamentals you need before
+                        starting practical cybersecurity labs.
+                    </p>
+
+                    <a href="#">Read Article →</a>
+
+                </div>
+
+            </article>
+
+
+            <article class="blog-card">
+
+                <div class="blog-image">
+                    <i class="fas fa-shield-halved"></i>
+                </div>
+
+                <div class="blog-content">
+
+                    <span>SECURITY</span>
+
+                    <h3>
+                        How To Improve Account Security
+                    </h3>
+
+                    <p>
+                        Practical security habits for protecting
+                        online accounts.
+                    </p>
+
+                    <a href="#">Read Article →</a>
+
+                </div>
+
+            </article>
+
+
+            <article class="blog-card">
+
+                <div class="blog-image">
+                    <i class="fas fa-fish"></i>
+                </div>
+
+                <div class="blog-content">
+
+                    <span>AWARENESS</span>
+
+                    <h3>
+                        How To Recognize Phishing
+                    </h3>
+
+                    <p>
+                        Learn the warning signs of suspicious
+                        emails, messages and websites.
+                    </p>
+
+                    <a href="#">Read Article →</a>
+
+                </div>
+
+            </article>
+
+        </div>
+
+    </div>
+</section>
+
+
+<!-- ================= CONTACT ================= -->
+
+<section id="contact" class="section contact-section">
+
+    <div class="container">
+
+        <div class="section-heading center">
+
+            <span class="section-tag">// CONTACT</span>
+
+            <h2>
+                Let's <span>Connect.</span>
+            </h2>
+
+            <p>
+                Have a question about training, cybersecurity
+                services or the academy?
+            </p>
+
+        </div>
+
+
+        <div class="contact-grid">
+
+            <div class="contact-card">
+
+                <i class="fab fa-whatsapp"></i>
+
+                <h3>WhatsApp</h3>
+
+                <p>Chat with us directly.</p>
+
+                <a href="https://wa.me/255791939190"
+                   target="_blank">
+                    +255 791 939 190
+                </a>
+
+            </div>
+
+
+            <div class="contact-card">
+
+                <i class="fas fa-phone"></i>
+
+                <h3>Phone</h3>
+
+                <p>Call us for inquiries.</p>
+
+                <a href="tel:+255635199827">
+                    +255 635 199 827
+                </a>
+
+            </div>
+
+
+            <div class="contact-card">
+
+                <i class="fas fa-envelope"></i>
+
+                <h3>Email</h3>
+
+                <p>Send us a message.</p>
+
+                <a href="mailt:techizack2@gmail.com">
+                    techizack2@gmail.com
+                </a>
+
+            </div>
+
+        </div>
+
+
+        <form class="contact-form" onsubmit="sendMessage(event)">
+
+            <input type="text"
+                   placeholder="Your Name"
+                   required>
+
+            <input type="email"
+                   placeholder="Your Email"
+                   required>
+
+            <input type="text"
+                   placeholder="Subject"
+                   required>
+
+            <textarea rows="6"
+                      placeholder="Your Message"
+                      required></textarea>
+
+            <button class="btn btn-primary" type="submit">
+                Send Message <i class="fas fa-paper-plane"></i>
+            </button>
+
+        </form>
+
+    </div>
+</section>
+
+
+<!-- ================= FOOTER ================= -->
+
+<footer>
+
+    <div class="container footer-grid">
+
+        <div>
+
+            <a href="#home" class="logo">
+                <span>&lt;</span>TECH IZACK<span>/&gt;</span>
+            </a>
+
+            <p>
+                Cybersecurity education, awareness and
+                practical training.
+            </p>
+
+        </div>
+
+
+        <div>
+
+            <h4>Academy</h4>
+
+            <a href="#kali">Kali Linux</a>
+            <a href="#social">Social Engineering</a>
+            <a href="#academy">Courses</a>
+            <a href="#">CTF Labs</a>
+
+        </div>
+
+
+        <div>
+
+            <h4>Company</h4>
+
+            <a href="#about">About</a>
+            <a href="#services">Services</a>
+            <a href="#blog">Blog</a>
+            <a href="#contact">Contact</a>
+
+        </div>
+
+
+        <div>
+
+            <h4>Follow</h4>
+
+            <div class="social-links">
+
+                <a href="#"><i class="fab fa-facebook"></i></a>
+                <a href="#"><i class="fab fa-instagram"></i></a>
+                <a href="#"><i class="fab fa-linkedin"></i></a>
+                <a href="#"><i class="fab fa-github"></i></a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="footer-bottom">
+
+        <p>
+            © 2026 Tech Izack. All rights reserved.
+        </p>
+
+        <p>
+            Learn ethically. Practice responsibly.
+        </p>
+
+    </div>
+
+</footer>
+
+
+<!-- ================= LOGIN MODAL ================= -->
+
+<div class="modal" id="loginModal">
+
+    <div class="modal-box">
+
+        <button class="close"
+                onclick="closeModal('loginModal')">
+            ×
+        </button>
+
+        <div class="modal-icon">
+            <i class="fas fa-user-shield"></i>
+        </div>
+
+        <h2>Welcome Back</h2>
+
+        <p>Login to your Tech Izack account.</p>
+
+        <form onsubmit="login(event)">
+
+            <label>Email</label>
+
+            <input type="email"
+                   id="loginEmail"
+                   placeholder="you@example.com"
+                   required>
+
+            <label>Password</label>
+
+            <input type="password"
+                   id="loginPassword"
+                   placeholder="••••••••"
+                   required>
+
+            <button class="btn btn-primary full">
+                Login
+            </button>
+
+        </form>
+
+        <p class="switch-auth">
+            Don't have an account?
+            <button onclick="switchModal('loginModal','signupModal')">
+                Sign Up
+            </button>
+        </p>
+
+    </div>
+</div>
+
+
+<!-- ================= SIGNUP MODAL ================= -->
+
+<div class="modal" id="signupModal">
+
+    <div class="modal-box">
+
+        <button class="close"
+                onclick="closeModal('signupModal')">
+            ×
+        </button>
+
+        <div class="modal-icon">
+            <i class="fas fa-user-plus"></i>
+        </div>
+
+        <h2>Create Account</h2>
+
+        <p>Join the Tech Izack Cybersecurity Academy.</p>
+
+        <form onsubmit="signup(event)">
+
+            <label>Full Name</label>
+
+            <input type="text"
+                   id="signupName"
+                   placeholder="Your name"
+                   required>
+
+            <label>Email</label>
+
+            <input type="email"
+                   id="signupEmail"
+                   placeholder="you@example.com"
+                   required>
+
+            <label>Password</label>
+
+            <input type="password"
+                   id="signupPassword"
+                   placeholder="Create password"
+                   required>
+
+            <button class="btn btn-primary full">
+                Create Account
+            </button>
+
+        </form>
+
+        <p class="switch-auth">
+            Already have an account?
+            <button onclick="switchModal('signupModal','loginModal')">
+                Login
+            </button>
+        </p>
+
+    </div>
+</div>
+
+
+<!-- WhatsApp Floating Button -->
+
+<a class="whatsapp-float"
+   href="https://wa.me/255791939190"
+   target="_blank"
+   aria-label="WhatsApp">
+
+    <i class="fab fa-whatsapp"></i>
+
+</a>
+
+
+<script src="script.js"></script>
+
+</body>
+</html>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+    const SUPABASE_URL = "WEKA_PROJECT_URL_HAPA";
+    const SUPABASE_KEY = "WEKA_PUBLISHABLE_KEY_HAPA";
+
+    const supabaseClient = window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+    );
+</script>
+
+<script src="script.js"></script>
+</button>

@@ -1,0 +1,728 @@
+```html
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>
+Kali Linux Academy | Tech Izack
+</title>
+
+<link
+rel="stylesheet"
+href="style.css">
+
+<style>
+
+.kali-page {
+
+    padding:110px 20px 70px;
+
+}
+
+
+.kali-header {
+
+    max-width:900px;
+
+    margin:0 auto 35px;
+
+}
+
+
+.kali-header h1 {
+
+    font-family:Orbitron;
+
+    font-size:42px;
+
+    margin:15px 0;
+
+}
+
+
+.filters {
+
+    display:grid;
+
+    grid-template-columns:
+    2fr 1fr 1fr;
+
+    gap:12px;
+
+    margin-bottom:30px;
+
+}
+
+
+.filters input,
+.filters select {
+
+    padding:14px;
+
+    background:#050b14;
+
+    color:white;
+
+    border:1px solid var(--border);
+
+    border-radius:7px;
+
+}
+
+
+.tools-grid {
+
+    display:grid;
+
+    grid-template-columns:
+    repeat(3,1fr);
+
+    gap:18px;
+
+}
+
+
+.tool-card {
+
+    background:var(--card);
+
+    border:1px solid var(--border);
+
+    border-radius:10px;
+
+    padding:24px;
+
+    transition:.2s;
+
+}
+
+
+.tool-card:hover {
+
+    transform:translateY(-3px);
+
+    border-color:var(--cyan);
+
+    box-shadow:
+    0 0 25px
+    rgba(0,217,255,.08);
+
+}
+
+
+.tool-name {
+
+    font-family:Orbitron;
+
+    font-size:19px;
+
+    margin:12px 0;
+
+}
+
+
+.tool-description {
+
+    color:var(--muted);
+
+    line-height:1.7;
+
+}
+
+
+.badge {
+
+    display:inline-block;
+
+    padding:5px 9px;
+
+    border-radius:20px;
+
+    font-size:11px;
+
+    border:1px solid
+    rgba(0,217,255,.3);
+
+    color:var(--cyan);
+
+}
+
+
+.tool-footer {
+
+    margin-top:20px;
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    gap:10px;
+
+}
+
+
+.no-results {
+
+    color:var(--muted);
+
+    padding:30px 0;
+
+}
+
+
+@media(max-width:900px) {
+
+    .tools-grid {
+
+        grid-template-columns:1fr 1fr;
+
+    }
+
+}
+
+
+@media(max-width:600px) {
+
+    .tools-grid {
+
+        grid-template-columns:1fr;
+
+    }
+
+
+    .filters {
+
+        grid-template-columns:1fr;
+
+    }
+
+
+    .kali-header h1 {
+
+        font-size:30px;
+
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<header class="navbar">
+
+<div class="container nav-inner">
+
+
+<a
+href="index.html"
+class="logo">
+
+<span>&lt;</span>
+
+TECH IZACK
+
+<span>/&gt;</span>
+
+</a>
+
+
+<nav>
+
+<a href="index.html">
+Home
+</a>
+
+<a href="academy.html">
+Academy
+</a>
+
+<a href="student-dashboard.html">
+Dashboard
+</a>
+
+</nav>
+
+
+</div>
+
+</header>
+
+
+<main class="kali-page">
+
+
+<div class="container">
+
+
+<section class="kali-header">
+
+<span class="section-tag">
+// KALI LINUX TRAINING
+</span>
+
+
+<h1>
+
+Kali Linux Tools Lab
+
+</h1>
+
+
+<p style="
+color:var(--muted);
+line-height:1.8;
+">
+
+Explore cybersecurity tools,
+learn what they do, and practice
+their defensive use inside
+authorized labs and CTF environments.
+
+</p>
+
+</section>
+
+
+<!-- FILTERS -->
+
+
+<section class="filters">
+
+
+<input
+id="search"
+type="search"
+placeholder="Search tools...">
+
+
+<select id="category">
+
+<option value="">
+All Categories
+</option>
+
+</select>
+
+
+<select id="level">
+
+<option value="">
+All Levels
+</option>
+
+<option value="Beginner">
+Beginner
+</option>
+
+<option value="Intermediate">
+Intermediate
+</option>
+
+<option value="Advanced">
+Advanced
+</option>
+
+</select>
+
+
+</section>
+
+
+<div
+id="tools"
+class="tools-grid">
+
+Loading tools...
+
+</div>
+
+
+</div>
+
+</main>
+
+
+<script
+src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+</script>
+
+
+<script>
+
+
+const SUPABASE_URL =
+"WEKA_PROJECT_URL_HAPA";
+
+
+const SUPABASE_KEY =
+"WEKA_PUBLISHABLE_KEY_HAPA";
+
+
+const supabaseClient =
+window.supabase.createClient(
+
+    SUPABASE_URL,
+
+    SUPABASE_KEY
+
+);
+
+
+let allTools = [];
+
+
+async function loadTools() {
+
+    const {
+        data,
+        error
+    } = await supabaseClient
+
+        .from("kali_tools")
+
+        .select("*")
+
+        .eq(
+            "published",
+            true
+        )
+
+        .order(
+            "name"
+        );
+
+
+    if (error) {
+
+        document.getElementById(
+            "tools"
+        ).innerHTML = `
+
+            <p class="no-results">
+
+                ${escapeHTML(
+                    error.message
+                )}
+
+            </p>
+
+        `;
+
+        return;
+
+    }
+
+
+    allTools =
+        data || [];
+
+
+    populateCategories();
+
+    renderTools();
+
+}
+
+
+function populateCategories() {
+
+    const select =
+        document.getElementById(
+            "category"
+        );
+
+
+    const categories =
+        [
+            ...new Set(
+                allTools.map(
+                    tool =>
+                    tool.category
+                )
+            )
+        ].sort();
+
+
+    categories.forEach(
+        category => {
+
+            const option =
+                document.createElement(
+                    "option"
+                );
+
+            option.value =
+                category;
+
+            option.textContent =
+                category;
+
+            select.appendChild(
+                option
+            );
+
+        }
+    );
+
+}
+
+
+function renderTools() {
+
+    const search =
+        document
+        .getElementById(
+            "search"
+        )
+        .value
+        .toLowerCase()
+        .trim();
+
+
+    const category =
+        document
+        .getElementById(
+            "category"
+        )
+        .value;
+
+
+    const level =
+        document
+        .getElementById(
+            "level"
+        )
+        .value;
+
+
+    const filtered =
+        allTools.filter(
+            tool => {
+
+                const matchesSearch =
+
+                    !search ||
+
+                    tool.name
+                    .toLowerCase()
+                    .includes(search)
+
+                    ||
+
+                    (
+                        tool.description ||
+                        ""
+                    )
+                    .toLowerCase()
+                    .includes(search);
+
+
+                const matchesCategory =
+
+                    !category ||
+
+                    tool.category ===
+                    category;
+
+
+                const matchesLevel =
+
+                    !level ||
+
+                    tool.level ===
+                    level;
+
+
+                return (
+                    matchesSearch &&
+                    matchesCategory &&
+                    matchesLevel
+                );
+
+            }
+        );
+
+
+    const container =
+        document.getElementById(
+            "tools"
+        );
+
+
+    if (!filtered.length) {
+
+        container.innerHTML = `
+
+            <p class="no-results">
+
+                No tools found.
+
+            </p>
+
+        `;
+
+        return;
+
+    }
+
+
+    container.innerHTML =
+
+        filtered.map(
+            tool => `
+
+            <article
+            class="tool-card">
+
+
+                <span class="badge">
+
+                    ${escapeHTML(
+                        tool.category
+                    )}
+
+                </span>
+
+
+                <h2
+                class="tool-name">
+
+                    ${escapeHTML(
+                        tool.name
+                    )}
+
+                </h2>
+
+
+                <p
+                class="tool-description">
+
+                    ${escapeHTML(
+                        tool.description ||
+                        ""
+                    )}
+
+                </p>
+
+
+                <div
+                class="tool-footer">
+
+
+                    <span
+                    class="badge">
+
+                        ${escapeHTML(
+                            tool.level
+                        )}
+
+                    </span>
+
+
+                    <a
+                    href="
+                    kali-tool.html?id=${tool.id}
+                    "
+                    class="btn btn-outline">
+
+                        Open Lab →
+
+                    </a>
+
+
+                </div>
+
+
+            </article>
+
+            `
+        ).join("");
+
+}
+
+
+document
+.getElementById(
+    "search"
+)
+.addEventListener(
+    "input",
+    renderTools
+);
+
+
+document
+.getElementById(
+    "category"
+)
+.addEventListener(
+    "change",
+    renderTools
+);
+
+
+document
+.getElementById(
+    "level"
+)
+.addEventListener(
+    "change",
+    renderTools
+);
+
+
+function escapeHTML(text) {
+
+    return String(text)
+
+        .replaceAll(
+            "&",
+            "&amp;"
+        )
+
+        .replaceAll(
+            "<",
+            "&lt;"
+        )
+
+        .replaceAll(
+            ">",
+            "&gt;"
+        )
+
+        .replaceAll(
+            '"',
+            "&quot;"
+        )
+
+        .replaceAll(
+            "'",
+            "&#039;"
+        );
+
+}
+
+
+loadTools();
+
+</script>
+
+</body>
+
+</html>
+```

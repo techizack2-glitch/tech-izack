@@ -1,0 +1,1013 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0">
+
+<title>Quiz | Tech Izack Academy</title>
+
+<link rel="stylesheet" href="style.css">
+
+<style>
+
+.quiz-page {
+    padding:110px 20px 60px;
+}
+
+.quiz-container {
+    max-width:850px;
+    margin:auto;
+}
+
+.quiz-card {
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:14px;
+    padding:30px;
+}
+
+.quiz-header {
+    margin-bottom:25px;
+}
+
+.quiz-header h1 {
+    font-family:Orbitron;
+}
+
+.quiz-meta {
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-top:15px;
+}
+
+.badge {
+    padding:6px 11px;
+    border-radius:20px;
+    background:#07141d;
+    border:1px solid var(--border);
+    color:#9baab8;
+    font-size:12px;
+}
+
+.progress-track {
+    height:8px;
+    background:#02070c;
+    border-radius:20px;
+    overflow:hidden;
+    margin:20px 0 8px;
+}
+
+.progress-fill {
+    height:100%;
+    background:linear-gradient(
+        90deg,
+        #00d9ff,
+        #20d68a
+    );
+    transition:.3s;
+}
+
+.question-number {
+    color:var(--cyan);
+    font-size:13px;
+}
+
+.question {
+    font-size:21px;
+    line-height:1.5;
+    margin:10px 0 25px;
+}
+
+.option {
+    display:block;
+    padding:15px;
+    border:1px solid var(--border);
+    border-radius:9px;
+    margin:10px 0;
+    cursor:pointer;
+    transition:.2s;
+}
+
+.option:hover {
+    border-color:var(--cyan);
+    background:#07141d;
+}
+
+.option input {
+    margin-right:10px;
+}
+
+.quiz-actions {
+    display:flex;
+    justify-content:space-between;
+    gap:10px;
+    margin-top:25px;
+    padding-top:20px;
+    border-top:1px solid var(--border);
+}
+
+.result {
+    text-align:center;
+    padding:35px 20px;
+}
+
+.result-score {
+    font-family:Orbitron;
+    font-size:45px;
+    color:var(--cyan);
+}
+
+.success {
+    color:#20d68a;
+}
+
+.failure {
+    color:#ff6475;
+}
+
+@media(max-width:600px) {
+
+    .quiz-card {
+        padding:20px;
+    }
+
+    .question {
+        font-size:18px;
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+<header class="navbar">
+
+<div class="container nav-inner">
+
+<a
+href="index.html"
+class="logo">
+
+<span>&lt;</span>
+TECH IZACK
+<span>/&gt;</span>
+
+</a>
+
+<a
+href="student-dashboard.html"
+class="btn btn-outline">
+
+Dashboard
+
+</a>
+
+</div>
+
+</header>
+
+
+<main class="quiz-page">
+
+<div class="quiz-container">
+
+<div class="quiz-card">
+
+
+<div
+id="quizHeader"
+class="quiz-header">
+
+<span class="section-tag">
+// KNOWLEDGE CHECK</span>
+
+<h1 id="quizTitle">
+Loading quiz...
+</h1>
+
+<p
+id="quizDescription"
+style="color:#9baab8">
+</p>
+
+<div
+id="quizMeta"
+class="quiz-meta">
+</div>
+
+</div>
+
+
+<div
+id="quizArea">
+
+Loading questions...
+
+</div>
+
+
+</div>
+
+</div>
+
+</main>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
+<script>
+
+const SUPABASE_URL =
+"WEKA_PROJECT_URL_HAPA";
+
+const SUPABASE_KEY =
+"WEKA_PUBLISHABLE_KEY_HAPA";
+
+const supabaseClient =
+window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
+
+
+const params =
+new URLSearchParams(
+    location.search
+);
+
+const quizId =
+params.get("id");
+
+
+let user = null;
+let quiz = null;
+let questions = [];
+let currentQuestion = 0;
+let answers = {};
+
+
+/* =========================
+   INIT
+========================= */
+
+async function init() {
+
+    const {
+        data
+    } =
+    await supabaseClient.auth
+        .getUser();
+
+    user = data.user;
+
+    if (!user) {
+
+        location.href =
+            "login.html";
+
+        return;
+
+    }
+
+    if (!quizId) {
+
+        showError(
+            "Quiz ID is missing."
+        );
+
+        return;
+
+    }
+
+    await loadQuiz();
+
+    await loadQuestions();
+
+    if (questions.length) {
+
+        renderQuestion();
+
+    }
+
+}
+
+
+/* =========================
+   LOAD QUIZ
+========================= */
+
+async function loadQuiz() {
+
+    const {
+        data,
+        error
+    } =
+    await supabaseClient
+
+        .from("quizzes")
+
+        .select(`
+            id,
+            course_id,
+            title,
+            description,
+            pass_mark,
+            published
+        `)
+
+        .eq(
+            "id",
+            quizId
+        )
+
+        .eq(
+            "published",
+            true
+        )
+
+        .single();
+
+
+    if (
+        error ||
+        !data
+    ) {
+
+        showError(
+            "Quiz not found."
+        );
+
+        return;
+
+    }
+
+
+    quiz = data;
+
+
+    /*
+    Verify course access.
+    */
+
+    const {
+        data: access
+    } =
+    await supabaseClient
+
+        .from("course_access")
+
+        .select("id")
+
+        .eq(
+            "user_id",
+            user.id
+        )
+
+        .eq(
+            "course_id",
+            quiz.course_id
+        )
+
+        .eq(
+            "active",
+            true
+        )
+
+        .maybeSingle();
+
+
+    if (!access) {
+
+        location.href =
+            `payment.html?course=${quiz.course_id}`;
+
+        return;
+
+    }
+
+
+    document.getElementById(
+        "quizTitle"
+    ).textContent =
+        quiz.title;
+
+
+    document.getElementById(
+        "quizDescription"
+    ).textContent =
+        quiz.description || "";
+
+
+    document.getElementById(
+        "quizMeta"
+    ).innerHTML = `
+
+        <span class="badge">
+            Pass mark: ${quiz.pass_mark}%
+        </span>
+
+        <span class="badge">
+            Questions loading...
+        </span>
+
+    `;
+
+}
+
+
+/* =========================
+   QUESTIONS
+========================= */
+
+async function loadQuestions() {
+
+    const {
+        data,
+        error
+    } =
+    await supabaseClient
+
+        .from("quiz_questions")
+
+        .select(`
+            id,
+            quiz_id,
+            question,
+            option_a,
+            option_b,
+            option_c,
+            option_d,
+            position
+        `)
+
+        .eq(
+            "quiz_id",
+            quizId
+        )
+
+        .order(
+            "position",
+            {
+                ascending:true
+            }
+        );
+
+
+    if (error) {
+
+        console.error(error);
+
+        showError(
+            "Unable to load quiz questions."
+        );
+
+        return;
+
+    }
+
+
+    questions =
+        data || [];
+
+
+    document.getElementById(
+        "quizMeta"
+    ).innerHTML = `
+
+        <span class="badge">
+            Pass mark: ${quiz.pass_mark}%
+        </span>
+
+        <span class="badge">
+            ${questions.length} Questions
+        </span>
+
+    `;
+
+}
+
+
+/* =========================
+   RENDER QUESTION
+========================= */
+
+function renderQuestion() {
+
+    const q =
+        questions[
+            currentQuestion
+        ];
+
+
+    if (!q) return;
+
+
+    const percentage =
+        Math.round(
+            (
+                currentQuestion /
+                questions.length
+            ) * 100
+        );
+
+
+    document.getElementById(
+        "quizArea"
+    ).innerHTML = `
+
+        <div class="question-number">
+
+            QUESTION
+            ${currentQuestion + 1}
+            /
+            ${questions.length}
+
+        </div>
+
+
+        <div class="progress-track">
+
+            <div
+            class="progress-fill"
+            style="width:${percentage}%">
+
+            </div>
+
+        </div>
+
+
+        <div class="question">
+
+            ${escapeHTML(
+                q.question
+            )}
+
+        </div>
+
+
+        <div>
+
+            ${renderOption(
+                q,
+                "A",
+                q.option_a
+            )}
+
+            ${renderOption(
+                q,
+                "B",
+                q.option_b
+            )}
+
+            ${renderOption(
+                q,
+                "C",
+                q.option_c
+            )}
+
+            ${renderOption(
+                q,
+                "D",
+                q.option_d
+            )}
+
+        </div>
+
+
+        <div class="quiz-actions">
+
+            <button
+            class="btn btn-outline"
+            onclick="previousQuestion()"
+            ${currentQuestion === 0
+                ? "disabled"
+                : ""}>
+
+                ← Previous
+
+            </button>
+
+
+            <button
+            class="btn btn-primary"
+            onclick="nextQuestion()">
+
+                ${
+                    currentQuestion ===
+                    questions.length - 1
+                    ? "Submit Quiz"
+                    : "Next →"
+                }
+
+            </button>
+
+        </div>
+
+    `;
+
+
+    /*
+    Restore selected answer.
+    */
+
+    const selected =
+        answers[q.id];
+
+
+    if (selected) {
+
+        const radio =
+            document.querySelector(
+                `input[value="${selected}"]`
+            );
+
+        if (radio) {
+
+            radio.checked =
+                true;
+
+        }
+
+    }
+
+}
+
+
+/* =========================
+   OPTION
+========================= */
+
+function renderOption(
+    question,
+    letter,
+    text
+) {
+
+    return `
+
+        <label class="option">
+
+            <input
+            type="radio"
+            name="answer"
+            value="${letter}"
+            onchange="saveAnswer(
+                ${question.id},
+                '${letter}'
+            )">
+
+            <strong>
+                ${letter}.
+            </strong>
+
+            ${escapeHTML(
+                text || ""
+            )}
+
+        </label>
+
+    `;
+
+}
+
+
+/* =========================
+   SAVE ANSWER
+========================= */
+
+function saveAnswer(
+    questionId,
+    answer
+) {
+
+    answers[questionId] =
+        answer;
+
+}
+
+
+/* =========================
+   NEXT
+========================= */
+
+function nextQuestion() {
+
+    const q =
+        questions[
+            currentQuestion
+        ];
+
+
+    if (!answers[q.id]) {
+
+        alert(
+            "Please select an answer."
+        );
+
+        return;
+
+    }
+
+
+    if (
+        currentQuestion <
+        questions.length - 1
+    ) {
+
+        currentQuestion++;
+
+        renderQuestion();
+
+    } else {
+
+        submitQuiz();
+
+    }
+
+}
+
+
+/* =========================
+   PREVIOUS
+========================= */
+
+function previousQuestion() {
+
+    if (
+        currentQuestion > 0
+    ) {
+
+        currentQuestion--;
+
+        renderQuestion();
+
+    }
+
+}
+
+
+/* =========================
+   SUBMIT
+========================= */
+
+async function submitQuiz() {
+
+    const {
+        data,
+        error
+    } =
+    await supabaseClient.functions
+        .invoke(
+            "submit-quiz",
+            {
+                body: {
+
+                    quiz_id:
+                        Number(quizId),
+
+                    answers:
+                        answers
+
+                }
+
+            }
+        );
+
+
+    if (error) {
+
+        console.error(error);
+
+        showError(
+            "Unable to submit quiz."
+        );
+
+        return;
+
+    }
+
+
+    showResult(
+        data
+    );
+
+}
+
+
+/* =========================
+   RESULT
+========================= */
+
+function showResult(
+    result
+) {
+
+    const passed =
+        result.passed;
+
+
+    document.getElementById(
+        "quizArea"
+    ).innerHTML = `
+
+        <div class="result">
+
+            <div
+            style="font-size:55px">
+
+                ${
+                    passed
+                    ? "🎓"
+                    : "📚"
+                }
+
+            </div>
+
+
+            <h2
+            class="${
+                passed
+                ? "success"
+                : "failure"
+            }">
+
+                ${
+                    passed
+                    ? "Congratulations!"
+                    : "Keep Learning"
+                }
+
+            </h2>
+
+
+            <div class="result-score">
+
+                ${result.score}%
+
+            </div>
+
+
+            <p
+            style="color:#9baab8">
+
+                You answered
+                ${result.correct}
+                out of
+                ${result.total}
+                questions correctly.
+
+            </p>
+
+
+            <p>
+
+                ${
+                    passed
+                    ? `You passed the quiz
+                       with a pass mark of
+                       ${quiz.pass_mark}%.`
+                    : `You need
+                       ${quiz.pass_mark}%
+                       to pass. Review the
+                       lessons and try again.`
+                }
+
+            </p>
+
+
+            <div
+            style="
+            display:flex;
+            justify-content:center;
+            gap:10px;
+            flex-wrap:wrap;
+            margin-top:25px">
+
+                ${
+                    passed
+                    ? `
+                        <a
+                        href="student-dashboard.html"
+                        class="btn btn-primary">
+
+                            Continue →
+
+                        </a>
+                    `
+                    : `
+                        <button
+                        class="btn btn-primary"
+                        onclick="location.reload()">
+
+                            Try Again
+
+                        </button>
+                    `
+                }
+
+
+                <a
+                href="student-dashboard.html"
+                class="btn btn-outline">
+
+                    Dashboard
+
+                </a>
+
+            </div>
+
+        </div>
+
+    `;
+
+}
+
+
+/* =========================
+   ERROR
+========================= */
+
+function showError(
+    message
+) {
+
+    document.getElementById(
+        "quizArea"
+    ).innerHTML = `
+
+        <div class="result">
+
+            <div style="font-size:45px">
+                ⚠️
+            </div>
+
+            <h2 class="failure">
+                Something went wrong
+            </h2>
+
+            <p>
+                ${escapeHTML(message)}
+            </p>
+
+        </div>
+
+    `;
+
+}
+
+
+/* =========================
+   ESCAPE
+========================= */
+
+function escapeHTML(text) {
+
+    return String(text)
+
+        .replaceAll(
+            "&",
+            "&amp;"
+        )
+
+        .replaceAll(
+            "<",
+            "&lt;"
+        )
+
+        .replaceAll(
+            ">",
+            "&gt;"
+        )
+
+        .replaceAll(
+            '"',
+            "&quot;"
+        )
+
+        .replaceAll(
+            "'",
+            "&#039;"
+        );
+
+}
+
+
+init();
+
+</script>
+
+</body>
+</html>
+```

@@ -1,0 +1,466 @@
+```html
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>
+Social Engineering Lab | Tech Izack
+</title>
+
+<link
+rel="stylesheet"
+href="style.css">
+
+<style>
+
+.lab-page {
+
+    padding:110px 20px 70px;
+
+}
+
+
+.lab-container {
+
+    max-width:850px;
+
+    margin:auto;
+
+}
+
+
+.lab-header {
+
+    margin-bottom:30px;
+
+}
+
+
+.lab-card {
+
+    background:var(--card);
+
+    border:1px solid var(--border);
+
+    border-radius:12px;
+
+    padding:30px;
+
+    margin-bottom:20px;
+
+}
+
+
+.message {
+
+    background:#050b14;
+
+    border-left:4px solid #ffb020;
+
+    padding:20px;
+
+    border-radius:6px;
+
+    line-height:1.7;
+
+}
+
+
+.message-header {
+
+    color:#7e94a8;
+
+    font-size:14px;
+
+    margin-bottom:15px;
+
+}
+
+
+.choice {
+
+    display:block;
+
+    border:1px solid var(--border);
+
+    padding:16px;
+
+    margin-top:12px;
+
+    border-radius:7px;
+
+    cursor:pointer;
+
+}
+
+
+.choice:hover {
+
+    border-color:var(--cyan);
+
+}
+
+
+.feedback {
+
+    display:none;
+
+    margin-top:20px;
+
+    padding:20px;
+
+    border-radius:7px;
+
+}
+
+
+.correct {
+
+    display:block;
+
+    background:#061b14;
+
+    border:1px solid #20d68a;
+
+}
+
+
+.incorrect {
+
+    display:block;
+
+    background:#1b090d;
+
+    border:1px solid #ff6475;
+
+}
+
+
+.red-flags {
+
+    margin-top:15px;
+
+    color:#9fb2c5;
+
+}
+
+
+.next {
+
+    margin-top:20px;
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<header class="navbar">
+
+<div class="container nav-inner">
+
+<a
+href="index.html"
+class="logo">
+
+<span>&lt;</span>
+
+TECH IZACK
+
+<span>/&gt;</span>
+
+</a>
+
+
+<a
+href="student-dashboard.html"
+class="btn btn-outline">
+
+Dashboard
+
+</a>
+
+</div>
+
+</header>
+
+
+<main class="lab-page">
+
+
+<div class="lab-container">
+
+
+<section class="lab-header">
+
+<span class="section-tag">
+// PRACTICAL AWARENESS LAB
+</span>
+
+<h1>
+
+Spot the Suspicious Message
+
+</h1>
+
+<p style="color:var(--muted)">
+
+Analyze fictional messages and identify
+social-engineering warning signs.
+
+</p>
+
+</section>
+
+
+<section class="lab-card">
+
+
+<div class="message">
+
+<div class="message-header">
+
+From:
+support@example-training.test
+
+<br>
+
+Subject:
+Urgent Account Verification
+
+</div>
+
+
+Hello,
+
+We detected unusual activity on your
+account.
+
+Please verify your account immediately
+using the link below or access may be
+restricted.
+
+Remember: never share your password
+or verification code with anyone.
+
+</div>
+
+
+<h3>
+
+What should you do?
+
+</h3>
+
+
+<label class="choice">
+
+<input
+type="radio"
+name="answer"
+value="suspicious">
+
+Treat the message as suspicious and
+verify through an official channel.
+
+</label>
+
+
+<label class="choice">
+
+<input
+type="radio"
+name="answer"
+value="safe">
+
+Click immediately because the message
+says the account is at risk.
+
+</label>
+
+
+<label class="choice">
+
+<input
+type="radio"
+name="answer"
+value="ignore">
+
+Forward the message to everyone.
+
+</label>
+
+
+<button
+class="btn btn-primary next"
+onclick="checkAnswer()">
+
+Check Answer
+
+</button>
+
+
+<div
+id="feedback"
+class="feedback">
+
+</div>
+
+
+</section>
+
+
+<section
+class="lab-card">
+
+<h3>
+Why this matters
+</h3>
+
+<p style="color:var(--muted);line-height:1.8">
+
+A defensive security mindset means
+pausing before responding to unexpected
+requests.
+
+Verify unusual requests using a trusted
+channel rather than relying only on
+information contained in the suspicious
+message.
+
+</p>
+
+</section>
+
+
+</div>
+
+</main>
+
+
+<script>
+
+function checkAnswer() {
+
+    const selected =
+        document.querySelector(
+            'input[name="answer"]:checked'
+        );
+
+
+    const feedback =
+        document.getElementById(
+            "feedback"
+        );
+
+
+    if (!selected) {
+
+        alert(
+            "Choose an answer first."
+        );
+
+        return;
+
+    }
+
+
+    if (
+        selected.value ===
+        "suspicious"
+    ) {
+
+        feedback.className =
+            "feedback correct";
+
+
+        feedback.innerHTML = `
+
+            <strong>
+                ✓ Correct
+            </strong>
+
+            <p>
+                The safe response is to
+                pause and verify the request
+                through a trusted channel.
+            </p>
+
+            <div class="red-flags">
+
+                <strong>
+                    Warning signs:
+                </strong>
+
+                <ul>
+
+                    <li>
+                        Urgency
+                    </li>
+
+                    <li>
+                        Unexpected account warning
+                    </li>
+
+                    <li>
+                        Request to take action
+                    </li>
+
+                </ul>
+
+            </div>
+
+        `;
+
+    }
+
+    else {
+
+        feedback.className =
+            "feedback incorrect";
+
+
+        feedback.innerHTML = `
+
+            <strong>
+                ✗ Not quite
+            </strong>
+
+            <p>
+                Do not immediately act on
+                unexpected security messages.
+                Verify the request through
+                an official channel.
+            </p>
+
+        `;
+
+    }
+
+}
+
+</script>
+
+</body>
+
+</html>
+```
+<a
+href="course.html?slug=social-engineering-awareness"
+class="btn btn-primary">
+
+Start Course →
+
+</a>

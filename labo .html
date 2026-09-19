@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>Practical Lab | Tech Izack</title>
+
+<link rel="stylesheet"
+href="style.css">
+
+<style>
+
+.lab-page {
+    padding:120px 0 80px;
+}
+
+.lab-header {
+    max-width:900px;
+    margin:auto;
+}
+
+.lab-card {
+    max-width:900px;
+    margin:25px auto;
+    padding:30px;
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:10px;
+}
+
+.objectives {
+    margin-top:25px;
+    padding:20px;
+    background:#07101c;
+    border-left:3px solid var(--cyan);
+}
+
+.task {
+    margin-top:25px;
+    padding:25px;
+    border:1px solid var(--border);
+    border-radius:8px;
+}
+
+.task.completed {
+    border-color:#20d68a;
+}
+
+.answer-input {
+    width:100%;
+    padding:14px;
+    margin-top:15px;
+    background:#050b14;
+    border:1px solid var(--border);
+    color:white;
+    border-radius:6px;
+}
+
+.feedback {
+    margin-top:15px;
+}
+
+.success {
+    color:#20d68a;
+}
+
+.error {
+    color:#ff6475;
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+<header class="navbar">
+
+<div class="container nav-inner">
+
+<a href="dashboard.html"
+class="logo">
+
+<span>&lt;</span>
+TECH IZACK
+<span>/&gt;</span>
+
+</a>
+
+<a href="dashboard.html"
+class="btn btn-outline">
+
+Dashboard
+
+</a>
+
+</div>
+
+</header>
+
+
+<main class="lab-page">
+
+<div class="container">
+
+
+<div class="lab-header">
+
+<span class="section-tag">
+// PRACTICAL LAB
+</span>
+
+<h1
+id="labTitle"
+style="font-family:Orbitron;margin-top:15px">
+
+Loading...
+
+</h1>
+
+<p
+id="labDescription"
+style="color:var(--muted)">
+
+</p>
+
+</div>
+
+
+<div class="lab-card">
+
+<h3>
+🎯 Objectives
+</h3>
+
+<div
+id="objectives"
+class="objectives">
+
+Loading...
+
+</div>
+
+</div>
+
+
+<div
+id="tasks"
+class="lab-card">
+
+Loading tasks...
+
+</div>
+
+
+<div
+id="finalResult"
+class="lab-card"
+style="display:none">
+
+</div>
+
+</div>
+
+</main>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+
+const SUPABASE_URL =
+"WEKA_PROJECT_URL_HAPA";
+
+const SUPABASE_KEY =
+"WEKA_PUBLISHABLE_KEY_HAPA";
+
+
+const supabaseClient =
+window.supabase.createClient(
+SUPABASE_URL,
+SUPABASE_KEY
+);
+
+
+const params =
+new URLSearchParams(
+window.location.search
+);
+
+const labId =
+params.get("id");
+
+
+let currentUser = null;
+let lab = null;
+let tasks = [];
+let completedTasks = [];
+
+
+// ==========================
+// INIT
+// ==========================
+
+async function initialize() {
+
+const {
+data:{user}
+} =
+await supabaseClient
+.auth
+.getUser();
+
+
+if (!user) {
+
+location.href =
+"index.html";
+
+return;
+
+}
+
+
+currentUser = user;
+
+
+await loadLab();
+
+await loadTasks();
+
+await loadProgress();
+
+renderLab();
+
+}
+
+
+// ==========================
+// LOAD LAB
+// ==========================
+
+async function loadLab() {
+
+const {
+data,
+error
+} =
+await supabaseClient
+.from("labs")
+.select("*")
+.eq("id",labId)
+.single();
+
+
+if (error || !data) {
+
+document.getElementById(
+"labTitle"
+).textContent =
+"Lab not found.";
+
+return;
+
+}
+
+
+lab = data;
+
+}
+
+
+// ==========================
+// LOAD TASKS
+// ==========================
+
+async function loadTasks() {
+
+const {
+data,
+error
+} =
+await supabaseClient
+.from("lab_tasks")
+.select("*")
+.eq("lab_id",labId)
+.order("task_order");
+
+
+if (error) {
+
+console.error(error);
+
+return;
+
+}
+
+
+tasks =
+data || [];
+
+}
+
+
+// ==========================
+// LOAD PROGRESS
+// ==========================
+
+async function loadProgress() {
+
+const {
+data
+} =
+await supabaseClient
+.from("lab_progress")
+.select("*")
+.eq(
+"user_id",
+currentUser.id
+)
+.eq(
+"lab_id",
+labId
+);
+
+
+completedTasks =
+data || [];
+
+}
+
+
+// ==========================
+// RENDER LAB
+// ==========================
+
+function renderLab() {
+
+document.getElementById(
+"labTitle"
+).textContent =
+lab.title;
+
+
+document.getElementById(
+"labDescription"
+).textContent =
+lab.description || "";
+
+
+document.getElementById(
+"objectives"
+).textContent =
+lab.objectives || "";
+
+
+const container =
+document.getElementById(
+"tasks"
+);
+
+
+container.innerHTML = `
+
+<h2>
+💻 Tasks
+</h2>
+
+${
+tasks.map(
+(task,index)=>renderTask(
+task,index
+)
+).join("")
+}
+
+`;
+
+}
+
+
+// ==========================
+// TASK
+// ==========================
+
+function renderTask(
+task,
+index
+) {
+
+const completed =
+completedTasks.some(
+item =>
+item.task_id === task.id
+);
+
+
+return `
+
+<div
+class="task
+${completed ? "completed" : ""}"
+id="task-${task.id}">
+
+<span class="section-tag">
+
+TASK ${index + 1}
+
+</span>
+
+<h3 style="margin-top:10px">
+
+${escapeHTML(task.title)}
+
+</h3>
+
+<p style="
+color:var(--muted);
+line-height:1.7;
+">
+
+${escapeHTML(
+task.instructions
+)}
+
+</p>
+
+
+${
+task.expected_answer
+?
+`
+
+<input
+id="answer-${task.id}"
+class="answer-input"
+placeholder="Enter your answer">
+
+<button
+class="btn btn-primary"
+style="margin-top:12px"
+onclick="submitTask(${task.id})">
+
+Check Answer
+
+</button>
+
+`
+:
+`
+
+<button
+class="btn btn-primary"
+onclick="completeTask(${task.id})">
+
+Mark Task Complete
+
+</button>
+
+`
+}
+
+
+<div
+id="feedback-${task.id}"
+class="feedback">
+
+</div>
+
+</div>
+
+`;
+
+}
+
+
+// ==========================
+// CHECK TASK
+// ==========================
+
+async function submitTask(
+taskId
+) {
+
+const task =
+tasks.find(
+item =>
+item.id === taskId
+);
+
+
+if (!task) return;
+
+
+const input =
+document.getElementById(
+`answer-${taskId}`
+);
+
+
+const answer =
+input.value
+.trim()
+.toLowerCase();
+
+
+const expected =
+String(
+task.expected_answer
+)
+.trim()
+.toLowerCase();
+
+
+const feedback =
+document.getElementById(
+`feedback-${taskId}`
+);
+
+
+if (answer === expected) {
+
+feedback.className =
+"feedback success";
+
+feedback.textContent =
+"✓ Correct!";
+
+
+await completeTask(
+taskId
+);
+
+} else {
+
+feedback.className =
+"feedback error";
+
+feedback.textContent =
+"✗ Not quite. Review the instructions and try again.";
+
+}
+
+}
+
+
+// ==========================
+// COMPLETE TASK
+// ==========================
+
+async function completeTask(
+taskId
+) {
+
+const task =
+tasks.find(
+item =>
+item.id === taskId
+);
+
+
+if (!task) return;
+
+
+const existing =
+completedTasks.find(
+item =>
+item.task_id === taskId
+);
+
+
+if (existing) {
+
+return;
+
+}
+
+
+const {
+error
+} =
+await supabaseClient
+.from("lab_progress")
+.insert({
+
+user_id:
+currentUser.id,
+
+lab_id:
+labId,
+
+task_id:
+taskId,
+
+completed:true,
+
+points_earned:
+task.points || 0,
+
+completed_at:
+new Date().toISOString()
+
+});
+
+
+if (error) {
+
+console.error(error);
+
+return;
+
+}
+
+
+await loadProgress();
+
+renderLab();
+
+checkLabCompletion();
+
+}
+
+
+// ==========================
+// LAB COMPLETION
+// ==========================
+
+function checkLabCompletion() {
+
+if (!tasks.length) return;
+
+
+const completed =
+tasks.every(
+task =>
+completedTasks.some(
+item =>
+item.task_id === task.id
+)
+);
+
+
+if (!completed) return;
+
+
+const result =
+document.getElementById(
+"finalResult"
+);
+
+
+result.style.display =
+"block";
+
+
+const points =
+tasks.reduce(
+(total,task) => {
+
+const record =
+completedTasks.find(
+item =>
+item.task_id === task.id
+);
+
+return total +
+Number(
+record?.points_earned || 0
+);
+
+},
+0
+);
+
+
+result.innerHTML = `
+
+<h2 class="success">
+🎉 Lab Completed!
+</h2>
+
+<p>
+You completed all practical tasks.
+</p>
+
+<p>
+Points earned:
+<strong>
+${points}
+</strong>
+</p>
+
+<a
+href="course-player.html?id=${lab.course_id}"
+class="btn btn-primary">
+
+Return to Course
+
+</a>
+
+`;
+
+}
+
+
+// ==========================
+// ESCAPE
+// ==========================
+
+function escapeHTML(text) {
+
+return String(text)
+.replaceAll("&","&amp;")
+.replaceAll("<","&lt;")
+.replaceAll(">","&gt;")
+.replaceAll('"',"&quot;")
+.replaceAll("'","&#039;");
+
+}
+
+
+initialize();
+
+</script>
+
+</body>
+
+</html>

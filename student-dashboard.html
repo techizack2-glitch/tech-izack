@@ -1,0 +1,972 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>Student Dashboard | Tech Izack</title>
+
+<link rel="stylesheet" href="style.css">
+
+<style>
+
+.dashboard-page {
+    padding:120px 0 80px;
+}
+
+.welcome {
+    margin-bottom:35px;
+}
+
+.welcome h1 {
+    font-family:Orbitron;
+    margin-top:10px;
+}
+
+.stats {
+    display:grid;
+    grid-template-columns:
+    repeat(4,1fr);
+
+    gap:18px;
+
+    margin-bottom:30px;
+}
+
+.stat {
+    padding:22px;
+
+    background:var(--card);
+
+    border:1px solid var(--border);
+
+    border-radius:10px;
+}
+
+.stat-number {
+    font-family:Orbitron;
+
+    font-size:30px;
+
+    color:var(--cyan);
+
+    margin-top:10px;
+}
+
+.section {
+    margin-top:25px;
+}
+
+.course-grid {
+    display:grid;
+
+    grid-template-columns:
+    repeat(3,1fr);
+
+    gap:20px;
+
+    margin-top:20px;
+}
+
+.course-card {
+
+    background:var(--card);
+
+    border:1px solid var(--border);
+
+    border-radius:10px;
+
+    overflow:hidden;
+
+}
+
+.course-image {
+
+    height:150px;
+
+    background:
+    linear-gradient(
+        135deg,
+        #06111e,
+        #0b2438
+    );
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    font-size:45px;
+
+}
+
+.course-body {
+
+    padding:22px;
+
+}
+
+.course-body h3 {
+
+    margin-bottom:10px;
+
+}
+
+.progress {
+
+    height:8px;
+
+    background:#07101c;
+
+    border-radius:20px;
+
+    overflow:hidden;
+
+    margin:15px 0 8px;
+
+}
+
+.progress-bar {
+
+    height:100%;
+
+    background:
+    linear-gradient(
+        90deg,
+        #00d9ff,
+        #168cff
+    );
+
+}
+
+.course-meta {
+
+    color:var(--muted);
+
+    font-size:14px;
+
+}
+
+.empty {
+
+    padding:30px;
+
+    background:var(--card);
+
+    border:1px solid var(--border);
+
+    border-radius:10px;
+
+    color:var(--muted);
+
+}
+
+@media(max-width:900px) {
+
+    .stats {
+
+        grid-template-columns:
+        1fr 1fr;
+
+    }
+
+    .course-grid {
+
+        grid-template-columns:
+        1fr 1fr;
+
+    }
+
+}
+
+@media(max-width:600px) {
+
+    .stats {
+
+        grid-template-columns:1fr;
+
+    }
+
+    .course-grid {
+
+        grid-template-columns:1fr;
+
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<header class="navbar">
+
+<div class="container nav-inner">
+
+<a
+href="student-dashboard.html"
+class="logo">
+
+<span>&lt;</span>
+TECH IZACK
+<span>/&gt;</span>
+
+</a>
+
+
+<nav>
+
+<a href="academy.html">
+Academy
+</a>
+
+<a href="profile.html">
+Profile
+</a>
+
+<button
+class="btn btn-outline"
+onclick="logout()">
+
+Logout
+
+</button>
+
+</nav>
+
+</div>
+
+</header>
+
+
+<main class="dashboard-page">
+
+<div class="container">
+
+
+<!-- WELCOME -->
+
+<div class="welcome">
+
+<span class="section-tag">
+// STUDENT PORTAL
+</span>
+
+<h1>
+Welcome back,
+<span
+id="studentName"
+style="color:var(--cyan)">
+Student
+</span>
+</h1>
+
+<p style="color:var(--muted)">
+Continue your cybersecurity learning journey.
+</p>
+
+</div>
+
+
+<!-- STATS -->
+
+<section class="stats">
+
+
+<div class="stat">
+
+<span class="section-tag">
+COURSES
+</span>
+
+<div
+id="courseCount"
+class="stat-number">
+
+0
+
+</div>
+
+</div>
+
+
+<div class="stat">
+
+<span class="section-tag">
+LESSONS
+</span>
+
+<div
+id="lessonCount"
+class="stat-number">
+
+0
+
+</div>
+
+</div>
+
+
+<div class="stat">
+
+<span class="section-tag">
+LABS
+</span>
+
+<div
+id="labCount"
+class="stat-number">
+
+0
+
+</div>
+
+</div>
+
+
+<div class="stat">
+
+<span class="section-tag">
+POINTS
+</span>
+
+<div
+id="pointsCount"
+class="stat-number">
+
+0
+
+</div>
+
+</div>
+
+
+</section>
+
+
+<!-- MY COURSES -->
+
+<section class="section">
+
+<span class="section-tag">
+// MY COURSES
+</span>
+
+<h2
+style="
+font-family:Orbitron;
+margin-top:10px;
+">
+
+Continue Learning
+
+</h2>
+
+
+<div
+id="courses"
+class="course-grid">
+
+<div class="empty">
+
+Loading courses...
+
+</div>
+
+</div>
+
+</section>
+
+
+</div>
+
+</main>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
+<script>
+
+
+const SUPABASE_URL =
+"WEKA_PROJECT_URL_HAPA";
+
+
+const SUPABASE_KEY =
+"WEKA_PUBLISHABLE_KEY_HAPA";
+
+
+const supabaseClient =
+window.supabase.createClient(
+
+    SUPABASE_URL,
+
+    SUPABASE_KEY
+
+);
+
+
+let currentUser;
+
+
+// ==========================
+// INIT
+// ==========================
+
+async function initialize() {
+
+    const {
+        data:{user}
+    } =
+    await supabaseClient
+        .auth
+        .getUser();
+
+
+    if (!user) {
+
+        location.href =
+        "index.html";
+
+        return;
+
+    }
+
+
+    currentUser = user;
+
+
+    await loadProfile();
+
+    await loadDashboard();
+
+}
+
+
+// ==========================
+// PROFILE
+// ==========================
+
+async function loadProfile() {
+
+    const {
+        data
+    } =
+    await supabaseClient
+        .from("profiles")
+        .select(
+            "full_name,email"
+        )
+        .eq(
+            "id",
+            currentUser.id
+        )
+        .single();
+
+
+    if (data?.full_name) {
+
+        document.getElementById(
+            "studentName"
+        ).textContent =
+        data.full_name;
+
+    }
+
+}
+
+
+// ==========================
+// DASHBOARD
+// ==========================
+
+async function loadDashboard() {
+
+    const {
+        data:enrollments
+    } =
+    await supabaseClient
+        .from(
+            "course_enrollments"
+        )
+        .select(
+            "course_id"
+        )
+        .eq(
+            "user_id",
+            currentUser.id
+        );
+
+
+    if (!enrollments?.length) {
+
+        document.getElementById(
+            "courses"
+        ).innerHTML = `
+
+            <div class="empty">
+
+                You haven't enrolled
+                in any course yet.
+
+                <br><br>
+
+                <a
+                href="academy.html"
+                class="btn btn-primary">
+
+                    Explore Academy
+
+                </a>
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    document.getElementById(
+        "courseCount"
+    ).textContent =
+    enrollments.length;
+
+
+    const courseIds =
+    enrollments.map(
+        item => item.course_id
+    );
+
+
+    const {
+        data:courses
+    } =
+    await supabaseClient
+        .from("courses")
+        .select("*")
+        .in(
+            "id",
+            courseIds
+        );
+
+
+    const {
+        data:lessons
+    } =
+    await supabaseClient
+        .from("lessons")
+        .select(
+            "id,course_id"
+        )
+        .in(
+            "course_id",
+            courseIds
+        );
+
+
+    const {
+        data:progress
+    } =
+    await supabaseClient
+        .from("lesson_progress")
+        .select(
+            "lesson_id,completed"
+        )
+        .eq(
+            "user_id",
+            currentUser.id
+        );
+
+
+    const completedLessons =
+    progress?.filter(
+        item =>
+        item.completed
+    ) || [];
+
+
+    document.getElementById(
+        "lessonCount"
+    ).textContent =
+    completedLessons.length;
+
+
+    await loadLabs(courseIds);
+
+    await loadPoints();
+
+    renderCourses(
+        courses || [],
+        lessons || [],
+        progress || []
+    );
+
+}
+
+
+// ==========================
+// COURSES
+// ==========================
+
+function renderCourses(
+    courses,
+    lessons,
+    progress
+) {
+
+    const container =
+    document.getElementById(
+        "courses"
+    );
+
+
+    container.innerHTML =
+    courses.map(course => {
+
+        const courseLessons =
+        lessons.filter(
+            lesson =>
+            lesson.course_id ===
+            course.id
+        );
+
+
+        const completed =
+        courseLessons.filter(
+            lesson =>
+            progress.some(
+                item =>
+                item.lesson_id ===
+                lesson.id &&
+                item.completed
+            )
+        ).length;
+
+
+        const percentage =
+        courseLessons.length
+        ? Math.round(
+            (
+                completed /
+                courseLessons.length
+            ) * 100
+        )
+        : 0;
+
+
+        return `
+
+        <div class="course-card">
+
+
+            <div class="course-image">
+
+                🐉
+
+            </div>
+
+
+            <div class="course-body">
+
+
+                <span
+                class="section-tag">
+
+                    ${escapeHTML(
+                        course.category ||
+                        "CYBERSECURITY"
+                    )}
+
+                </span>
+
+
+                <h3>
+
+                    ${escapeHTML(
+                        course.title
+                    )}
+
+                </h3>
+
+
+                <p
+                class="course-meta">
+
+                    ${escapeHTML(
+                        course.level ||
+                        "Beginner"
+                    )}
+
+                    ·
+
+                    ${completed}/
+                    ${courseLessons.length}
+                    lessons
+
+                </p>
+
+
+                <div class="progress">
+
+                    <div
+                    class="progress-bar"
+                    style="
+                    width:${percentage}%
+                    ">
+
+                    </div>
+
+                </div>
+
+
+                <p
+                class="course-meta">
+
+                    ${percentage}%
+                    complete
+
+                </p>
+
+
+                <br>
+
+
+                <a
+                href="course.html?id=${course.id}"
+                class="btn btn-primary">
+
+                    ${
+                        percentage > 0
+                        ? "Continue Learning"
+                        : "Start Course"
+                    }
+
+                </a>
+
+
+            </div>
+
+        </div>
+
+        `;
+
+    }).join("");
+
+}
+
+
+// ==========================
+// LAB POINTS
+// ==========================
+
+async function loadLabs(
+    courseIds
+) {
+
+    const {
+        data:labs
+    } =
+    await supabaseClient
+        .from("labs")
+        .select("id")
+        .in(
+            "course_id",
+            courseIds
+        );
+
+
+    if (!labs?.length) {
+
+        document.getElementById(
+            "labCount"
+        ).textContent = 0;
+
+        return;
+
+    }
+
+
+    const labIds =
+    labs.map(
+        lab => lab.id
+    );
+
+
+    const {
+        data:completedLabs
+    } =
+    await supabaseClient
+        .from("lab_progress")
+        .select(
+            "lab_id,points_earned,completed"
+        )
+        .eq(
+            "user_id",
+            currentUser.id
+        )
+        .in(
+            "lab_id",
+            labIds
+        );
+
+
+    const completed =
+    completedLabs?.filter(
+        item =>
+        item.completed
+    ) || [];
+
+
+    document.getElementById(
+        "labCount"
+    ).textContent =
+    completed.length;
+
+}
+
+
+// ==========================
+// POINTS
+// ==========================
+
+async function loadPoints() {
+
+    const {
+        data
+    } =
+    await supabaseClient
+        .from("lab_progress")
+        .select(
+            "points_earned"
+        )
+        .eq(
+            "user_id",
+            currentUser.id
+        );
+
+
+    const points =
+    data?.reduce(
+        (sum,item) =>
+        sum +
+        Number(
+            item.points_earned || 0
+        ),
+        0
+    ) || 0;
+
+
+    document.getElementById(
+        "pointsCount"
+    ).textContent =
+    points;
+
+}
+
+
+// ==========================
+// LOGOUT
+// ==========================
+
+async function logout() {
+
+    await supabaseClient
+        .auth
+        .signOut();
+
+    location.href =
+    "index.html";
+
+}
+
+
+// ==========================
+
+function escapeHTML(text) {
+
+    return String(text)
+
+        .replaceAll(
+            "&",
+            "&amp;"
+        )
+
+        .replaceAll(
+            "<",
+            "&lt;"
+        )
+
+        .replaceAll(
+            ">",
+            "&gt;"
+        )
+
+        .replaceAll(
+            '"',
+            "&quot;"
+        )
+
+        .replaceAll(
+            "'",
+            "&#039;"
+        );
+
+}
+
+
+initialize();
+
+</script>
+
+</body>
+
+</html>
+```
+<section class="panel">
+
+    <span class="section-tag">
+        // YOUR PROGRESS
+    </span>
+
+    <h2>
+        Kali Linux Course
+    </h2>
+
+    <div class="progress-bar">
+
+        <div
+        id="courseProgress"
+        class="progress-fill">
+        </div>
+
+    </div>
+
+    <p
+    id="progressText"
+    style="color:var(--muted);">
+
+        Loading progress...
+
+    </p>
+
+</section>
+<a
+href="course.html?slug=kali-linux-fundamentals"
+class="btn btn-primary">
+
+Continue Course →
+
+</a>

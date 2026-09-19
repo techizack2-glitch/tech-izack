@@ -1,0 +1,1085 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0">
+
+<title>Quiz | Tech Izack Academy</title>
+
+<link
+    rel="stylesheet"
+    href="style.css">
+
+
+<style>
+
+.quiz-page {
+    padding:110px 20px 70px;
+}
+
+.quiz-container {
+    max-width:850px;
+    margin:auto;
+}
+
+.quiz-header,
+.question-card,
+.result-card {
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:25px;
+    margin-bottom:20px;
+}
+
+.quiz-title {
+    font-family:Orbitron;
+    font-size:30px;
+    margin:10px 0;
+}
+
+.quiz-description {
+    color:var(--muted);
+    line-height:1.7;
+}
+
+.quiz-top {
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:20px;
+}
+
+.timer {
+    color:var(--cyan);
+    font-family:Orbitron;
+    font-size:20px;
+}
+
+.question-number {
+    color:var(--cyan);
+    font-size:13px;
+}
+
+.question-text {
+    font-size:19px;
+    line-height:1.6;
+    margin:10px 0 20px;
+}
+
+.options {
+    display:grid;
+    gap:12px;
+}
+
+.option-label {
+    display:block;
+    padding:15px;
+    border:1px solid var(--border);
+    border-radius:8px;
+    cursor:pointer;
+    transition:.2s;
+}
+
+.option-label:hover {
+    border-color:var(--cyan);
+    background:rgba(0,217,255,.04);
+}
+
+.option-label input {
+    margin-right:10px;
+}
+
+.option-label.selected {
+    border-color:var(--cyan);
+    background:rgba(0,217,255,.07);
+}
+
+.progress-track {
+    height:6px;
+    background:#02070c;
+    border-radius:10px;
+    overflow:hidden;
+    margin-top:20px;
+}
+
+.progress-fill {
+    height:100%;
+    background:linear-gradient(
+        90deg,
+        #00d9ff,
+        #20d68a
+    );
+}
+
+.result-card {
+    text-align:center;
+    display:none;
+}
+
+.score {
+    font-family:Orbitron;
+    font-size:50px;
+    color:var(--cyan);
+}
+
+.pass {
+    color:#20d68a;
+}
+
+.fail {
+    color:#ff6475;
+}
+
+.quiz-actions {
+    margin-top:25px;
+    display:flex;
+    justify-content:flex-end;
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<header class="navbar">
+
+<div class="container nav-inner">
+
+<a
+href="student-dashboard.html"
+class="logo">
+
+<span>&lt;</span>
+TECH IZACK
+<span>/&gt;</span>
+
+</a>
+
+<a
+href="student-dashboard.html"
+class="btn btn-outline">
+
+← Dashboard
+
+</a>
+
+</div>
+
+</header>
+
+
+<main class="quiz-page">
+
+<div class="quiz-container">
+
+
+<section class="quiz-header">
+
+<div class="quiz-top">
+
+<div>
+
+<span class="section-tag">
+// QUIZ</span>
+
+<h1
+id="quizTitle"
+class="quiz-title">
+
+Loading...
+
+</h1>
+
+</div>
+
+
+<div
+id="timer"
+class="timer">
+
+--:--
+
+</div>
+
+</div>
+
+
+<p
+id="quizDescription"
+class="quiz-description">
+
+</p>
+
+
+<div class="progress-track">
+
+<div
+id="progressFill"
+class="progress-fill"
+style="width:0%">
+
+</div>
+
+</div>
+
+</section>
+
+
+<form
+id="quizForm"
+onsubmit="submitQuiz(event)">
+
+<div id="questions">
+
+Loading...
+
+</div>
+
+
+<div class="quiz-actions">
+
+<button
+id="submitButton"
+type="submit"
+class="btn btn-primary">
+
+Submit Quiz →
+
+</button>
+
+</div>
+
+</form>
+
+
+<section
+id="resultCard"
+class="result-card">
+
+<span class="section-tag">
+// RESULT</span>
+
+<h2 id="resultTitle">
+Quiz Result
+</h2>
+
+<div
+id="score"
+class="score">
+
+0%
+
+</div>
+
+<p id="resultText">
+</p>
+
+
+<a
+href="student-dashboard.html"
+class="btn btn-primary">
+
+← Continue Learning
+
+</a>
+
+</section>
+
+
+</div>
+
+</main>
+
+
+<script
+src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+</script>
+
+
+<script>
+
+const SUPABASE_URL =
+"WEKA_PROJECT_URL_HAPA";
+
+const SUPABASE_KEY =
+"WEKA_PUBLISHABLE_KEY_HAPA";
+
+
+const supabaseClient =
+window.supabase.createClient(
+
+    SUPABASE_URL,
+
+    SUPABASE_KEY
+
+);
+
+
+let user = null;
+
+let quiz = null;
+
+let questions = [];
+
+let timerSeconds = 0;
+
+let timerInterval = null;
+
+let submitted = false;
+
+
+/*
+================================
+INIT
+================================
+*/
+
+async function init() {
+
+    const {
+        data
+    } =
+    await supabaseClient.auth
+        .getUser();
+
+
+    user =
+        data.user;
+
+
+    if (!user) {
+
+        location.href =
+            "login.html";
+
+        return;
+
+    }
+
+
+    const quizId =
+        new URLSearchParams(
+            location.search
+        ).get("id");
+
+
+    if (!quizId) {
+
+        showError(
+            "Quiz ID missing."
+        );
+
+        return;
+
+    }
+
+
+    await loadQuiz(
+        quizId
+    );
+
+}
+
+
+/*
+================================
+LOAD QUIZ
+================================
+*/
+
+async function loadQuiz(
+    quizId
+) {
+
+    /*
+    IMPORTANT:
+
+    We select questions WITHOUT
+    correct_option.
+    */
+
+    const {
+        data,
+        error
+    } =
+    await supabaseClient
+
+        .from("quizzes")
+
+        .select(`
+            id,
+            title,
+            description,
+            pass_percentage,
+            questions:quiz_questions(
+                id,
+                question,
+                option_a,
+                option_b,
+                option_c,
+                option_d,
+                question_order
+            )
+        `)
+
+        .eq(
+            "id",
+            quizId
+        )
+
+        .eq(
+            "published",
+            true
+        )
+
+        .single();
+
+
+    if (
+        error ||
+        !data
+    ) {
+
+        showError(
+            "Quiz not found."
+        );
+
+        return;
+
+    }
+
+
+    quiz =
+        data;
+
+
+    questions =
+        (quiz.questions || [])
+            .sort(
+                (
+                    a,
+                    b
+                ) =>
+                    a.question_order -
+                    b.question_order
+            );
+
+
+    document.getElementById(
+        "quizTitle"
+    ).textContent =
+        quiz.title;
+
+
+    document.getElementById(
+        "quizDescription"
+    ).textContent =
+        quiz.description || "";
+
+
+    renderQuestions();
+
+    startTimer();
+
+}
+
+
+/*
+================================
+RENDER QUESTIONS
+================================
+*/
+
+function renderQuestions() {
+
+    const container =
+        document.getElementById(
+            "questions"
+        );
+
+
+    if (!questions.length) {
+
+        container.innerHTML = `
+            <div class="question-card">
+                <p>No questions available.</p>
+            </div>
+        `;
+
+        return;
+
+    }
+
+
+    container.innerHTML =
+        questions.map(
+            (q, index) => `
+
+            <section
+            class="question-card">
+
+                <div class="question-number">
+
+                    QUESTION
+                    ${index + 1}
+                    /
+                    ${questions.length}
+
+                </div>
+
+
+                <div class="question-text">
+
+                    ${escapeHTML(
+                        q.question
+                    )}
+
+                </div>
+
+
+                <div class="options">
+
+                    ${optionHTML(
+                        q.id,
+                        "A",
+                        q.option_a
+                    )}
+
+                    ${optionHTML(
+                        q.id,
+                        "B",
+                        q.option_b
+                    )}
+
+                    ${optionHTML(
+                        q.id,
+                        "C",
+                        q.option_c
+                    )}
+
+                    ${optionHTML(
+                        q.id,
+                        "D",
+                        q.option_d
+                    )}
+
+                </div>
+
+            </section>
+
+            `
+        ).join("");
+
+
+    document.querySelectorAll(
+        ".option-input"
+    ).forEach(
+        input => {
+
+            input.addEventListener(
+                "change",
+                updateProgress
+            );
+
+        }
+    );
+
+}
+
+
+function optionHTML(
+    questionId,
+    letter,
+    text
+) {
+
+    return `
+
+        <label class="option-label">
+
+            <input
+                class="option-input"
+                type="radio"
+                name="question_${questionId}"
+                value="${letter}">
+
+            <strong>
+                ${letter}.
+            </strong>
+
+            ${escapeHTML(text)}
+
+        </label>
+
+    `;
+
+}
+
+
+/*
+================================
+PROGRESS
+================================
+*/
+
+function updateProgress() {
+
+    const answered =
+        questions.filter(
+            q =>
+                document.querySelector(
+                    `input[name="question_${q.id}"]:checked`
+                )
+        ).length;
+
+
+    const percentage =
+        questions.length
+        ? (answered / questions.length) * 100
+        : 0;
+
+
+    document.getElementById(
+        "progressFill"
+    ).style.width =
+        percentage + "%";
+
+}
+
+
+/*
+================================
+TIMER
+================================
+*/
+
+function startTimer() {
+
+    /*
+    20 minutes.
+    Change if needed.
+    */
+
+    timerSeconds =
+        questions.length * 60;
+
+
+    timerInterval =
+        setInterval(
+            updateTimer,
+            1000
+        );
+
+
+    updateTimer();
+
+}
+
+
+function updateTimer() {
+
+    const minutes =
+        Math.floor(
+            timerSeconds / 60
+        );
+
+
+    const seconds =
+        timerSeconds % 60;
+
+
+    document.getElementById(
+        "timer"
+    ).textContent =
+
+        String(minutes)
+            .padStart(2, "0")
+
+        +
+
+        ":"
+
+        +
+
+        String(seconds)
+            .padStart(2, "0");
+
+
+    if (
+        timerSeconds <= 0
+    ) {
+
+        clearInterval(
+            timerInterval
+        );
+
+
+        if (!submitted) {
+
+            submitQuiz(
+                null,
+                true
+            );
+
+        }
+
+        return;
+
+    }
+
+
+    timerSeconds--;
+
+}
+
+
+/*
+================================
+SUBMIT
+================================
+*/
+
+async function submitQuiz(
+    event,
+    automatic = false
+) {
+
+    if (event) {
+
+        event.preventDefault();
+
+    }
+
+
+    if (submitted) {
+
+        return;
+
+    }
+
+
+    const answers = [];
+
+
+    for (const question of questions) {
+
+        const selected =
+            document.querySelector(
+                `input[name="question_${question.id}"]:checked`
+            );
+
+
+        answers.push({
+
+            question_id:
+                question.id,
+
+            answer:
+                selected
+                ? selected.value
+                : ""
+
+        });
+
+    }
+
+
+    const answeredCount =
+        answers.filter(
+            item =>
+                item.answer
+        ).length;
+
+
+    if (
+        !automatic &&
+        answeredCount <
+        questions.length
+    ) {
+
+        const proceed =
+            confirm(
+                `You answered ${answeredCount} of ${questions.length} questions. Submit anyway?`
+            );
+
+
+        if (!proceed) {
+
+            return;
+
+        }
+
+    }
+
+
+    submitted = true;
+
+
+    clearInterval(
+        timerInterval
+    );
+
+
+    const button =
+        document.getElementById(
+            "submitButton"
+        );
+
+
+    button.disabled =
+        true;
+
+    button.textContent =
+        "Submitting...";
+
+
+    try {
+
+        const {
+            data: sessionData
+        } =
+        await supabaseClient.auth
+            .getSession();
+
+
+        const session =
+            sessionData.session;
+
+
+        if (!session) {
+
+            location.href =
+                "login.html";
+
+            return;
+
+        }
+
+
+        const response =
+            await fetch(
+
+                `${SUPABASE_URL}/functions/v1/submit-quiz`,
+
+                {
+
+                    method:"POST",
+
+                    headers: {
+
+                        "Content-Type":
+                            "application/json",
+
+                        "Authorization":
+                            `Bearer ${session.access_token}`
+
+                    },
+
+                    body:JSON.stringify({
+
+                        quiz_id:
+                            quiz.id,
+
+                        answers
+
+                    })
+
+                }
+
+            );
+
+
+        const result =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                result.error ||
+                "Quiz submission failed."
+            );
+
+        }
+
+
+        showResult(
+            result
+        );
+
+
+    } catch (error) {
+
+        submitted = false;
+
+        button.disabled =
+            false;
+
+        button.textContent =
+            "Submit Quiz →";
+
+        alert(
+            error.message
+        );
+
+    }
+
+}
+
+
+/*
+================================
+RESULT
+================================
+*/
+
+function showResult(
+    result
+) {
+
+    document.getElementById(
+        "quizForm"
+    ).style.display =
+        "none";
+
+
+    const card =
+        document.getElementById(
+            "resultCard"
+        );
+
+
+    card.style.display =
+        "block";
+
+
+    document.getElementById(
+        "score"
+    ).textContent =
+        `${result.percentage}%`;
+
+
+    const title =
+        document.getElementById(
+            "resultTitle"
+        );
+
+
+    const text =
+        document.getElementById(
+            "resultText"
+        );
+
+
+    if (result.passed) {
+
+        title.textContent =
+            "🎉 Quiz Passed!";
+
+        title.className =
+            "pass";
+
+        text.textContent =
+            `You scored ${result.score} out of ${result.total}. Pass mark: ${result.pass_percentage}%.`;
+
+    } else {
+
+        title.textContent =
+            "Keep Practicing";
+
+        title.className =
+            "fail";
+
+        text.textContent =
+            `You scored ${result.score} out of ${result.total}. Pass mark: ${result.pass_percentage}%.`;
+
+    }
+
+}
+
+
+/*
+================================
+ERROR
+================================
+*/
+
+function showError(
+    message
+) {
+
+    document.getElementById(
+        "questions"
+    ).innerHTML = `
+
+        <div class="question-card">
+
+            <h2>
+                ${escapeHTML(message)}
+            </h2>
+
+        </div>
+
+    `;
+
+}
+
+
+/*
+================================
+ESCAPE
+================================
+*/
+
+function escapeHTML(
+    text
+) {
+
+    return String(text)
+
+        .replaceAll(
+            "&",
+            "&amp;"
+        )
+
+        .replaceAll(
+            "<",
+            "&lt;"
+        )
+
+        .replaceAll(
+            ">",
+            "&gt;"
+        )
+
+        .replaceAll(
+            '"',
+            "&quot;"
+        )
+
+        .replaceAll(
+            "'",
+            "&#039;"
+        );
+
+}
+
+
+init();
+
+</script>
+
+</body>
+
+</html>
+```

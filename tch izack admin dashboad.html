@@ -1,0 +1,1287 @@
+```html
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>
+Admin | Tech Izack Academy
+</title>
+
+<link
+rel="stylesheet"
+href="style.css">
+
+<style>
+
+.admin-page {
+
+    padding:110px 20px 70px;
+
+}
+
+
+.admin-container {
+
+    max-width:1100px;
+
+    margin:auto;
+
+}
+
+
+.admin-header {
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    gap:20px;
+
+    margin-bottom:30px;
+
+}
+
+
+.admin-grid {
+
+    display:grid;
+
+    grid-template-columns:
+    repeat(4,1fr);
+
+    gap:15px;
+
+    margin-bottom:30px;
+
+}
+
+
+.stat {
+
+    background:var(--card);
+
+    border:1px solid var(--border);
+
+    border-radius:10px;
+
+    padding:22px;
+
+}
+
+
+.stat-number {
+
+    display:block;
+
+    font-family:Orbitron;
+
+    font-size:30px;
+
+    color:var(--cyan);
+
+    margin-top:8px;
+
+}
+
+
+.panel {
+
+    background:var(--card);
+
+    border:1px solid var(--border);
+
+    border-radius:10px;
+
+    padding:25px;
+
+    margin-bottom:20px;
+
+}
+
+
+.form-grid {
+
+    display:grid;
+
+    grid-template-columns:1fr 1fr;
+
+    gap:15px;
+
+}
+
+
+.form-group {
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:7px;
+
+}
+
+
+.form-group.full {
+
+    grid-column:1/-1;
+
+}
+
+
+.form-group label {
+
+    color:#9fb2c5;
+
+    font-size:13px;
+
+}
+
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+
+    width:100%;
+
+    padding:13px;
+
+    background:#050b14;
+
+    color:white;
+
+    border:1px solid var(--border);
+
+    border-radius:6px;
+
+}
+
+
+.form-group textarea {
+
+    min-height:110px;
+
+    resize:vertical;
+
+}
+
+
+.tools-table {
+
+    width:100%;
+
+    border-collapse:collapse;
+
+}
+
+
+.tools-table th,
+.tools-table td {
+
+    text-align:left;
+
+    padding:13px;
+
+    border-bottom:
+    1px solid var(--border);
+
+}
+
+
+.tools-table th {
+
+    color:var(--cyan);
+
+}
+
+
+.action-btn {
+
+    cursor:pointer;
+
+    padding:7px 10px;
+
+    background:transparent;
+
+    border:1px solid var(--border);
+
+    color:white;
+
+    border-radius:5px;
+
+}
+
+
+.action-btn:hover {
+
+    border-color:var(--cyan);
+
+}
+
+
+.danger:hover {
+
+    border-color:#ff6475;
+
+    color:#ff6475;
+
+}
+
+
+.message {
+
+    display:none;
+
+    margin-top:15px;
+
+    padding:15px;
+
+    border-radius:6px;
+
+}
+
+
+.message.success {
+
+    display:block;
+
+    background:#061a14;
+
+    border:1px solid #20d68a;
+
+    color:#20d68a;
+
+}
+
+
+.message.error {
+
+    display:block;
+
+    background:#1a080c;
+
+    border:1px solid #ff6475;
+
+    color:#ff6475;
+
+}
+
+
+@media(max-width:800px) {
+
+    .admin-grid {
+
+        grid-template-columns:
+        1fr 1fr;
+
+    }
+
+    .form-grid {
+
+        grid-template-columns:1fr;
+
+    }
+
+    .form-group.full {
+
+        grid-column:auto;
+
+    }
+
+}
+
+
+@media(max-width:600px) {
+
+    .admin-header {
+
+        flex-direction:column;
+
+        align-items:flex-start;
+
+    }
+
+    .admin-grid {
+
+        grid-template-columns:1fr;
+
+    }
+
+    .tools-table {
+
+        font-size:12px;
+
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<header class="navbar">
+
+<div class="container nav-inner">
+
+
+<a
+href="index.html"
+class="logo">
+
+<span>&lt;</span>
+
+TECH IZACK
+
+<span>/&gt;</span>
+
+</a>
+
+
+<button
+class="btn btn-outline"
+onclick="logout()">
+
+Logout
+
+</button>
+
+
+</div>
+
+</header>
+
+
+<main class="admin-page">
+
+
+<div class="admin-container">
+
+
+<div class="admin-header">
+
+
+<div>
+
+<span class="section-tag">
+// ADMIN CONTROL PANEL
+</span>
+
+<h1>
+Academy Dashboard
+</h1>
+
+</div>
+
+
+</div>
+
+
+<!-- STATS -->
+
+
+<section class="admin-grid">
+
+
+<div class="stat">
+
+Tools
+
+<span
+id="toolCount"
+class="stat-number">
+
+0
+
+</span>
+
+</div>
+
+
+<div class="stat">
+
+Courses
+
+<span
+id="courseCount"
+class="stat-number">
+
+0
+
+</span>
+
+</div>
+
+
+<div class="stat">
+
+Lessons
+
+<span
+id="lessonCount"
+class="stat-number">
+
+0
+
+</span>
+
+</div>
+
+
+<div class="stat">
+
+Labs
+
+<span
+id="labCount"
+class="stat-number">
+
+0
+
+</span>
+
+</div>
+
+
+</section>
+
+
+<!-- ADD TOOL -->
+
+
+<section class="panel">
+
+
+<span class="section-tag">
+// ADD KALI TOOL
+</span>
+
+
+<h2>
+Create Tool
+</h2>
+
+
+<form
+id="toolForm">
+
+
+<div class="form-grid">
+
+
+<div class="form-group">
+
+<label>
+Tool Name
+</label>
+
+<input
+id="name"
+required
+placeholder="Example: Nmap">
+
+</div>
+
+
+<div class="form-group">
+
+<label>
+Category
+</label>
+
+<input
+id="category"
+required
+placeholder="Network Security">
+
+</div>
+
+
+<div class="form-group">
+
+<label>
+Level
+</label>
+
+<select id="level">
+
+<option>
+Beginner
+</option>
+
+<option>
+Intermediate
+</option>
+
+<option>
+Advanced
+</option>
+
+</select>
+
+</div>
+
+
+<div class="form-group">
+
+<label>
+Published
+</label>
+
+<select id="published">
+
+<option value="true">
+Yes
+</option>
+
+<option value="false">
+No
+</option>
+
+</select>
+
+</div>
+
+
+<div class="form-group full">
+
+<label>
+Description
+</label>
+
+<textarea
+id="description"
+required>
+
+</textarea>
+
+</div>
+
+
+<div class="form-group full">
+
+<label>
+Purpose
+</label>
+
+<textarea
+id="purpose">
+
+</textarea>
+
+</div>
+
+
+<div class="form-group full">
+
+<label>
+Authorized Lab Instructions
+</label>
+
+<textarea
+id="instructions">
+
+</textarea>
+
+</div>
+
+
+<div class="form-group full">
+
+<label>
+Safe Lab Command
+</label>
+
+<textarea
+id="command"
+placeholder="Example: nmap -sV 192.168.56.101">
+
+</textarea>
+
+</div>
+
+
+</div>
+
+
+<button
+class="btn btn-primary"
+type="submit">
+
++ Add Tool
+
+</button>
+
+
+<div
+id="message"
+class="message">
+
+</div>
+
+
+</form>
+
+
+</section>
+
+
+<!-- TOOLS -->
+
+
+<section class="panel">
+
+
+<div style="
+display:flex;
+justify-content:space-between;
+align-items:center;
+gap:15px;
+margin-bottom:20px;
+">
+
+
+<div>
+
+<span class="section-tag">
+// TOOLS
+
+</span>
+
+<h2>
+Kali Linux Tools
+</h2>
+
+</div>
+
+
+<input
+id="toolSearch"
+placeholder="Search..."
+style="
+padding:10px;
+background:#050b14;
+color:white;
+border:1px solid var(--border);
+border-radius:6px;
+">
+
+
+</div>
+
+
+<div style="
+overflow-x:auto;
+">
+
+
+<table class="tools-table">
+
+
+<thead>
+
+<tr>
+
+<th>
+Name
+</th>
+
+<th>
+Category
+</th>
+
+<th>
+Level
+</th>
+
+<th>
+Published
+</th>
+
+<th>
+Action
+</th>
+
+</tr>
+
+</thead>
+
+
+<tbody
+id="toolsTable">
+
+</tbody>
+
+
+</table>
+
+
+</div>
+
+
+</section>
+
+
+</div>
+
+</main>
+
+
+<script
+src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+</script>
+
+
+<script>
+
+
+const SUPABASE_URL =
+"WEKA_PROJECT_URL_HAPA";
+
+
+const SUPABASE_KEY =
+"WEKA_PUBLISHABLE_KEY_HAPA";
+
+
+const supabaseClient =
+window.supabase.createClient(
+
+    SUPABASE_URL,
+
+    SUPABASE_KEY
+
+);
+
+
+let tools = [];
+
+
+/*
+=================================
+CHECK ADMIN
+=================================
+*/
+
+async function checkAdmin() {
+
+    const {
+        data: {
+            user
+        }
+    } =
+    await supabaseClient.auth
+        .getUser();
+
+
+    if (!user) {
+
+        location.href =
+            "login.html";
+
+        return;
+
+    }
+
+
+    /*
+      IMPORTANT:
+
+      Do not trust frontend alone
+      for admin authorization.
+
+      Your database RLS policies
+      must also enforce admin access.
+    */
+
+
+    loadDashboard();
+
+}
+
+
+/*
+=================================
+LOAD DASHBOARD
+=================================
+*/
+
+async function loadDashboard() {
+
+    await Promise.all([
+
+        loadStats(),
+
+        loadTools()
+
+    ]);
+
+}
+
+
+/*
+=================================
+STATS
+=================================
+*/
+
+async function loadStats() {
+
+
+    const tables = [
+
+        ["kali_tools","toolCount"],
+
+        ["courses","courseCount"],
+
+        ["lessons","lessonCount"],
+
+        ["labs","labCount"]
+
+    ];
+
+
+    for (
+        const [
+            table,
+            element
+        ]
+        of tables
+    ) {
+
+
+        const {
+            count
+        } =
+        await supabaseClient
+
+            .from(table)
+
+            .select(
+                "*",
+                {
+                    count:"exact",
+                    head:true
+                }
+            );
+
+
+        document.getElementById(
+            element
+        ).textContent =
+
+            count || 0;
+
+    }
+
+}
+
+
+/*
+=================================
+LOAD TOOLS
+=================================
+*/
+
+async function loadTools() {
+
+
+    const {
+        data,
+        error
+    } =
+    await supabaseClient
+
+        .from("kali_tools")
+
+        .select("*")
+
+        .order(
+            "id",
+            {
+                ascending:false
+            }
+        );
+
+
+    if (error) {
+
+        showMessage(
+            error.message,
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    tools =
+        data || [];
+
+
+    renderTools();
+
+}
+
+
+/*
+=================================
+RENDER
+=================================
+*/
+
+function renderTools() {
+
+
+    const search =
+        document
+        .getElementById(
+            "toolSearch"
+        )
+        .value
+        .toLowerCase();
+
+
+    const filtered =
+        tools.filter(
+            tool =>
+
+            tool.name
+            .toLowerCase()
+            .includes(search)
+
+            ||
+
+            tool.category
+            .toLowerCase()
+            .includes(search)
+        );
+
+
+    document
+    .getElementById(
+        "toolsTable"
+    )
+    .innerHTML =
+
+    filtered.map(
+        tool => `
+
+        <tr>
+
+            <td>
+                ${escapeHTML(
+                    tool.name
+                )}
+            </td>
+
+            <td>
+                ${escapeHTML(
+                    tool.category
+                )}
+            </td>
+
+            <td>
+                ${escapeHTML(
+                    tool.level
+                )}
+            </td>
+
+            <td>
+
+                ${
+                    tool.published
+                    ? "✓"
+                    : "No"
+                }
+
+            </td>
+
+            <td>
+
+                <button
+                class="action-btn danger"
+                onclick="
+                deleteTool(${tool.id})
+                ">
+
+                    Delete
+
+                </button>
+
+            </td>
+
+        </tr>
+
+        `
+    ).join("");
+
+}
+
+
+/*
+=================================
+ADD TOOL
+=================================
+*/
+
+document
+.getElementById(
+    "toolForm"
+)
+.addEventListener(
+    "submit",
+    async event => {
+
+        event.preventDefault();
+
+
+        const tool = {
+
+            name:
+                value("name"),
+
+            category:
+                value("category"),
+
+            level:
+                value("level"),
+
+            description:
+                value("description"),
+
+            purpose:
+                value("purpose"),
+
+            lab_instructions:
+                value("instructions"),
+
+            safe_command:
+                value("command"),
+
+            published:
+                document
+                .getElementById(
+                    "published"
+                )
+                .value === "true"
+
+        };
+
+
+        const {
+            error
+        } =
+        await supabaseClient
+
+            .from("kali_tools")
+
+            .insert(tool);
+
+
+        if (error) {
+
+            showMessage(
+                error.message,
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        showMessage(
+            "Tool added successfully.",
+            "success"
+        );
+
+
+        event.target.reset();
+
+
+        await loadTools();
+
+        await loadStats();
+
+    }
+);
+
+
+/*
+=================================
+DELETE TOOL
+=================================
+*/
+
+async function deleteTool(id) {
+
+
+    const confirmed =
+        confirm(
+            "Delete this tool?"
+        );
+
+
+    if (!confirmed) {
+
+        return;
+
+    }
+
+
+    const {
+        error
+    } =
+    await supabaseClient
+
+        .from("kali_tools")
+
+        .delete()
+
+        .eq(
+            "id",
+            id
+        );
+
+
+    if (error) {
+
+        showMessage(
+            error.message,
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    showMessage(
+        "Tool deleted.",
+        "success"
+    );
+
+
+    await loadTools();
+
+    await loadStats();
+
+}
+
+
+/*
+=================================
+SEARCH
+=================================
+*/
+
+document
+.getElementById(
+    "toolSearch"
+)
+.addEventListener(
+    "input",
+    renderTools
+);
+
+
+/*
+=================================
+HELPERS
+=================================
+*/
+
+function value(id) {
+
+    return document
+        .getElementById(id)
+        .value
+        .trim();
+
+}
+
+
+function showMessage(
+    text,
+    type
+) {
+
+    const element =
+        document.getElementById(
+            "message"
+        );
+
+
+    element.textContent =
+        text;
+
+
+    element.className =
+        `message ${type}`;
+
+}
+
+
+function escapeHTML(text) {
+
+    return String(text)
+
+        .replaceAll(
+            "&",
+            "&amp;"
+        )
+
+        .replaceAll(
+            "<",
+            "&lt;"
+        )
+
+        .replaceAll(
+            ">",
+            "&gt;"
+        )
+
+        .replaceAll(
+            '"',
+            "&quot;"
+        )
+
+        .replaceAll(
+            "'",
+            "&#039;"
+        );
+
+}
+
+
+async function logout() {
+
+    await supabaseClient.auth.signOut();
+
+    location.href =
+        "login.html";
+
+}
+
+
+checkAdmin();
+
+</script>
+
+</body>
+
+</html>
+```

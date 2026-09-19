@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>Quiz Builder | Tech Izack</title>
+
+<link rel="stylesheet"
+href="style.css">
+
+<style>
+
+.builder {
+padding:130px 0 80px;
+}
+
+.builder-card {
+max-width:900px;
+margin:auto;
+background:var(--card);
+border:1px solid var(--border);
+padding:35px;
+border-radius:10px;
+}
+
+.form-group {
+margin-bottom:18px;
+}
+
+.form-group label {
+display:block;
+margin-bottom:7px;
+color:var(--muted);
+}
+
+.form-group input,
+.form-group select {
+width:100%;
+padding:13px;
+background:#050b14;
+border:1px solid var(--border);
+color:white;
+border-radius:6px;
+}
+
+.question {
+padding:25px;
+margin-top:25px;
+border:1px solid var(--border);
+border-radius:8px;
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+<header class="navbar">
+
+<div class="container nav-inner">
+
+<a href="admin.html"
+class="logo">
+
+<span>&lt;</span>
+TECH IZACK
+<span>/&gt;</span>
+
+</a>
+
+<a href="admin.html"
+class="btn btn-outline">
+
+Admin
+
+</a>
+
+</div>
+
+</header>
+
+
+<main class="builder">
+
+<div class="container">
+
+<div class="builder-card">
+
+<span class="section-tag">
+// QUIZ BUILDER
+</span>
+
+<h1 style="font-family:Orbitron;margin:15px 0">
+Create Quiz
+</h1>
+
+
+<div class="form-group">
+
+<label>
+Course
+</label>
+
+<select id="courseId">
+
+<option>
+Loading...
+</option>
+
+</select>
+
+</div>
+
+
+<div class="form-group">
+
+<label>
+Lesson
+</label>
+
+<select id="lessonId">
+
+<option>
+Select course first
+</option>
+
+</select>
+
+</div>
+
+
+<div class="form-group">
+
+<label>
+Quiz Title
+</label>
+
+<input
+id="quizTitle"
+placeholder="Linux Fundamentals Quiz">
+
+</div>
+
+
+<div class="form-group">
+
+<label>
+Passing Score %
+</label>
+
+<input
+id="passingScore"
+type="number"
+value="70"
+min="1"
+max="100">
+
+</div>
+
+
+<hr style="
+border-color:var(--border);
+margin:30px 0;
+">
+
+
+<div id="questions"></div>
+
+
+<button
+class="btn btn-outline"
+onclick="addQuestion()">
+
++ Add Question
+
+</button>
+
+
+<br><br>
+
+
+<button
+class="btn btn-primary"
+onclick="createQuiz()">
+
+Create Quiz
+
+</button>
+
+
+<p id="message"
+style="margin-top:20px">
+</p>
+
+</div>
+
+</div>
+
+</main>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+
+const SUPABASE_URL =
+"WEKA_PROJECT_URL_HAPA";
+
+const SUPABASE_KEY =
+"WEKA_PUBLISHABLE_KEY_HAPA";
+
+const supabaseClient =
+window.supabase.createClient(
+SUPABASE_URL,
+SUPABASE_KEY
+);
+
+
+// ==========================
+// ADMIN CHECK
+// ==========================
+
+async function checkAdmin() {
+
+const {
+data:{user}
+} =
+await supabaseClient
+.auth
+.getUser();
+
+
+if (!user) {
+
+location.href =
+"index.html";
+
+return false;
+
+}
+
+
+const {
+data:profile
+} =
+await supabaseClient
+.from("profiles")
+.select("role")
+.eq("id",user.id)
+.single();
+
+
+if (
+!profile ||
+profile.role !== "admin"
+) {
+
+alert("Admin access required.");
+
+location.href =
+"dashboard.html";
+
+return false;
+
+}
+
+return true;
+
+}
+
+
+// ==========================
+// COURSES
+// ==========================
+
+async function loadCourses() {
+
+const {
+data
+} =
+await supabaseClient
+.from("courses")
+.select("id,title")
+.order("id");
+
+
+const select =
+document.getElementById(
+"courseId"
+);
+
+
+select.innerHTML =
+`<option value="">
+Select course
+</option>`;
+
+
+data.forEach(course=>{
+
+select.innerHTML += `
+
+<option value="${course.id}">
+${escapeHTML(course.title)}
+</option>
+
+`;
+
+});
+
+}
+
+
+// ==========================
+// LESSONS
+// ==========================
+
+document
+.getElementById("courseId")
+.addEventListener(
+"change",
+loadLessons
+);
+
+
+async function loadLessons() {
+
+const courseId =
+document
+.getElementById("courseId")
+.value;
+
+
+const select =
+document.getElementById("lessonId");
+
+
+select.innerHTML =
+"<option>Loading...</option>";
+
+
+const {
+data
+} =
+await supabaseClient
+.from("lessons")
+.select("id,title")
+.eq(
+"course_id",
+courseId
+)
+.order(
+"lesson_order"
+);
+
+
+select.innerHTML =
+`<option value="">
+Select lesson
+</option>`;
+
+
+data.forEach(lesson=>{
+
+select.innerHTML += `
+
+<option value="${lesson.id}">
+${escapeHTML(lesson.title)}
+</option>
+
+`;
+
+});
+
+}
+
+
+// ==========================
+// QUESTIONS
+// ==========================
+
+let questionCount = 0;
+
+
+function addQuestion() {
+
+questionCount++;
+
+
+const area =
+document.getElementById(
+"questions"
+);
+
+
+area.insertAdjacentHTML(
+"beforeend",
+`
+
+<div
+class="question"
+data-question="${questionCount}">
+
+<h3>
+Question ${questionCount}
+</h3>
+
+<div class="form-group">
+
+<label>
+Question
+</label>
+
+<input
+class="question-text"
+placeholder="Enter question">
+
+</div>
+
+
+<div class="form-group">
+
+<label>
+Option A
+</label>
+
+<input class="option-a">
+
+</div>
+
+
+<div class="form-group">
+
+<label>
+Option B
+</label>
+
+<input class="option-b">
+
+</div>
+
+
+<div class="form-group">
+
+<label>
+Option C
+</label>
+
+<input class="option-c">
+
+</div>
+
+
+<div class="form-group">
+
+<label>
+Option D
+</label>
+
+<input class="option-d">
+
+</div>
+
+
+<div class="form-group">
+
+<label>
+Correct Answer
+</label>
+
+<select class="correct-answer">
+
+<option value="A">A</option>
+<option value="B">B</option>
+<option value="C">C</option>
+<option value="D">D</option>
+
+</select>
+
+</div>
+
+</div>
+
+`);
+
+}
+
+
+// ==========================
+// CREATE QUIZ
+// ==========================
+
+async function createQuiz() {
+
+const courseId =
+document
+.getElementById("courseId")
+.value;
+
+
+const lessonId =
+document
+.getElementById("lessonId")
+.value;
+
+
+const title =
+document
+.getElementById("quizTitle")
+.value
+.trim();
+
+
+const passingScore =
+Number(
+document
+.getElementById("passingScore")
+.value
+);
+
+
+const message =
+document.getElementById(
+"message"
+);
+
+
+if (!courseId ||
+!lessonId ||
+!title) {
+
+message.style.color =
+"#ff6475";
+
+message.textContent =
+"Please complete all quiz fields.";
+
+return;
+
+}
+
+
+const {
+data:quiz,
+error
+} =
+await supabaseClient
+.from("quizzes")
+.insert({
+
+course_id:
+Number(courseId),
+
+lesson_id:
+Number(lessonId),
+
+title,
+
+passing_score:
+passingScore
+
+})
+.select()
+.single();
+
+
+if (error) {
+
+message.style.color =
+"#ff6475";
+
+message.textContent =
+error.message;
+
+return;
+
+}
+
+
+const questionCards =
+document
+.querySelectorAll(
+".question"
+);
+
+
+for (
+const card of questionCards
+) {
+
+const question =
+card.querySelector(
+".question-text"
+).value.trim();
+
+
+const optionA =
+card.querySelector(
+".option-a"
+).value.trim();
+
+
+const optionB =
+card.querySelector(
+".option-b"
+).value.trim();
+
+
+const optionC =
+card.querySelector(
+".option-c"
+).value.trim();
+
+
+const optionD =
+card.querySelector(
+".option-d"
+).value.trim();
+
+
+const correct =
+card.querySelector(
+".correct-answer"
+).value;
+
+
+await supabaseClient
+.from("quiz_questions")
+.insert({
+
+quiz_id:
+quiz.id,
+
+question,
+
+option_a:
+optionA,
+
+option_b:
+optionB,
+
+option_c:
+optionC,
+
+option_d:
+optionD,
+
+correct_answer:
+correct,
+
+points:1
+
+});
+
+}
+
+
+message.style.color =
+"#20d68a";
+
+message.textContent =
+"Quiz created successfully!";
+
+}
+
+
+// ==========================
+
+function escapeHTML(text) {
+
+return String(text)
+.replaceAll("&","&amp;")
+.replaceAll("<","&lt;")
+.replaceAll(">","&gt;")
+.replaceAll('"',"&quot;")
+.replaceAll("'","&#039;");
+
+}
+
+
+// ==========================
+
+(async()=>{
+
+const allowed =
+await checkAdmin();
+
+if (allowed) {
+
+await loadCourses();
+
+addQuestion();
+
+}
+
+})();
+
+</script>
+
+</body>
+
+</html>

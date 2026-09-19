@@ -1,0 +1,437 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0">
+
+<title>
+Certificate | Tech Izack Academy
+</title>
+
+<link
+    rel="stylesheet"
+    href="style.css">
+
+
+<style>
+
+.certificate-page {
+
+    padding:120px 20px 80px;
+
+}
+
+
+.certificate {
+
+    max-width:900px;
+
+    margin:auto;
+
+    padding:60px 40px;
+
+    text-align:center;
+
+    background:
+
+        radial-gradient(
+            circle at top right,
+            rgba(0,217,255,.12),
+            transparent 35%
+        ),
+
+        #071019;
+
+    border:
+
+        1px solid
+        rgba(0,217,255,.35);
+
+    box-shadow:
+
+        0 0 50px
+        rgba(0,217,255,.08);
+
+}
+
+
+.certificate-logo {
+
+    font-family:Orbitron;
+
+    font-size:18px;
+
+    color:#00d9ff;
+
+    letter-spacing:3px;
+
+}
+
+
+.certificate h1 {
+
+    font-family:Orbitron;
+
+    font-size:42px;
+
+    margin:35px 0 10px;
+
+}
+
+
+.certificate-label {
+
+    color:#8493a2;
+
+}
+
+
+.student-name {
+
+    font-size:30px;
+
+    color:#00d9ff;
+
+    margin:25px 0;
+
+}
+
+
+.course-name {
+
+    font-size:22px;
+
+}
+
+
+.certificate-number {
+
+    margin-top:35px;
+
+    font-family:monospace;
+
+    color:#9baab8;
+
+}
+
+
+.certificate-date {
+
+    color:#9baab8;
+
+    margin-top:10px;
+
+}
+
+
+.verify-link {
+
+    margin-top:30px;
+
+}
+
+
+@media(max-width:600px) {
+
+    .certificate {
+
+        padding:35px 20px;
+
+    }
+
+    .certificate h1 {
+
+        font-size:30px;
+
+    }
+
+    .student-name {
+
+        font-size:24px;
+
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<header class="navbar">
+
+<div class="container nav-inner">
+
+<a
+href="student-dashboard.html"
+class="logo">
+
+<span>&lt;</span>
+TECH IZACK
+<span>/&gt;</span>
+
+</a>
+
+
+<a
+href="student-dashboard.html"
+class="btn btn-outline">
+
+← Dashboard
+
+</a>
+
+</div>
+
+</header>
+
+
+<main class="certificate-page">
+
+
+<div class="certificate">
+
+
+<div class="certificate-logo">
+
+TECH IZACK ACADEMY
+
+</div>
+
+
+<p class="certificate-label">
+
+CERTIFICATE OF COMPLETION
+
+</p>
+
+
+<h1>
+Certificate
+</h1>
+
+
+<p>
+This certificate is proudly presented to
+</p>
+
+
+<div
+id="studentName"
+class="student-name">
+
+Loading...
+
+</div>
+
+
+<p>
+for successfully completing
+</p>
+
+
+<div
+id="courseName"
+class="course-name">
+
+Loading...
+
+</div>
+
+
+<div
+id="certificateNumber"
+class="certificate-number">
+
+Certificate ID: Loading...
+
+</div>
+
+
+<div
+id="certificateDate"
+class="certificate-date">
+
+Issued: Loading...
+
+</div>
+
+
+<div class="verify-link">
+
+<a
+id="verifyLink"
+class="btn btn-primary">
+
+Verify Certificate →
+
+</a>
+
+</div>
+
+
+</div>
+
+</main>
+
+
+<script
+src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+</script>
+
+
+<script>
+
+const SUPABASE_URL =
+"WEKA_PROJECT_URL_HAPA";
+
+const SUPABASE_KEY =
+"WEKA_PUBLISHABLE_KEY_HAPA";
+
+
+const supabaseClient =
+window.supabase.createClient(
+
+    SUPABASE_URL,
+
+    SUPABASE_KEY
+
+);
+
+
+async function init() {
+
+    const {
+        data: {
+            user
+        }
+    } =
+    await supabaseClient.auth
+        .getUser();
+
+
+    if (!user) {
+
+        location.href =
+            "login.html";
+
+        return;
+
+    }
+
+
+    const certificateId =
+        new URLSearchParams(
+            location.search
+        ).get("id");
+
+
+    if (!certificateId) {
+
+        alert(
+            "Certificate ID missing."
+        );
+
+        return;
+
+    }
+
+
+    const {
+        data,
+        error
+    } =
+    await supabaseClient
+
+        .from("certificates")
+
+        .select(`
+            id,
+            certificate_number,
+            issued_at,
+            courses(
+                title
+            )
+        `)
+
+        .eq(
+            "id",
+            certificateId
+        )
+
+        .single();
+
+
+    if (
+        error ||
+        !data
+    ) {
+
+        alert(
+            "Certificate not found."
+        );
+
+        return;
+
+    }
+
+
+    document.getElementById(
+        "studentName"
+    ).textContent =
+        user.user_metadata?.full_name
+        ||
+        user.email
+        ||
+        "Student";
+
+
+    document.getElementById(
+        "courseName"
+    ).textContent =
+        data.courses?.title
+        ||
+        "Cybersecurity Course";
+
+
+    document.getElementById(
+        "certificateNumber"
+    ).textContent =
+        `Certificate ID: ${data.certificate_number}`;
+
+
+    document.getElementById(
+        "certificateDate"
+    ).textContent =
+        `Issued: ${new Date(
+            data.issued_at
+        ).toLocaleDateString()}`;
+
+
+    document.getElementById(
+        "verifyLink"
+    ).href =
+        `verify.html?number=${encodeURIComponent(
+            data.certificate_number
+        )}`;
+
+}
+
+
+init();
+
+</script>
+
+</body>
+
+</html>
+```

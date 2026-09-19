@@ -1,0 +1,1067 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>Course Player | Tech Izack</title>
+
+<link rel="stylesheet"
+href="style.css">
+
+<style>
+
+.player-page {
+    padding:110px 0 60px;
+}
+
+.player-layout {
+    display:grid;
+    grid-template-columns:280px 1fr;
+    gap:25px;
+}
+
+.sidebar {
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:20px;
+    height:fit-content;
+    position:sticky;
+    top:90px;
+}
+
+.sidebar h3 {
+    font-family:Orbitron;
+    margin-bottom:20px;
+}
+
+.progress-box {
+    margin-bottom:25px;
+}
+
+.progress-bar {
+    height:8px;
+    background:#111d2d;
+    border-radius:10px;
+    overflow:hidden;
+    margin-top:10px;
+}
+
+.progress-fill {
+    height:100%;
+    width:0%;
+    background:var(--cyan);
+    transition:.3s;
+}
+
+.lesson-list {
+    display:flex;
+    flex-direction:column;
+    gap:7px;
+}
+
+.lesson-item {
+    padding:12px;
+    border:1px solid transparent;
+    border-radius:6px;
+    cursor:pointer;
+    color:var(--muted);
+}
+
+.lesson-item:hover {
+    border-color:var(--border);
+    color:white;
+}
+
+.lesson-item.active {
+    background:rgba(0,174,255,.08);
+    border-color:rgba(0,174,255,.25);
+    color:var(--cyan);
+}
+
+.lesson-item.completed {
+    color:#20d68a;
+}
+
+.lesson-content {
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:35px;
+}
+
+.lesson-content h1 {
+    font-family:Orbitron;
+    margin:10px 0 25px;
+}
+
+.lesson-text {
+    color:#c2cede;
+    line-height:1.9;
+    white-space:pre-line;
+}
+
+.video-container {
+    margin:25px 0;
+}
+
+.video-container iframe {
+    width:100%;
+    min-height:400px;
+    border:0;
+    border-radius:8px;
+}
+
+.action-row {
+    display:flex;
+    justify-content:space-between;
+    gap:15px;
+    margin-top:35px;
+    padding-top:25px;
+    border-top:1px solid var(--border);
+}
+
+.lab-box,
+.quiz-box {
+    margin-top:30px;
+    padding:25px;
+    border:1px solid var(--border);
+    border-radius:8px;
+    background:#07101c;
+}
+
+@media(max-width:800px) {
+
+    .player-layout {
+        grid-template-columns:1fr;
+    }
+
+    .sidebar {
+        position:static;
+    }
+
+    .video-container iframe {
+        min-height:250px;
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+<header class="navbar">
+
+<div class="container nav-inner">
+
+<a href="dashboard.html"
+class="logo">
+
+<span>&lt;</span>
+TECH IZACK
+<span>/&gt;</span>
+
+</a>
+
+<a href="dashboard.html"
+class="btn btn-outline">
+
+Dashboard
+
+</a>
+
+</div>
+
+</header>
+
+
+<main class="player-page">
+
+<div class="container">
+
+
+<div style="margin-bottom:25px">
+
+<span class="section-tag">
+// COURSE PLAYER
+</span>
+
+<h1 id="courseTitle"
+style="font-family:Orbitron;margin-top:12px">
+
+Loading...
+
+</h1>
+
+</div>
+
+
+<div class="player-layout">
+
+
+<!-- SIDEBAR -->
+
+<aside class="sidebar">
+
+<h3>
+Course Content
+</h3>
+
+
+<div class="progress-box">
+
+<div style="
+display:flex;
+justify-content:space-between;
+">
+
+<span>
+Progress
+</span>
+
+<strong id="progressText">
+0%
+</strong>
+
+</div>
+
+
+<div class="progress-bar">
+
+<div
+id="progressFill"
+class="progress-fill">
+</div>
+
+</div>
+
+</div>
+
+
+<div
+id="lessonList"
+class="lesson-list">
+
+Loading...
+
+</div>
+
+</aside>
+
+
+<!-- CONTENT -->
+
+<section class="lesson-content">
+
+<span
+id="lessonNumber"
+class="section-tag">
+
+LESSON
+
+</span>
+
+
+<h1 id="lessonTitle">
+Loading...
+</h1>
+
+
+<div
+id="videoContainer"
+class="video-container">
+</div>
+
+
+<div
+id="lessonText"
+class="lesson-text">
+
+Loading...
+
+</div>
+
+
+<div
+id="labArea">
+</div>
+
+
+<div
+id="quizArea">
+</div>
+
+
+<div class="action-row">
+
+<button
+id="previousBtn"
+class="btn btn-outline"
+onclick="previousLesson()">
+
+← Previous
+
+</button>
+
+
+<button
+id="completeBtn"
+class="btn btn-primary"
+onclick="completeLesson()">
+
+Mark as Complete →
+
+</button>
+
+</div>
+
+</section>
+
+</div>
+
+</div>
+
+</main>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+
+const SUPABASE_URL =
+"WEKA_PROJECT_URL_HAPA";
+
+const SUPABASE_KEY =
+"WEKA_PUBLISHABLE_KEY_HAPA";
+
+
+const supabaseClient =
+window.supabase.createClient(
+SUPABASE_URL,
+SUPABASE_KEY
+);
+
+
+// ==========================
+// STATE
+// ==========================
+
+const params =
+new URLSearchParams(
+window.location.search
+);
+
+const courseId =
+params.get("id");
+
+
+let currentUser = null;
+
+let course = null;
+
+let lessons = [];
+
+let progress = [];
+
+let currentIndex = 0;
+
+
+// ==========================
+// INITIALIZE
+// ==========================
+
+async function initialize() {
+
+const {
+data:{user}
+} =
+await supabaseClient
+.auth
+.getUser();
+
+
+if (!user) {
+
+location.href =
+"index.html";
+
+return;
+
+}
+
+
+currentUser = user;
+
+
+await loadCourse();
+
+await loadLessons();
+
+await loadProgress();
+
+renderSidebar();
+
+
+// Open first incomplete lesson
+
+const incomplete =
+lessons.findIndex(
+lesson =>
+!isLessonComplete(
+lesson.id
+)
+);
+
+
+if (incomplete >= 0) {
+
+currentIndex =
+incomplete;
+
+} else {
+
+currentIndex = 0;
+
+}
+
+
+renderLesson();
+
+}
+
+
+// ==========================
+// COURSE
+// ==========================
+
+async function loadCourse() {
+
+const {
+data,
+error
+} =
+await supabaseClient
+.from("courses")
+.select("*")
+.eq("id",courseId)
+.single();
+
+
+if (error) {
+
+alert("Course not found.");
+
+return;
+
+}
+
+
+course = data;
+
+
+document.getElementById(
+"courseTitle"
+).textContent =
+course.title;
+
+}
+
+
+// ==========================
+// LESSONS
+// ==========================
+
+async function loadLessons() {
+
+const {
+data,
+error
+} =
+await supabaseClient
+.from("lessons")
+.select("*")
+.eq(
+"course_id",
+courseId
+)
+.order(
+"lesson_order"
+);
+
+
+if (error) {
+
+console.error(error);
+
+return;
+
+}
+
+
+lessons =
+data || [];
+
+}
+
+
+// ==========================
+// PROGRESS
+// ==========================
+
+async function loadProgress() {
+
+const {
+data
+} =
+await supabaseClient
+.from("lesson_progress")
+.select("*")
+.eq(
+"user_id",
+currentUser.id
+);
+
+
+progress =
+data || [];
+
+}
+
+
+function isLessonComplete(
+lessonId
+) {
+
+return progress.some(
+item =>
+item.lesson_id === lessonId &&
+item.completed === true
+);
+
+}
+
+
+// ==========================
+// SIDEBAR
+// ==========================
+
+function renderSidebar() {
+
+const list =
+document.getElementById(
+"lessonList"
+);
+
+
+if (!lessons.length) {
+
+list.innerHTML =
+"<p>No lessons available.</p>";
+
+return;
+
+}
+
+
+list.innerHTML =
+lessons.map(
+(lesson,index)=>{
+
+const complete =
+isLessonComplete(
+lesson.id
+);
+
+
+return `
+
+<div
+class="lesson-item
+${index === currentIndex ? "active" : ""}
+${complete ? "completed" : ""}"
+
+onclick="openLesson(${index})">
+
+${complete ? "✓ " : ""}
+
+${index + 1}.
+${escapeHTML(lesson.title)}
+
+</div>
+
+`;
+
+}).join("");
+
+
+updateProgress();
+
+}
+
+
+// ==========================
+// PROGRESS BAR
+// ==========================
+
+function updateProgress() {
+
+const completed =
+lessons.filter(
+lesson =>
+isLessonComplete(
+lesson.id
+)
+).length;
+
+
+const percentage =
+lessons.length
+? Math.round(
+(completed / lessons.length)
+* 100
+)
+: 0;
+
+
+document.getElementById(
+"progressText"
+).textContent =
+percentage + "%";
+
+
+document.getElementById(
+"progressFill"
+).style.width =
+percentage + "%";
+
+}
+
+
+// ==========================
+// OPEN LESSON
+// ==========================
+
+async function openLesson(index) {
+
+currentIndex =
+index;
+
+renderSidebar();
+
+renderLesson();
+
+}
+
+
+// ==========================
+// RENDER LESSON
+// ==========================
+
+async function renderLesson() {
+
+const lesson =
+lessons[currentIndex];
+
+
+if (!lesson) return;
+
+
+document.getElementById(
+"lessonNumber"
+).textContent =
+`LESSON ${currentIndex + 1}`;
+
+
+document.getElementById(
+"lessonTitle"
+).textContent =
+lesson.title;
+
+
+document.getElementById(
+"lessonText"
+).textContent =
+lesson.content || "";
+
+
+renderVideo(
+lesson.video_url
+);
+
+
+document.getElementById(
+"completeBtn"
+).textContent =
+isLessonComplete(lesson.id)
+? "✓ Completed"
+: "Mark as Complete →";
+
+
+document.getElementById(
+"previousBtn"
+).disabled =
+currentIndex === 0;
+
+
+await loadLab(
+lesson.id
+);
+
+await loadQuiz(
+lesson.id
+);
+
+}
+
+
+// ==========================
+// VIDEO
+// ==========================
+
+function renderVideo(url) {
+
+const container =
+document.getElementById(
+"videoContainer"
+);
+
+
+if (!url) {
+
+container.innerHTML = "";
+
+return;
+
+}
+
+
+if (
+url.includes("youtube.com") ||
+url.includes("youtu.be")
+) {
+
+const videoId =
+getYoutubeId(url);
+
+
+if (!videoId) {
+
+container.innerHTML = "";
+
+return;
+
+}
+
+
+container.innerHTML = `
+
+<iframe
+src="https://www.youtube.com/embed/${videoId}"
+allowfullscreen>
+</iframe>
+
+`;
+
+}
+
+}
+
+
+// ==========================
+// YOUTUBE ID
+// ==========================
+
+function getYoutubeId(url) {
+
+try {
+
+const parsed =
+new URL(url);
+
+
+if (
+parsed.hostname.includes(
+"youtu.be"
+)
+) {
+
+return parsed.pathname.substring(1);
+
+}
+
+
+return parsed.searchParams.get(
+"v"
+);
+
+} catch {
+
+return null;
+
+}
+
+}
+
+
+// ==========================
+// COMPLETE LESSON
+// ==========================
+
+async function completeLesson() {
+
+const lesson =
+lessons[currentIndex];
+
+
+if (!lesson) return;
+
+
+const {
+error
+} =
+await supabaseClient
+.from("lesson_progress")
+.upsert({
+
+user_id:
+currentUser.id,
+
+lesson_id:
+lesson.id,
+
+completed:true,
+
+completed_at:
+new Date().toISOString()
+
+},{
+onConflict:
+"user_id,lesson_id"
+});
+
+
+if (error) {
+
+alert(error.message);
+
+return;
+
+}
+
+
+await loadProgress();
+
+renderSidebar();
+
+
+// Automatically move forward
+
+if (
+currentIndex <
+lessons.length - 1
+) {
+
+currentIndex++;
+
+renderSidebar();
+
+renderLesson();
+
+} else {
+
+alert(
+"🎉 Congratulations! You completed all lessons."
+);
+
+}
+
+}
+
+
+// ==========================
+// PREVIOUS
+// ==========================
+
+function previousLesson() {
+
+if (currentIndex > 0) {
+
+currentIndex--;
+
+renderSidebar();
+
+renderLesson();
+
+}
+
+}
+
+
+// ==========================
+// LAB
+// ==========================
+
+async function loadLab(
+lessonId
+) {
+
+const area =
+document.getElementById(
+"labArea"
+);
+
+
+const {
+data
+} =
+await supabaseClient
+.from("labs")
+.select("*")
+.eq(
+"lesson_id",
+lessonId
+);
+
+
+if (!data || !data.length) {
+
+area.innerHTML = "";
+
+return;
+
+}
+
+
+area.innerHTML = `
+
+<div class="lab-box">
+
+<span class="section-tag">
+// PRACTICAL LAB
+</span>
+
+<h3 style="margin:12px 0">
+${escapeHTML(data[0].title)}
+</h3>
+
+<p style="color:var(--muted)">
+${escapeHTML(
+data[0].description || ""
+)}
+</p>
+
+<a
+href="lab.html?id=${data[0].id}"
+class="btn btn-primary">
+
+Start Practical Lab
+
+</a>
+
+</div>
+
+`;
+
+}
+
+
+// ==========================
+// QUIZ
+// ==========================
+
+async function loadQuiz(
+lessonId
+) {
+
+const area =
+document.getElementById(
+"quizArea"
+);
+
+
+const {
+data
+} =
+await supabaseClient
+.from("quizzes")
+.select("*")
+.eq(
+"lesson_id",
+lessonId
+);
+
+
+if (!data || !data.length) {
+
+area.innerHTML = "";
+
+return;
+
+}
+
+
+area.innerHTML = `
+
+<div class="quiz-box">
+
+<span class="section-tag">
+// KNOWLEDGE CHECK
+</span>
+
+<h3 style="margin:12px 0">
+${escapeHTML(data[0].title)}
+</h3>
+
+<p style="color:var(--muted)">
+Passing score:
+${data[0].passing_score}%
+</p>
+
+<a
+href="quiz.html?id=${data[0].id}"
+class="btn btn-primary">
+
+Start Quiz
+
+</a>
+
+</div>
+
+`;
+
+}
+
+
+// ==========================
+// ESCAPE
+// ==========================
+
+function escapeHTML(text) {
+
+return String(text)
+.replaceAll("&","&amp;")
+.replaceAll("<","&lt;")
+.replaceAll(">","&gt;")
+.replaceAll('"',"&quot;")
+.replaceAll("'","&#039;");
+
+}
+
+
+// ==========================
+
+initialize();
+
+</script>
+
+</body>
+
+</html>

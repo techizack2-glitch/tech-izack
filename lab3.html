@@ -1,0 +1,625 @@
+```html
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>
+Practical Lab | Tech Izack Academy
+</title>
+
+<link
+rel="stylesheet"
+href="style.css">
+
+<style>
+
+.lab-page {
+
+    padding:110px 20px 70px;
+
+}
+
+.lab-container {
+
+    max-width:950px;
+
+    margin:auto;
+
+}
+
+.lab-header,
+.lab-panel {
+
+    background:var(--card);
+
+    border:1px solid var(--border);
+
+    border-radius:12px;
+
+    padding:30px;
+
+    margin-bottom:20px;
+
+}
+
+.lab-title {
+
+    font-family:Orbitron;
+
+    font-size:36px;
+
+    margin:12px 0;
+
+}
+
+.lab-description {
+
+    color:var(--muted);
+
+    line-height:1.8;
+
+}
+
+.lab-section {
+
+    margin-top:25px;
+
+}
+
+.lab-section h3 {
+
+    color:var(--cyan);
+
+}
+
+.lab-text {
+
+    white-space:pre-wrap;
+
+    line-height:1.8;
+
+    color:#d7e2ec;
+
+}
+
+.flag-input {
+
+    width:100%;
+
+    box-sizing:border-box;
+
+    padding:15px;
+
+    background:#03080d;
+
+    border:1px solid var(--border);
+
+    color:white;
+
+    border-radius:7px;
+
+    margin:15px 0;
+
+}
+
+.result {
+
+    margin-top:15px;
+
+    padding:14px;
+
+    border-radius:7px;
+
+    display:none;
+
+}
+
+.correct {
+
+    display:block;
+
+    color:#20d68a;
+
+    background:rgba(32,214,138,.08);
+
+}
+
+.wrong {
+
+    display:block;
+
+    color:#ff6475;
+
+    background:rgba(255,100,117,.08);
+
+}
+
+.badge {
+
+    display:inline-block;
+
+    padding:6px 10px;
+
+    border-radius:20px;
+
+    font-size:12px;
+
+    border:1px solid var(--border);
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<header class="navbar">
+
+<div class="container nav-inner">
+
+<a
+href="student-dashboard.html"
+class="logo">
+
+<span>&lt;</span>
+TECH IZACK
+<span>/&gt;</span>
+
+</a>
+
+<a
+href="student-dashboard.html"
+class="btn btn-outline">
+
+← Dashboard
+
+</a>
+
+</div>
+
+</header>
+
+
+<main class="lab-page">
+
+<div class="lab-container">
+
+
+<section class="lab-header">
+
+<span class="section-tag">
+// PRACTICAL LAB
+</span>
+
+<h1
+id="labTitle"
+class="lab-title">
+
+Loading...
+
+</h1>
+
+<p
+id="labDescription"
+class="lab-description">
+
+</p>
+
+<span
+id="difficulty"
+class="badge">
+
+</span>
+
+</section>
+
+
+<section class="lab-panel">
+
+<div class="lab-section">
+
+<h3>
+🎯 Objective
+</h3>
+
+<div
+id="objective"
+class="lab-text">
+
+Loading...
+
+</div>
+
+</div>
+
+
+<div class="lab-section">
+
+<h3>
+📋 Instructions
+</h3>
+
+<div
+id="instructions"
+class="lab-text">
+
+Loading...
+
+</div>
+
+</div>
+
+
+<div class="lab-section">
+
+<h3>
+💡 Hint
+</h3>
+
+<div
+id="hint"
+class="lab-text">
+
+Hint available during the lab.
+
+</div>
+
+</div>
+
+</section>
+
+
+<section class="lab-panel">
+
+<span class="section-tag">
+// FLAG SUBMISSION
+</span>
+
+<h2>
+Submit Your Flag
+</h2>
+
+<p style="color:var(--muted)">
+
+Complete the authorized lab exercise,
+then enter the flag you discovered.
+
+</p>
+
+<input
+id="flagInput"
+class="flag-input"
+placeholder="TI{your_flag_here}"
+autocomplete="off">
+
+<button
+class="btn btn-primary"
+onclick="submitFlag()">
+
+🚩 Submit Flag
+
+</button>
+
+<div
+id="result"
+class="result">
+
+</div>
+
+</section>
+
+
+</div>
+
+</main>
+
+
+<script
+src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+</script>
+
+<script>
+
+const SUPABASE_URL =
+"WEKA_PROJECT_URL_HAPA";
+
+const SUPABASE_KEY =
+"WEKA_PUBLISHABLE_KEY_HAPA";
+
+const supabaseClient =
+window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
+
+let user = null;
+let lab = null;
+
+
+/*
+==============================
+INITIALIZE
+==============================
+*/
+
+async function init() {
+
+    const {
+        data
+    } =
+    await supabaseClient.auth
+        .getUser();
+
+    user = data.user;
+
+    if (!user) {
+
+        location.href =
+            "login.html";
+
+        return;
+
+    }
+
+    const labId =
+        new URLSearchParams(
+            location.search
+        ).get("id");
+
+    if (!labId) {
+
+        showError(
+            "Lab ID missing."
+        );
+
+        return;
+
+    }
+
+    await loadLab(labId);
+
+}
+
+
+/*
+==============================
+LOAD LAB
+==============================
+*/
+
+async function loadLab(id) {
+
+    const {
+        data,
+        error
+    } =
+    await supabaseClient
+
+        .from("labs")
+
+        .select("*")
+
+        .eq("id", id)
+
+        .eq("published", true)
+
+        .single();
+
+    if (error || !data) {
+
+        showError(
+            "Lab not found."
+        );
+
+        return;
+
+    }
+
+    lab = data;
+
+    document.getElementById(
+        "labTitle"
+    ).textContent =
+        lab.title;
+
+    document.getElementById(
+        "labDescription"
+    ).textContent =
+        lab.description || "";
+
+    document.getElementById(
+        "difficulty"
+    ).textContent =
+        lab.difficulty;
+
+    document.getElementById(
+        "objective"
+    ).textContent =
+        lab.objective || "";
+
+    document.getElementById(
+        "instructions"
+    ).textContent =
+        lab.instructions || "";
+
+    document.getElementById(
+        "hint"
+    ).textContent =
+        lab.hint ||
+        "No hint available.";
+
+}
+
+
+/*
+==============================
+SUBMIT FLAG
+==============================
+*/
+
+async function submitFlag() {
+
+    const input =
+        document.getElementById(
+            "flagInput"
+        );
+
+    const result =
+        document.getElementById(
+            "result"
+        );
+
+    const submittedFlag =
+        input.value.trim();
+
+    if (!submittedFlag) {
+
+        result.className =
+            "result wrong";
+
+        result.textContent =
+            "Enter a flag first.";
+
+        return;
+
+    }
+
+    /*
+    NOTE:
+    For a production platform,
+    do not expose the real flag
+    in browser code.
+
+    This starter implementation
+    uses the database for learning.
+    */
+
+    const correct =
+        submittedFlag === lab.flag;
+
+    const {
+        error
+    } =
+    await supabaseClient
+
+        .from("lab_submissions")
+
+        .insert({
+
+            user_id:
+                user.id,
+
+            lab_id:
+                lab.id,
+
+            submitted_flag:
+                submittedFlag,
+
+            correct:
+                correct
+
+        });
+
+    if (error) {
+
+        result.className =
+            "result wrong";
+
+        result.textContent =
+            error.message;
+
+        return;
+
+    }
+
+    if (correct) {
+
+        result.className =
+            "result correct";
+
+        result.textContent =
+            "✓ Correct flag! Lab completed.";
+
+        input.disabled = true;
+
+    } else {
+
+        result.className =
+            "result wrong";
+
+        result.textContent =
+            "✗ Incorrect flag. Review the lab instructions and try again.";
+
+    }
+
+}
+
+
+/*
+==============================
+ERROR
+==============================
+*/
+
+function showError(message) {
+
+    document.body.innerHTML = `
+
+        <div style="
+            color:white;
+            text-align:center;
+            padding:120px 20px;
+        ">
+
+            <h1>
+                ${escapeHTML(message)}
+            </h1>
+
+            <a
+            href="student-dashboard.html"
+            class="btn btn-primary">
+
+                Back to Dashboard
+
+            </a>
+
+        </div>
+
+    `;
+
+}
+
+
+function escapeHTML(text) {
+
+    return String(text)
+
+        .replaceAll("&","&amp;")
+
+        .replaceAll("<","&lt;")
+
+        .replaceAll(">","&gt;")
+
+        .replaceAll('"',"&quot;")
+
+        .replaceAll("'","&#039;");
+
+}
+
+init();
+
+</script>
+
+</body>
+
+</html>
+```

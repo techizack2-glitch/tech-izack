@@ -1,0 +1,830 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>Course Builder | Tech Izack</title>
+
+<link rel="stylesheet"
+href="style.css">
+
+<style>
+
+.builder-page {
+    padding:120px 0 80px;
+}
+
+.builder-card {
+    max-width:900px;
+    margin:auto;
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:35px;
+}
+
+.form-group {
+    margin-bottom:22px;
+}
+
+.form-group label {
+    display:block;
+    margin-bottom:8px;
+    color:#b9c6d6;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+    width:100%;
+    padding:14px;
+
+    background:#050b14;
+    color:white;
+
+    border:1px solid var(--border);
+    border-radius:6px;
+
+    outline:none;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+    border-color:var(--cyan);
+}
+
+.form-group textarea {
+    min-height:160px;
+    resize:vertical;
+}
+
+.form-row {
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:20px;
+}
+
+.preview {
+    margin-top:30px;
+    padding:20px;
+
+    background:#07101c;
+    border:1px solid var(--border);
+    border-radius:8px;
+}
+
+.message {
+    margin-top:20px;
+}
+
+.success {
+    color:#20d68a;
+}
+
+.error {
+    color:#ff6475;
+}
+
+@media(max-width:700px) {
+
+    .form-row {
+        grid-template-columns:1fr;
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<header class="navbar">
+
+<div class="container nav-inner">
+
+<a href="admin-dashboard.html"
+class="logo">
+
+<span>&lt;</span>
+TECH IZACK
+<span>/&gt;</span>
+
+</a>
+
+
+<a
+href="admin-dashboard.html"
+class="btn btn-outline">
+
+Admin Dashboard
+
+</a>
+
+</div>
+
+</header>
+
+
+<main class="builder-page">
+
+<div class="container">
+
+
+<div class="builder-card">
+
+<span class="section-tag">
+// ACADEMY / COURSE BUILDER
+</span>
+
+
+<h1
+style="
+font-family:Orbitron;
+margin:15px 0 30px;
+">
+
+Create Course
+
+</h1>
+
+
+<form
+id="courseForm">
+
+
+<div class="form-group">
+
+<label>
+Course Title *
+</label>
+
+<input
+id="title"
+type="text"
+placeholder="Kali Linux Fundamentals"
+required>
+
+</div>
+
+
+<div class="form-group">
+
+<label>
+Course Description
+</label>
+
+<textarea
+id="description"
+placeholder="Describe what students will learn...">
+</textarea>
+
+</div>
+
+
+<div class="form-row">
+
+
+<div class="form-group">
+
+<label>
+Level
+</label>
+
+<select id="level">
+
+<option value="Beginner">
+Beginner
+</option>
+
+<option value="Intermediate">
+Intermediate
+</option>
+
+<option value="Advanced">
+Advanced
+</option>
+
+</select>
+
+</div>
+
+
+<div class="form-group">
+
+<label>
+Category
+</label>
+
+<select id="category">
+
+<option value="Kali Linux">
+Kali Linux
+</option>
+
+<option value="Web Security">
+Web Security
+</option>
+
+<option value="Networking">
+Networking
+</option>
+
+<option value="Digital Forensics">
+Digital Forensics
+</option>
+
+<option value="OSINT">
+OSINT
+</option>
+
+<option value="Social Engineering">
+Social Engineering
+</option>
+
+<option value="Defensive Security">
+Defensive Security
+</option>
+
+</select>
+
+</div>
+
+</div>
+
+
+<div class="form-group">
+
+<label>
+Thumbnail URL
+</label>
+
+<input
+id="thumbnail"
+type="url"
+placeholder="https://example.com/image.jpg">
+
+</div>
+
+
+<div class="form-group">
+
+<label>
+
+<input
+id="published"
+type="checkbox">
+
+&nbsp;
+
+Publish course immediately
+
+</label>
+
+</div>
+
+
+<div class="preview">
+
+<span class="section-tag">
+// PREVIEW
+</span>
+
+<h2
+id="previewTitle"
+style="margin-top:12px">
+
+Your Course
+
+</h2>
+
+<p
+id="previewDescription"
+style="color:var(--muted)">
+
+Course description...
+
+</p>
+
+<p
+id="previewMeta"
+style="color:var(--cyan)">
+
+Beginner · Kali Linux
+
+</p>
+
+</div>
+
+
+<button
+type="submit"
+class="btn btn-primary"
+style="margin-top:25px">
+
+Save Course →
+
+</button>
+
+
+<p
+id="message"
+class="message">
+
+</p>
+
+
+</form>
+
+</div>
+
+</div>
+
+</main>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+
+
+const SUPABASE_URL =
+"WEKA_PROJECT_URL_HAPA";
+
+
+const SUPABASE_KEY =
+"WEKA_PUBLISHABLE_KEY_HAPA";
+
+
+const supabaseClient =
+window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
+
+
+const params =
+new URLSearchParams(
+    window.location.search
+);
+
+
+const courseId =
+params.get("id");
+
+
+let editing = false;
+
+
+// ==========================
+// AUTH
+// ==========================
+
+async function checkAdmin() {
+
+    const {
+        data:{user}
+    } =
+    await supabaseClient
+        .auth
+        .getUser();
+
+
+    if (!user) {
+
+        location.href =
+        "index.html";
+
+        return false;
+
+    }
+
+
+    const {
+        data:profile
+    } =
+    await supabaseClient
+        .from("profiles")
+        .select("role")
+        .eq("id",user.id)
+        .single();
+
+
+    if (
+        !profile ||
+        profile.role !== "admin"
+    ) {
+
+        location.href =
+        "dashboard.html";
+
+        return false;
+
+    }
+
+
+    return true;
+
+}
+
+
+// ==========================
+// LOAD COURSE
+// ==========================
+
+async function loadCourse() {
+
+    if (!courseId) return;
+
+
+    editing = true;
+
+
+    const {
+        data,
+        error
+    } =
+    await supabaseClient
+        .from("courses")
+        .select("*")
+        .eq("id",courseId)
+        .single();
+
+
+    if (error || !data) {
+
+        showMessage(
+            "Course not found.",
+            true
+        );
+
+        return;
+
+    }
+
+
+    document.getElementById(
+        "title"
+    ).value =
+    data.title || "";
+
+
+    document.getElementById(
+        "description"
+    ).value =
+    data.description || "";
+
+
+    document.getElementById(
+        "level"
+    ).value =
+    data.level || "Beginner";
+
+
+    document.getElementById(
+        "category"
+    ).value =
+    data.category || "Kali Linux";
+
+
+    document.getElementById(
+        "thumbnail"
+    ).value =
+    data.thumbnail_url || "";
+
+
+    document.getElementById(
+        "published"
+    ).checked =
+    data.published === true;
+
+
+    document.querySelector(
+        "h1"
+    ).textContent =
+    "Edit Course";
+
+
+    document.querySelector(
+        "#courseForm button"
+    ).textContent =
+    "Update Course →";
+
+
+    updatePreview();
+
+}
+
+
+// ==========================
+// SAVE
+// ==========================
+
+document
+.getElementById("courseForm")
+.addEventListener(
+"submit",
+async function(event) {
+
+    event.preventDefault();
+
+
+    const title =
+    document
+        .getElementById("title")
+        .value
+        .trim();
+
+
+    const description =
+    document
+        .getElementById("description")
+        .value
+        .trim();
+
+
+    const level =
+    document
+        .getElementById("level")
+        .value;
+
+
+    const category =
+    document
+        .getElementById("category")
+        .value;
+
+
+    const thumbnail =
+    document
+        .getElementById("thumbnail")
+        .value
+        .trim();
+
+
+    const published =
+    document
+        .getElementById("published")
+        .checked;
+
+
+    if (!title) {
+
+        showMessage(
+            "Course title is required.",
+            true
+        );
+
+        return;
+
+    }
+
+
+    const slug =
+    createSlug(title);
+
+
+    const payload = {
+
+        title,
+
+        slug,
+
+        description,
+
+        level,
+
+        category,
+
+        thumbnail_url:
+            thumbnail || null,
+
+        published
+
+    };
+
+
+    let result;
+
+
+    if (editing) {
+
+        result =
+        await supabaseClient
+            .from("courses")
+            .update(payload)
+            .eq(
+                "id",
+                courseId
+            );
+
+    } else {
+
+        result =
+        await supabaseClient
+            .from("courses")
+            .insert(payload);
+
+    }
+
+
+    if (result.error) {
+
+        showMessage(
+            result.error.message,
+            true
+        );
+
+        return;
+
+    }
+
+
+    showMessage(
+        editing
+        ? "✓ Course updated successfully!"
+        : "✓ Course created successfully!",
+        false
+    );
+
+
+    if (!editing) {
+
+        setTimeout(
+            () => {
+
+                location.href =
+                "admin-dashboard.html";
+
+            },
+            1000
+        );
+
+    }
+
+});
+
+
+// ==========================
+// PREVIEW
+// ==========================
+
+document
+.getElementById("title")
+.addEventListener(
+"input",
+updatePreview
+);
+
+
+document
+.getElementById("description")
+.addEventListener(
+"input",
+updatePreview
+);
+
+
+document
+.getElementById("level")
+.addEventListener(
+"change",
+updatePreview
+);
+
+
+document
+.getElementById("category")
+.addEventListener(
+"change",
+updatePreview
+);
+
+
+function updatePreview() {
+
+    const title =
+    document
+        .getElementById("title")
+        .value
+        .trim();
+
+
+    const description =
+    document
+        .getElementById("description")
+        .value
+        .trim();
+
+
+    const level =
+    document
+        .getElementById("level")
+        .value;
+
+
+    const category =
+    document
+        .getElementById("category")
+        .value;
+
+
+    document.getElementById(
+        "previewTitle"
+    ).textContent =
+    title || "Your Course";
+
+
+    document.getElementById(
+        "previewDescription"
+    ).textContent =
+    description ||
+    "Course description...";
+
+
+    document.getElementById(
+        "previewMeta"
+    ).textContent =
+    `${level} · ${category}`;
+
+}
+
+
+// ==========================
+// SLUG
+// ==========================
+
+function createSlug(text) {
+
+    return text
+        .toLowerCase()
+        .trim()
+        .replace(
+            /[^a-z0-9]+/g,
+            "-"
+        )
+        .replace(
+            /^-+|-+$/g,
+            ""
+        );
+
+}
+
+
+// ==========================
+
+function showMessage(
+    text,
+    error
+) {
+
+    const element =
+    document.getElementById(
+        "message"
+    );
+
+
+    element.textContent =
+    text;
+
+
+    element.className =
+    "message " +
+    (
+        error
+        ? "error"
+        : "success"
+    );
+
+}
+
+
+// ==========================
+
+(async()=>{
+
+    const allowed =
+    await checkAdmin();
+
+
+    if (!allowed) return;
+
+
+    await loadCourse();
+
+})();
+
+</script>
+
+</body>
+</html>
+```

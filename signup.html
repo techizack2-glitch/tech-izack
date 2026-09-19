@@ -1,0 +1,530 @@
+```html
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>
+Create Account | Tech Izack
+</title>
+
+<link
+rel="stylesheet"
+href="style.css">
+
+<style>
+
+.auth-page {
+
+    min-height:100vh;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    padding:30px 20px;
+
+    background:
+    radial-gradient(
+        circle at top,
+        #071a2b,
+        #030810 70%
+    );
+
+}
+
+
+.auth-box {
+
+    width:100%;
+
+    max-width:480px;
+
+    background:var(--card);
+
+    border:1px solid var(--border);
+
+    border-radius:12px;
+
+    padding:35px;
+
+}
+
+
+.auth-logo {
+
+    text-align:center;
+
+    margin-bottom:30px;
+
+}
+
+
+.auth-logo a {
+
+    font-family:Orbitron;
+
+    font-size:22px;
+
+    color:white;
+
+}
+
+
+.auth-logo span {
+
+    color:var(--cyan);
+
+}
+
+
+.form-group {
+
+    margin-bottom:18px;
+
+}
+
+
+.form-group label {
+
+    display:block;
+
+    margin-bottom:7px;
+
+    color:#9fb2c5;
+
+    font-size:13px;
+
+}
+
+
+.form-group input {
+
+    width:100%;
+
+    padding:14px;
+
+    background:#050b14;
+
+    color:white;
+
+    border:1px solid var(--border);
+
+    border-radius:6px;
+
+    outline:none;
+
+}
+
+
+.form-group input:focus {
+
+    border-color:var(--cyan);
+
+}
+
+
+.auth-button {
+
+    width:100%;
+
+    margin-top:10px;
+
+}
+
+
+.message {
+
+    display:none;
+
+    margin-top:15px;
+
+    padding:13px;
+
+    border-radius:6px;
+
+    font-size:14px;
+
+}
+
+
+.message.show {
+
+    display:block;
+
+}
+
+
+.message.error {
+
+    color:#ff7d8b;
+
+    background:#1a080c;
+
+    border:1px solid #ff6475;
+
+}
+
+
+.message.success {
+
+    color:#20d68a;
+
+    background:#061a14;
+
+    border:1px solid #20d68a;
+
+}
+
+
+.login-link {
+
+    text-align:center;
+
+    margin-top:20px;
+
+    color:var(--muted);
+
+}
+
+
+.login-link a {
+
+    color:var(--cyan);
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<main class="auth-page">
+
+
+<section class="auth-box">
+
+
+<div class="auth-logo">
+
+<a href="index.html">
+
+<span>&lt;</span>
+
+TECH IZACK
+
+<span>/&gt;</span>
+
+</a>
+
+</div>
+
+
+<span class="section-tag">
+
+// ACADEMY REGISTRATION
+
+</span>
+
+
+<h1>
+Create Account
+</h1>
+
+
+<p style="color:var(--muted);">
+
+Start learning cybersecurity
+through practical training.
+
+</p>
+
+
+<form id="signupForm">
+
+
+<div class="form-group">
+
+<label>
+Full Name
+</label>
+
+<input
+id="fullName"
+type="text"
+required
+autocomplete="name"
+placeholder="Your full name">
+
+</div>
+
+
+<div class="form-group">
+
+<label>
+Phone Number
+</label>
+
+<input
+id="phone"
+type="tel"
+autocomplete="tel"
+placeholder="255791939190">
+
+</div>
+
+
+<div class="form-group">
+
+<label>
+Email
+</label>
+
+<input
+id="email"
+type="email"
+required
+autocomplete="email"
+placeholder="you@example.com">
+
+</div>
+
+
+<div class="form-group">
+
+<label>
+Password
+</label>
+
+<input
+id="password"
+type="password"
+required
+minlength="8"
+autocomplete="new-password"
+placeholder="Minimum 8 characters">
+
+</div>
+
+
+<button
+class="btn btn-primary auth-button"
+type="submit">
+
+Create Account
+
+</button>
+
+
+<div
+id="message"
+class="message">
+
+</div>
+
+
+</form>
+
+
+<div class="login-link">
+
+Already have an account?
+
+<a href="login.html">
+
+Login
+
+</a>
+
+</div>
+
+
+</section>
+
+</main>
+
+
+<script
+src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+</script>
+
+
+<script>
+
+
+const SUPABASE_URL =
+"WEKA_PROJECT_URL_HAPA";
+
+
+const SUPABASE_KEY =
+"WEKA_PUBLISHABLE_KEY_HAPA";
+
+
+const supabaseClient =
+window.supabase.createClient(
+
+    SUPABASE_URL,
+
+    SUPABASE_KEY
+
+);
+
+
+const form =
+document.getElementById(
+    "signupForm"
+);
+
+
+const message =
+document.getElementById(
+    "message"
+);
+
+
+form.addEventListener(
+    "submit",
+    async event => {
+
+        event.preventDefault();
+
+
+        const fullName =
+            document
+            .getElementById(
+                "fullName"
+            )
+            .value
+            .trim();
+
+
+        const phone =
+            document
+            .getElementById(
+                "phone"
+            )
+            .value
+            .trim();
+
+
+        const email =
+            document
+            .getElementById(
+                "email"
+            )
+            .value
+            .trim();
+
+
+        const password =
+            document
+            .getElementById(
+                "password"
+            )
+            .value;
+
+
+        showMessage(
+            "Creating your account...",
+            "success"
+        );
+
+
+        const {
+            data,
+            error
+        } =
+        await supabaseClient.auth
+            .signUp({
+
+                email,
+
+                password,
+
+                options: {
+
+                    data: {
+
+                        full_name:
+                            fullName,
+
+                        phone:
+                            phone
+
+                    }
+
+                }
+
+            });
+
+
+        if (error) {
+
+            showMessage(
+                error.message,
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        /*
+          If email confirmation is enabled,
+          Supabase may require the user
+          to confirm their email first.
+        */
+
+
+        showMessage(
+            "Account created. Check your email if confirmation is required.",
+            "success"
+        );
+
+
+        setTimeout(
+            () => {
+
+                location.href =
+                    "login.html";
+
+            },
+            2500
+        );
+
+    }
+);
+
+
+function showMessage(
+    text,
+    type
+) {
+
+    message.textContent =
+        text;
+
+    message.className =
+        `message show ${type}`;
+
+}
+
+</script>
+
+</body>
+
+</html>
+```

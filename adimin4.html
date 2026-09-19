@@ -1,0 +1,1058 @@
+```html
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>
+Admin | Tech Izack Academy
+</title>
+
+<link
+rel="stylesheet"
+href="style.css">
+
+<style>
+
+.admin-page {
+
+    padding:110px 20px 70px;
+
+}
+
+
+.admin-container {
+
+    max-width:1200px;
+
+    margin:auto;
+
+}
+
+
+.admin-header {
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    gap:20px;
+
+    margin-bottom:30px;
+
+}
+
+
+.admin-header h1 {
+
+    font-family:Orbitron;
+
+}
+
+
+.stats {
+
+    display:grid;
+
+    grid-template-columns:
+    repeat(4, 1fr);
+
+    gap:15px;
+
+    margin-bottom:25px;
+
+}
+
+
+.stat {
+
+    background:var(--card);
+
+    border:1px solid var(--border);
+
+    border-radius:10px;
+
+    padding:22px;
+
+}
+
+
+.stat-number {
+
+    display:block;
+
+    font-family:Orbitron;
+
+    font-size:30px;
+
+    color:var(--cyan);
+
+    margin-top:10px;
+
+}
+
+
+.admin-grid {
+
+    display:grid;
+
+    grid-template-columns:
+    1fr 1fr;
+
+    gap:20px;
+
+}
+
+
+.panel {
+
+    background:var(--card);
+
+    border:1px solid var(--border);
+
+    border-radius:10px;
+
+    padding:25px;
+
+}
+
+
+.form-group {
+
+    margin-bottom:17px;
+
+}
+
+
+.form-group label {
+
+    display:block;
+
+    margin-bottom:7px;
+
+    color:#b9c8d6;
+
+}
+
+
+.form-input,
+.form-select {
+
+    width:100%;
+
+    box-sizing:border-box;
+
+    padding:13px;
+
+    background:#050b12;
+
+    color:white;
+
+    border:1px solid var(--border);
+
+    border-radius:6px;
+
+}
+
+
+.course {
+
+    display:flex;
+
+    justify-content:space-between;
+
+    gap:15px;
+
+    padding:17px 0;
+
+    border-bottom:
+    1px solid var(--border);
+
+}
+
+
+.course:last-child {
+
+    border-bottom:0;
+
+}
+
+
+.course h3 {
+
+    margin:0 0 5px;
+
+}
+
+
+.course p {
+
+    margin:0;
+
+    color:var(--muted);
+
+    font-size:13px;
+
+}
+
+
+.message {
+
+    margin-top:15px;
+
+    padding:12px;
+
+    border-radius:6px;
+
+    display:none;
+
+}
+
+
+.success {
+
+    display:block;
+
+    color:#20d68a;
+
+    background:
+    rgba(32,214,138,.08);
+
+}
+
+
+.error {
+
+    display:block;
+
+    color:#ff6475;
+
+    background:
+    rgba(255,100,117,.08);
+
+}
+
+
+@media(max-width:850px) {
+
+    .stats {
+
+        grid-template-columns:
+        1fr 1fr;
+
+    }
+
+    .admin-grid {
+
+        grid-template-columns:1fr;
+
+    }
+
+}
+
+
+@media(max-width:550px) {
+
+    .stats {
+
+        grid-template-columns:1fr;
+
+    }
+
+    .admin-header {
+
+        flex-direction:column;
+
+        align-items:flex-start;
+
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<header class="navbar">
+
+<div class="container nav-inner">
+
+
+<a
+href="index.html"
+class="logo">
+
+<span>&lt;</span>
+
+TECH IZACK
+
+<span>/&gt;</span>
+
+</a>
+
+
+<button
+class="btn btn-outline"
+onclick="logout()">
+
+Logout
+
+</button>
+
+
+</div>
+
+</header>
+
+
+<main class="admin-page">
+
+
+<div class="admin-container">
+
+
+<div class="admin-header">
+
+<div>
+
+<span class="section-tag">
+// ADMIN PANEL
+</span>
+
+<h1>
+Academy Control Center
+</h1>
+
+</div>
+
+</div>
+
+
+<!-- STATS -->
+
+
+<section class="stats">
+
+
+<div class="stat">
+
+Courses
+
+<span
+id="courseCount"
+class="stat-number">
+
+0
+
+</span>
+
+</div>
+
+
+<div class="stat">
+
+Lessons
+
+<span
+id="lessonCount"
+class="stat-number">
+
+0
+
+</span>
+
+</div>
+
+
+<div class="stat">
+
+Labs
+
+<span
+id="labCount"
+class="stat-number">
+
+0
+
+</span>
+
+</div>
+
+
+<div class="stat">
+
+Students
+
+<span
+id="studentCount"
+class="stat-number">
+
+0
+
+</span>
+
+</div>
+
+
+</section>
+
+
+<div class="admin-grid">
+
+
+<!-- CREATE COURSE -->
+
+
+<section class="panel">
+
+
+<span class="section-tag">
+// CREATE COURSE
+</span>
+
+
+<h2>
+New Course
+</h2>
+
+
+<form
+onsubmit="createCourse(event)">
+
+
+<div class="form-group">
+
+<label>
+Course Title
+</label>
+
+<input
+id="courseTitle"
+class="form-input"
+required
+placeholder="Example: Linux Fundamentals">
+
+</div>
+
+
+<div class="form-group">
+
+<label>
+Slug
+</label>
+
+<input
+id="courseSlug"
+class="form-input"
+required
+placeholder="linux-fundamentals">
+
+</div>
+
+
+<div class="form-group">
+
+<label>
+Description
+</label>
+
+<textarea
+id="courseDescription"
+class="form-input"
+rows="5"
+placeholder="Course description...">
+</textarea>
+
+</div>
+
+
+<div class="form-group">
+
+<label>
+Level
+</label>
+
+<select
+id="courseLevel"
+class="form-select">
+
+<option>
+Beginner
+</option>
+
+<option>
+Intermediate
+</option>
+
+<option>
+Advanced
+</option>
+
+</select>
+
+</div>
+
+
+<button
+class="btn btn-primary"
+type="submit">
+
++ Create Course
+
+</button>
+
+
+<div
+id="message"
+class="message">
+
+</div>
+
+
+</form>
+
+</section>
+
+
+<!-- COURSES -->
+
+
+<section class="panel">
+
+
+<span class="section-tag">
+// COURSES
+</span>
+
+
+<h2>
+Existing Courses
+</h2>
+
+
+<div id="courses">
+
+Loading...
+
+</div>
+
+
+</section>
+
+
+</div>
+
+
+</div>
+
+</main>
+
+
+<script
+src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+</script>
+
+
+<script>
+
+
+const SUPABASE_URL =
+"WEKA_PROJECT_URL_HAPA";
+
+
+const SUPABASE_KEY =
+"WEKA_PUBLISHABLE_KEY_HAPA";
+
+
+const supabaseClient =
+window.supabase.createClient(
+
+    SUPABASE_URL,
+
+    SUPABASE_KEY
+
+);
+
+
+let currentUser = null;
+
+
+/*
+================================
+AUTH + ADMIN CHECK
+================================
+*/
+
+async function init() {
+
+
+    const {
+        data
+    } =
+    await supabaseClient.auth
+        .getUser();
+
+
+    currentUser =
+        data.user;
+
+
+    if (!currentUser) {
+
+        location.href =
+            "login.html";
+
+        return;
+
+    }
+
+
+    const {
+        data: profile,
+        error
+    } =
+    await supabaseClient
+
+        .from("profiles")
+
+        .select("role")
+
+        .eq(
+            "id",
+            currentUser.id
+        )
+
+        .single();
+
+
+    if (
+        error ||
+        !profile ||
+        profile.role !== "admin"
+    ) {
+
+        document.body.innerHTML = `
+
+            <div style="
+                color:white;
+                text-align:center;
+                padding:120px 20px;
+            ">
+
+                <h1>
+                    Access Denied
+                </h1>
+
+                <p>
+                    Admin privileges are required.
+                </p>
+
+                <a
+                href="student-dashboard.html"
+                class="btn btn-primary">
+
+                    Back to Dashboard
+
+                </a>
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    await loadStats();
+
+    await loadCourses();
+
+}
+
+
+/*
+================================
+LOAD STATS
+================================
+*/
+
+async function loadStats() {
+
+
+    const courses =
+        await supabaseClient
+
+            .from("courses")
+
+            .select(
+                "id",
+                {
+                    count:"exact",
+                    head:true
+                }
+            );
+
+
+    const lessons =
+        await supabaseClient
+
+            .from("lessons")
+
+            .select(
+                "id",
+                {
+                    count:"exact",
+                    head:true
+                }
+            );
+
+
+    const labs =
+        await supabaseClient
+
+            .from("labs")
+
+            .select(
+                "id",
+                {
+                    count:"exact",
+                    head:true
+                }
+            );
+
+
+    const students =
+        await supabaseClient
+
+            .from("profiles")
+
+            .select(
+                "id",
+                {
+                    count:"exact",
+                    head:true
+                }
+            )
+
+            .eq(
+                "role",
+                "student"
+            );
+
+
+    document.getElementById(
+        "courseCount"
+    ).textContent =
+        courses.count || 0;
+
+
+    document.getElementById(
+        "lessonCount"
+    ).textContent =
+        lessons.count || 0;
+
+
+    document.getElementById(
+        "labCount"
+    ).textContent =
+        labs.count || 0;
+
+
+    document.getElementById(
+        "studentCount"
+    ).textContent =
+        students.count || 0;
+
+}
+
+
+/*
+================================
+LOAD COURSES
+================================
+*/
+
+async function loadCourses() {
+
+
+    const {
+        data,
+        error
+    } =
+    await supabaseClient
+
+        .from("courses")
+
+        .select("*")
+
+        .order(
+            "created_at",
+            {
+                ascending:false
+            }
+        );
+
+
+    const container =
+        document.getElementById(
+            "courses"
+        );
+
+
+    if (error) {
+
+        container.textContent =
+            error.message;
+
+        return;
+
+    }
+
+
+    if (!data.length) {
+
+        container.innerHTML = `
+
+            <p style="
+                color:var(--muted);
+            ">
+
+                No courses created yet.
+
+            </p>
+
+        `;
+
+        return;
+
+    }
+
+
+    container.innerHTML =
+
+        data.map(
+            course => `
+
+            <article
+            class="course">
+
+                <div>
+
+                    <h3>
+
+                        ${escapeHTML(
+                            course.title
+                        )}
+
+                    </h3>
+
+                    <p>
+
+                        ${escapeHTML(
+                            course.level
+                        )}
+
+                        ·
+
+                        ${escapeHTML(
+                            course.slug
+                        )}
+
+                    </p>
+
+                </div>
+
+                <span
+                class="badge">
+
+                    ${
+                        course.published
+                        ? "Published"
+                        : "Draft"
+                    }
+
+                </span>
+
+            </article>
+
+            `
+        ).join("");
+
+}
+
+
+/*
+================================
+CREATE COURSE
+================================
+*/
+
+async function createCourse(
+    event
+) {
+
+
+    event.preventDefault();
+
+
+    const title =
+        document.getElementById(
+            "courseTitle"
+        ).value.trim();
+
+
+    const slug =
+        document.getElementById(
+            "courseSlug"
+        ).value.trim()
+        .toLowerCase();
+
+
+    const description =
+        document.getElementById(
+            "courseDescription"
+        ).value.trim();
+
+
+    const level =
+        document.getElementById(
+            "courseLevel"
+        ).value;
+
+
+    const message =
+        document.getElementById(
+            "message"
+        );
+
+
+    const {
+        error
+    } =
+    await supabaseClient
+
+        .from("courses")
+
+        .insert({
+
+            title,
+
+            slug,
+
+            description,
+
+            level,
+
+            published:true
+
+        });
+
+
+    if (error) {
+
+        message.className =
+            "message error";
+
+        message.textContent =
+            error.message;
+
+        return;
+
+    }
+
+
+    message.className =
+        "message success";
+
+
+    message.textContent =
+        "✓ Course created successfully.";
+
+
+    event.target.reset();
+
+
+    await loadStats();
+
+    await loadCourses();
+
+}
+
+
+/*
+================================
+LOGOUT
+================================
+*/
+
+async function logout() {
+
+    await supabaseClient.auth
+        .signOut();
+
+    location.href =
+        "login.html";
+
+}
+
+
+/*
+================================
+ESCAPE
+================================
+*/
+
+function escapeHTML(text) {
+
+    return String(text)
+
+        .replaceAll(
+            "&",
+            "&amp;"
+        )
+
+        .replaceAll(
+            "<",
+            "&lt;"
+        )
+
+        .replaceAll(
+            ">",
+            "&gt;"
+        )
+
+        .replaceAll(
+            '"',
+            "&quot;"
+        )
+
+        .replaceAll(
+            "'",
+            "&#039;"
+        );
+
+}
+
+
+init();
+
+</script>
+
+</body>
+
+</html>
+```

@@ -1,0 +1,1362 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
+
+<title>Student Dashboard | Tech Izack Academy</title>
+
+<link rel="stylesheet" href="style.css">
+
+<style>
+
+.dashboard-page {
+    padding:110px 20px 60px;
+}
+
+.dashboard-container {
+    max-width:1200px;
+    margin:auto;
+}
+
+/* HERO */
+
+.dashboard-hero {
+
+    background:
+        radial-gradient(
+            circle at top right,
+            rgba(0,217,255,.12),
+            transparent 35%
+        ),
+        var(--card);
+
+    border:1px solid var(--border);
+
+    border-radius:15px;
+
+    padding:30px;
+
+    margin-bottom:20px;
+}
+
+.dashboard-hero h1 {
+    font-family:Orbitron;
+}
+
+.dashboard-hero p {
+    color:var(--muted);
+}
+
+/* STATS */
+
+.stats {
+
+    display:grid;
+
+    grid-template-columns:
+        repeat(4, 1fr);
+
+    gap:15px;
+
+    margin-bottom:20px;
+}
+
+.stat-card {
+
+    background:var(--card);
+
+    border:1px solid var(--border);
+
+    border-radius:12px;
+
+    padding:22px;
+}
+
+.stat-icon {
+    font-size:28px;
+}
+
+.stat-value {
+
+    font-size:28px;
+
+    font-family:Orbitron;
+
+    color:var(--cyan);
+
+    margin-top:8px;
+}
+
+.stat-label {
+
+    color:var(--muted);
+
+    font-size:13px;
+
+    margin-top:5px;
+}
+
+/* COURSES */
+
+.section-card {
+
+    background:var(--card);
+
+    border:1px solid var(--border);
+
+    border-radius:15px;
+
+    padding:25px;
+
+    margin-bottom:20px;
+}
+
+.section-card h2 {
+    font-family:Orbitron;
+}
+
+/* COURSE */
+
+.course-card {
+
+    border:1px solid var(--border);
+
+    background:#041018;
+
+    border-radius:10px;
+
+    padding:20px;
+
+    margin-top:12px;
+
+}
+
+.course-top {
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    gap:15px;
+}
+
+.course-top h3 {
+    margin:0;
+}
+
+.progress {
+
+    height:8px;
+
+    background:#02070c;
+
+    border-radius:20px;
+
+    overflow:hidden;
+
+    margin:15px 0 8px;
+}
+
+.progress-bar {
+
+    height:100%;
+
+    background:
+        linear-gradient(
+            90deg,
+            #00d9ff,
+            #20d68a
+        );
+
+    transition:.5s;
+}
+
+.progress-text {
+
+    color:#9baab8;
+
+    font-size:13px;
+}
+
+/* QUIZ */
+
+.quiz-row {
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    gap:15px;
+
+    padding:15px 0;
+
+    border-bottom:
+        1px solid var(--border);
+
+}
+
+.quiz-row:last-child {
+    border-bottom:0;
+}
+
+.quiz-score {
+    font-family:Orbitron;
+    color:var(--cyan);
+}
+
+/* CERTIFICATE */
+
+.certificate-card {
+
+    background:
+        linear-gradient(
+            135deg,
+            #06151d,
+            #071018
+        );
+
+    border:1px solid #17495b;
+
+    border-radius:12px;
+
+    padding:25px;
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    gap:20px;
+}
+
+/* EMPTY */
+
+.empty {
+
+    text-align:center;
+
+    padding:35px;
+
+    color:#81909c;
+}
+
+/* RESPONSIVE */
+
+@media(max-width:900px) {
+
+    .stats {
+
+        grid-template-columns:
+            repeat(2, 1fr);
+
+    }
+
+}
+
+@media(max-width:600px) {
+
+    .stats {
+
+        grid-template-columns:1fr;
+
+    }
+
+    .course-top,
+    .certificate-card {
+
+        flex-direction:column;
+
+        align-items:flex-start;
+
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<header class="navbar">
+
+<div class="container nav-inner">
+
+
+<a
+href="index.html"
+class="logo">
+
+<span>&lt;</span>
+TECH IZACK
+<span>/&gt;</span>
+
+</a>
+
+
+<div
+style="
+display:flex;
+gap:10px;
+align-items:center;
+">
+
+<a
+href="academy.html"
+class="btn btn-outline">
+
+Academy
+
+</a>
+
+
+<button
+class="btn btn-outline"
+onclick="logout()">
+
+Logout
+
+</button>
+
+</div>
+
+
+</div>
+
+</header>
+
+
+<main class="dashboard-page">
+
+
+<div class="dashboard-container">
+
+
+<!-- HERO -->
+
+<section
+class="dashboard-hero">
+
+<span class="section-tag">
+
+// STUDENT PORTAL
+
+</span>
+
+
+<h1>
+
+Welcome back,
+<span
+id="studentName">
+
+Student
+
+</span> 👋
+
+</h1>
+
+
+<p>
+
+Continue your cybersecurity
+learning journey.
+
+</p>
+
+</section>
+
+
+<!-- STATS -->
+
+<section class="stats">
+
+
+<div class="stat-card">
+
+<div class="stat-icon">
+📚
+</div>
+
+<div
+id="courseCount"
+class="stat-value">
+
+0
+
+</div>
+
+<div class="stat-label">
+
+Courses
+
+</div>
+
+</div>
+
+
+<div class="stat-card">
+
+<div class="stat-icon">
+🧪
+</div>
+
+<div
+id="labCount"
+class="stat-value">
+
+0
+
+</div>
+
+<div class="stat-label">
+
+Labs Solved
+
+</div>
+
+</div>
+
+
+<div class="stat-card">
+
+<div class="stat-icon">
+🧠
+</div>
+
+<div
+id="quizCount"
+class="stat-value">
+
+0
+
+</div>
+
+<div class="stat-label">
+
+Quizzes Passed
+
+</div>
+
+</div>
+
+
+<div class="stat-card">
+
+<div class="stat-icon">
+🎓
+</div>
+
+<div
+id="certificateCount"
+class="stat-value">
+
+0
+
+</div>
+
+<div class="stat-label">
+
+Certificates
+
+</div>
+
+</div>
+
+
+</section>
+
+
+<!-- COURSES -->
+
+<section class="section-card">
+
+
+<h2>
+📚 My Courses
+</h2>
+
+
+<div
+id="courses">
+
+Loading courses...
+
+</div>
+
+
+</section>
+
+
+<!-- QUIZZES -->
+
+<section class="section-card">
+
+
+<h2>
+🧠 Quiz Results
+</h2>
+
+
+<div
+id="quizResults">
+
+Loading results...
+
+</div>
+
+
+</section>
+
+
+<!-- CERTIFICATES -->
+
+<section class="section-card">
+
+
+<h2>
+🎓 My Certificates
+</h2>
+
+
+<div
+id="certificates">
+
+Loading certificates...
+
+</div>
+
+
+</section>
+
+
+</div>
+
+</main>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
+<script>
+
+
+const SUPABASE_URL =
+"WEKA_PROJECT_URL_HAPA";
+
+
+const SUPABASE_KEY =
+"WEKA_PUBLISHABLE_KEY_HAPA";
+
+
+const supabaseClient =
+window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
+
+
+let user = null;
+
+let courses = [];
+
+let certificates = [];
+
+
+/* =========================
+   INIT
+========================= */
+
+async function init() {
+
+    const {
+        data
+    } =
+    await supabaseClient.auth
+        .getUser();
+
+
+    user =
+        data.user;
+
+
+    if (!user) {
+
+        location.href =
+            "login.html";
+
+        return;
+
+    }
+
+
+    setStudentName();
+
+
+    await loadCourses();
+
+    await loadLabs();
+
+    await loadQuizzes();
+
+    await loadCertificates();
+
+
+    renderCourses();
+
+}
+
+
+/* =========================
+   NAME
+========================= */
+
+function setStudentName() {
+
+    const metadata =
+        user.user_metadata || {};
+
+
+    const name =
+        metadata.full_name ||
+        metadata.name ||
+        user.email
+            ?.split("@")[0] ||
+        "Student";
+
+
+    document.getElementById(
+        "studentName"
+    ).textContent =
+        name;
+
+}
+
+
+/* =========================
+   COURSES
+========================= */
+
+async function loadCourses() {
+
+    const {
+        data,
+        error
+    } =
+    await supabaseClient
+
+        .from("course_access")
+
+        .select(`
+            id,
+            course_id,
+            active,
+            courses (
+                id,
+                title,
+                description
+            )
+        `)
+
+        .eq(
+            "user_id",
+            user.id
+        )
+
+        .eq(
+            "active",
+            true
+        );
+
+
+    if (error) {
+
+        console.error(error);
+
+        courses = [];
+
+        return;
+
+    }
+
+
+    courses =
+        data || [];
+
+
+    document.getElementById(
+        "courseCount"
+    ).textContent =
+        courses.length;
+
+}
+
+
+/* =========================
+   LABS
+========================= */
+
+async function loadLabs() {
+
+    const {
+        data,
+        error
+    } =
+    await supabaseClient
+
+        .from("lab_submissions")
+
+        .select("id")
+
+        .eq(
+            "user_id",
+            user.id
+        )
+
+        .eq(
+            "correct",
+            true
+        );
+
+
+    if (error) {
+
+        console.error(error);
+
+        return;
+
+    }
+
+
+    document.getElementById(
+        "labCount"
+    ).textContent =
+        data?.length || 0;
+
+}
+
+
+/* =========================
+   QUIZZES
+========================= */
+
+async function loadQuizzes() {
+
+    const {
+        data,
+        error
+    } =
+    await supabaseClient
+
+        .from("quiz_attempts")
+
+        .select(`
+            id,
+            quiz_id,
+            score,
+            passed,
+            completed_at,
+            quizzes (
+                title
+            )
+        `)
+
+        .eq(
+            "user_id",
+            user.id
+        )
+
+        .order(
+            "completed_at",
+            {
+                ascending:false
+            }
+        );
+
+
+    if (error) {
+
+        console.error(error);
+
+        return;
+
+    }
+
+
+    const passed =
+        (data || [])
+        .filter(
+            item =>
+                item.passed === true
+        );
+
+
+    document.getElementById(
+        "quizCount"
+    ).textContent =
+        passed.length;
+
+
+    renderQuizResults(
+        data || []
+    );
+
+}
+
+
+/* =========================
+   CERTIFICATES
+========================= */
+
+async function loadCertificates() {
+
+    const {
+        data,
+        error
+    } =
+    await supabaseClient
+
+        .from("certificates")
+
+        .select(`
+            certificate_id,
+            course_id,
+            course_title,
+            score,
+            issued_at
+        `)
+
+        .eq(
+            "user_id",
+            user.id
+        )
+
+        .order(
+            "issued_at",
+            {
+                ascending:false
+            }
+        );
+
+
+    if (error) {
+
+        console.error(error);
+
+        return;
+
+    }
+
+
+    certificates =
+        data || [];
+
+
+    document.getElementById(
+        "certificateCount"
+    ).textContent =
+        certificates.length;
+
+
+    renderCertificates();
+
+}
+
+
+/* =========================
+   RENDER COURSES
+========================= */
+
+async function renderCourses() {
+
+    const container =
+        document.getElementById(
+            "courses"
+        );
+
+
+    if (!courses.length) {
+
+        container.innerHTML = `
+
+            <div class="empty">
+
+                You haven't enrolled in
+                any courses yet.
+
+                <br><br>
+
+                <a
+                href="academy.html"
+                class="btn btn-primary">
+
+                    Explore Academy
+
+                </a>
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    let html = "";
+
+
+    for (
+        const access
+        of courses
+    ) {
+
+
+        const course =
+            access.courses;
+
+
+        const progress =
+            await getCourseProgress(
+                course.id
+            );
+
+
+        html += `
+
+            <div
+            class="course-card">
+
+
+                <div
+                class="course-top">
+
+
+                    <div>
+
+                        <h3>
+
+                            ${escapeHTML(
+                                course.title
+                            )}
+
+                        </h3>
+
+
+                        <p
+                        style="
+                        color:#81909c">
+
+                            ${escapeHTML(
+                                course.description ||
+                                ""
+                            )}
+
+                        </p>
+
+                    </div>
+
+
+                    <a
+                    href="course.html?id=${
+                        course.id
+                    }"
+                    class="btn btn-primary">
+
+                        ${
+                            progress === 100
+                            ? "Review Course"
+                            : "Continue Learning"
+                        }
+
+                    </a>
+
+
+                </div>
+
+
+                <div class="progress">
+
+                    <div
+                    class="progress-bar"
+                    style="width:${
+                        progress
+                    }%">
+
+                    </div>
+
+                </div>
+
+
+                <div
+                class="progress-text">
+
+                    ${progress}% completed
+
+                </div>
+
+
+            </div>
+
+        `;
+
+    }
+
+
+    container.innerHTML =
+        html;
+
+}
+
+
+/* =========================
+   COURSE PROGRESS
+========================= */
+
+async function getCourseProgress(
+    courseId
+) {
+
+    const {
+        data: lessons
+    } =
+    await supabaseClient
+
+        .from("lessons")
+
+        .select("id")
+
+        .eq(
+            "course_id",
+            courseId
+        );
+
+
+    if (!lessons?.length) {
+
+        return 0;
+
+    }
+
+
+    const lessonIds =
+        lessons.map(
+            lesson =>
+                lesson.id
+        );
+
+
+    const {
+        data: completed
+    } =
+    await supabaseClient
+
+        .from("lesson_progress")
+
+        .select("lesson_id")
+
+        .eq(
+            "user_id",
+            user.id
+        )
+
+        .eq(
+            "completed",
+            true
+        )
+
+        .in(
+            "lesson_id",
+            lessonIds
+        );
+
+
+    return Math.round(
+
+        (
+            (completed?.length || 0) /
+            lessons.length
+        ) * 100
+
+    );
+
+}
+
+
+/* =========================
+   QUIZ RESULTS
+========================= */
+
+function renderQuizResults(
+    results
+) {
+
+    const container =
+        document.getElementById(
+            "quizResults"
+        );
+
+
+    if (!results.length) {
+
+        container.innerHTML = `
+
+            <div class="empty">
+
+                No quiz attempts yet.
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    container.innerHTML =
+        results
+        .slice(0,10)
+        .map(
+            result => `
+
+                <div
+                class="quiz-row">
+
+
+                    <div>
+
+                        <strong>
+
+                            ${
+                                escapeHTML(
+                                    result.quizzes?.title ||
+                                    "Quiz"
+                                )
+                            }
+
+                        </strong>
+
+
+                        <div
+                        style="
+                        color:#81909c;
+                        font-size:12px">
+
+                            ${
+                                new Date(
+                                    result.completed_at
+                                )
+                                .toLocaleDateString()
+                            }
+
+                        </div>
+
+                    </div>
+
+
+                    <div
+                    class="quiz-score">
+
+                        ${result.score}%
+
+
+                        <span
+                        style="
+                        font-size:12px;
+                        color:${
+                            result.passed
+                            ? "#20d68a"
+                            : "#ff6475"
+                        }">
+
+                            ${
+                                result.passed
+                                ? " ✓ PASS"
+                                : " ✕ FAIL"
+                            }
+
+                        </span>
+
+                    </div>
+
+
+                </div>
+
+            `
+        )
+        .join("");
+
+}
+
+
+/* =========================
+   CERTIFICATES
+========================= */
+
+function renderCertificates() {
+
+    const container =
+        document.getElementById(
+            "certificates"
+        );
+
+
+    if (!certificates.length) {
+
+        container.innerHTML = `
+
+            <div class="empty">
+
+                Complete your courses to
+                earn certificates.
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    container.innerHTML =
+        certificates
+        .map(
+            cert => `
+
+                <div
+                class="certificate-card">
+
+
+                    <div>
+
+                        <h3>
+
+                            🎓 ${
+                                escapeHTML(
+                                    cert.course_title
+                                )
+                            }
+
+                        </h3>
+
+
+                        <p
+                        style="color:#9baab8">
+
+                            Score:
+                            ${
+                                cert.score ??
+                                "Completed"
+                            }%
+
+                            <br>
+
+                            Certificate ID:
+                            ${
+                                escapeHTML(
+                                    cert.certificate_id
+                                )
+                            }
+
+                        </p>
+
+                    </div>
+
+
+                    <a
+                    href="certificate.html?id=${
+                        encodeURIComponent(
+                            cert.certificate_id
+                        )
+                    }"
+                    class="btn btn-primary">
+
+                        View Certificate
+
+                    </a>
+
+
+                </div>
+
+            `
+        )
+        .join("");
+
+}
+
+
+/* =========================
+   LOGOUT
+========================= */
+
+async function logout() {
+
+    await supabaseClient.auth
+        .signOut();
+
+
+    location.href =
+        "login.html";
+
+}
+
+
+/* =========================
+   ESCAPE HTML
+========================= */
+
+function escapeHTML(text) {
+
+    return String(text)
+
+        .replaceAll(
+            "&",
+            "&amp;"
+        )
+
+        .replaceAll(
+            "<",
+            "&lt;"
+        )
+
+        .replaceAll(
+            ">",
+            "&gt;"
+        )
+
+        .replaceAll(
+            '"',
+            "&quot;"
+        )
+
+        .replaceAll(
+            "'",
+            "&#039;"
+        );
+
+}
+
+
+init();
+
+</script>
+
+</body>
+
+</html>
+```

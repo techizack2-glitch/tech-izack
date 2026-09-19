@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
+
+<title>Lesson Builder | Tech Izack</title>
+
+<link rel="stylesheet"
+      href="style.css">
+
+<style>
+
+.builder {
+    padding:130px 0 80px;
+}
+
+.builder-card {
+    max-width:900px;
+    margin:auto;
+    background:var(--card);
+    border:1px solid var(--border);
+    padding:35px;
+    border-radius:10px;
+}
+
+.form-group {
+    margin-bottom:20px;
+}
+
+.form-group label {
+    display:block;
+    margin-bottom:8px;
+    color:var(--muted);
+    font-size:14px;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+    width:100%;
+    padding:14px;
+    background:#050b14;
+    border:1px solid var(--border);
+    color:white;
+    border-radius:6px;
+}
+
+.form-group textarea {
+    min-height:220px;
+    resize:vertical;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<header class="navbar">
+
+<div class="container nav-inner">
+
+<a href="admin.html"
+   class="logo">
+
+<span>&lt;</span>
+TECH IZACK
+<span>/&gt;</span>
+
+</a>
+
+<a href="admin.html"
+   class="btn btn-outline">
+
+Admin
+
+</a>
+
+</div>
+
+</header>
+
+
+<main class="builder">
+
+<div class="container">
+
+<div class="builder-card">
+
+<span class="section-tag">
+// LESSON BUILDER
+</span>
+
+<h1 style="font-family:Orbitron;margin:15px 0 30px">
+Create Lesson
+</h1>
+
+
+<form id="lessonForm">
+
+<div class="form-group">
+
+<label>
+Course
+</label>
+
+<select id="courseId"
+        required>
+
+<option value="">
+Loading courses...
+</option>
+
+</select>
+
+</div>
+
+
+<div class="form-group">
+
+<label>
+Lesson Title
+</label>
+
+<input
+id="lessonTitle"
+placeholder="Example: Linux Terminal Fundamentals"
+required>
+
+</div>
+
+
+<div class="form-group">
+
+<label>
+Lesson Content
+</label>
+
+<textarea
+id="lessonContent"
+placeholder="Write your lesson here..."
+required></textarea>
+
+</div>
+
+
+<div class="form-group">
+
+<label>
+Video URL
+</label>
+
+<input
+id="videoUrl"
+type="url"
+placeholder="https://...">
+
+</div>
+
+
+<div class="form-group">
+
+<label>
+Lesson Order
+</label>
+
+<input
+id="lessonOrder"
+type="number"
+value="1"
+min="1">
+
+</div>
+
+
+<button
+class="btn btn-primary"
+type="submit">
+
+Create Lesson
+
+</button>
+
+</form>
+
+<p id="message"
+   style="margin-top:20px">
+</p>
+
+</div>
+
+</div>
+
+</main>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+
+const SUPABASE_URL =
+"WEKA_PROJECT_URL_HAPA";
+
+const SUPABASE_KEY =
+"WEKA_PUBLISHABLE_KEY_HAPA";
+
+const supabaseClient =
+window.supabase.createClient(
+SUPABASE_URL,
+SUPABASE_KEY
+);
+
+
+// ==========================
+// ADMIN CHECK
+// ==========================
+
+async function checkAdmin() {
+
+const {
+data:{user}
+} = await supabaseClient
+.auth
+.getUser();
+
+if (!user) {
+
+location.href =
+"index.html";
+
+return false;
+
+}
+
+
+const {
+data:profile
+} = await supabaseClient
+.from("profiles")
+.select("role")
+.eq("id",user.id)
+.single();
+
+
+if (
+!profile ||
+profile.role !== "admin"
+) {
+
+alert("Admin access required.");
+
+location.href =
+"dashboard.html";
+
+return false;
+
+}
+
+return true;
+
+}
+
+
+// ==========================
+// LOAD COURSES
+// ==========================
+
+async function loadCourses() {
+
+const {
+data,
+error
+} = await supabaseClient
+.from("courses")
+.select("id,title")
+.order("id");
+
+
+const select =
+document.getElementById(
+"courseId"
+);
+
+
+if (error) {
+
+select.innerHTML =
+"<option>Error loading courses</option>";
+
+return;
+
+}
+
+
+select.innerHTML =
+`<option value="">
+Select course
+</option>`;
+
+
+data.forEach(course => {
+
+select.innerHTML += `
+
+<option value="${course.id}">
+${escapeHTML(course.title)}
+</option>
+
+`;
+
+});
+
+}
+
+
+// ==========================
+// CREATE LESSON
+// ==========================
+
+document
+.getElementById("lessonForm")
+.addEventListener(
+"submit",
+async function(e) {
+
+e.preventDefault();
+
+
+const courseId =
+document
+.getElementById("courseId")
+.value;
+
+
+const title =
+document
+.getElementById("lessonTitle")
+.value
+.trim();
+
+
+const content =
+document
+.getElementById("lessonContent")
+.value
+.trim();
+
+
+const videoUrl =
+document
+.getElementById("videoUrl")
+.value
+.trim();
+
+
+const lessonOrder =
+Number(
+document
+.getElementById("lessonOrder")
+.value
+);
+
+
+const {
+error
+} = await supabaseClient
+.from("lessons")
+.insert({
+
+course_id:
+Number(courseId),
+
+title,
+
+content,
+
+video_url:
+videoUrl || null,
+
+lesson_order:
+lessonOrder
+
+});
+
+
+const message =
+document.getElementById(
+"message"
+);
+
+
+if (error) {
+
+message.style.color =
+"#ff6475";
+
+message.textContent =
+error.message;
+
+return;
+
+}
+
+
+message.style.color =
+"#20d68a";
+
+message.textContent =
+"Lesson created successfully!";
+
+
+this.reset();
+
+});
+
+
+// ==========================
+// ESCAPE
+// ==========================
+
+function escapeHTML(text) {
+
+return String(text)
+.replaceAll("&","&amp;")
+.replaceAll("<","&lt;")
+.replaceAll(">","&gt;")
+.replaceAll('"',"&quot;")
+.replaceAll("'","&#039;");
+
+}
+
+
+// ==========================
+
+(async()=>{
+
+const allowed =
+await checkAdmin();
+
+if (allowed) {
+
+await loadCourses();
+
+}
+
+})();
+
+</script>
+
+</body>
+
+</html>

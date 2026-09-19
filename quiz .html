@@ -1,0 +1,718 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>Quiz | Tech Izack</title>
+
+<link rel="stylesheet" href="style.css">
+
+<style>
+
+.quiz-page {
+    padding:110px 0 70px;
+}
+
+.quiz-header {
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:30px;
+    margin-bottom:25px;
+}
+
+.quiz-header h1 {
+    font-family:Orbitron;
+    margin:12px 0;
+}
+
+.quiz-container {
+    max-width:900px;
+    margin:auto;
+}
+
+.question {
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:25px;
+    margin-bottom:18px;
+}
+
+.question h3 {
+    margin-bottom:20px;
+    line-height:1.6;
+}
+
+.option {
+    display:block;
+    padding:15px;
+    margin:10px 0;
+    border:1px solid var(--border);
+    border-radius:7px;
+    cursor:pointer;
+    transition:.2s;
+}
+
+.option:hover {
+    border-color:var(--cyan);
+    background:#071522;
+}
+
+.option input {
+    margin-right:10px;
+}
+
+.quiz-result {
+    display:none;
+    text-align:center;
+    padding:35px;
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:10px;
+    margin-top:25px;
+}
+
+.score {
+    font-family:Orbitron;
+    font-size:48px;
+    color:var(--cyan);
+    margin:15px 0;
+}
+
+.passed {
+    color:#20d68a;
+}
+
+.failed {
+    color:#ff6475;
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<header class="navbar">
+
+<div class="container nav-inner">
+
+<a href="index.html"
+class="logo">
+
+<span>&lt;</span>
+TECH IZACK
+<span>/&gt;</span>
+
+</a>
+
+<a href="student-dashboard.html"
+class="btn btn-outline">
+
+Dashboard
+
+</a>
+
+</div>
+
+</header>
+
+
+<main class="quiz-page">
+
+<div class="container quiz-container">
+
+
+<section class="quiz-header">
+
+<span class="section-tag">
+// KNOWLEDGE CHECK
+</span>
+
+<h1 id="quizTitle">
+Loading Quiz...
+</h1>
+
+<p id="quizDescription"
+style="color:var(--muted)">
+</p>
+
+</section>
+
+
+<form id="quizForm">
+
+<div id="questions">
+
+Loading questions...
+
+</div>
+
+
+<button
+type="submit"
+id="submitButton"
+class="btn btn-primary"
+style="width:100%;">
+
+Submit Quiz
+
+</button>
+
+</form>
+
+
+<section
+id="result"
+class="quiz-result">
+
+<span class="section-tag">
+// RESULT
+</span>
+
+<h2>
+Quiz Completed
+</h2>
+
+<div
+id="score"
+class="score">
+
+0%
+
+</div>
+
+<h3 id="resultStatus"></h3>
+
+<p id="resultMessage"
+style="color:var(--muted);">
+</p>
+
+<br>
+
+<a
+href="student-dashboard.html"
+class="btn btn-primary">
+
+Back to Dashboard
+
+</a>
+
+</section>
+
+
+</div>
+
+</main>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+
+
+const SUPABASE_URL =
+"WEKA_PROJECT_URL_HAPA";
+
+const SUPABASE_KEY =
+"WEKA_PUBLISHABLE_KEY_HAPA";
+
+
+const supabaseClient =
+window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
+
+
+const params =
+new URLSearchParams(
+    location.search
+);
+
+const quizId =
+params.get("id");
+
+
+let user;
+let quiz;
+let questions = [];
+
+
+// ======================================
+// INIT
+// ======================================
+
+async function init() {
+
+    const {
+        data:{user:currentUser}
+    } =
+    await supabaseClient
+        .auth
+        .getUser();
+
+
+    if (!currentUser) {
+
+        location.href =
+        "login.html";
+
+        return;
+
+    }
+
+
+    user =
+    currentUser;
+
+
+    await loadQuiz();
+
+}
+
+
+// ======================================
+// LOAD QUIZ
+// ======================================
+
+async function loadQuiz() {
+
+    const {
+        data,
+        error
+    } =
+    await supabaseClient
+        .from("quizzes")
+        .select("*")
+        .eq(
+            "id",
+            quizId
+        )
+        .single();
+
+
+    if (error || !data) {
+
+        document.getElementById(
+            "quizTitle"
+        ).textContent =
+        "Quiz not found.";
+
+        return;
+
+    }
+
+
+    quiz = data;
+
+
+    document.getElementById(
+        "quizTitle"
+    ).textContent =
+    quiz.title;
+
+
+    document.getElementById(
+        "quizDescription"
+    ).textContent =
+    quiz.description || "";
+
+
+    await loadQuestions();
+
+}
+
+
+// ======================================
+// QUESTIONS
+// ======================================
+
+async function loadQuestions() {
+
+    const {
+        data,
+        error
+    } =
+    await supabaseClient
+        .from("quiz_questions")
+        .select("*")
+        .eq(
+            "quiz_id",
+            quizId
+        )
+        .order(
+            "question_order"
+        );
+
+
+    if (error) {
+
+        document.getElementById(
+            "questions"
+        ).textContent =
+        error.message;
+
+        return;
+
+    }
+
+
+    questions =
+    data || [];
+
+
+    renderQuestions();
+
+}
+
+
+// ======================================
+// RENDER
+// ======================================
+
+function renderQuestions() {
+
+    const container =
+    document.getElementById(
+        "questions"
+    );
+
+
+    if (!questions.length) {
+
+        container.innerHTML = `
+
+            <div class="question">
+
+                <h3>
+                    No questions available.
+                </h3>
+
+            </div>
+
+        `;
+
+        document.getElementById(
+            "submitButton"
+        ).style.display =
+        "none";
+
+        return;
+
+    }
+
+
+    container.innerHTML =
+    questions.map(
+        (q,index) => `
+
+        <div class="question">
+
+            <h3>
+
+                ${index + 1}.
+                ${escapeHTML(
+                    q.question
+                )}
+
+            </h3>
+
+
+            ${option(
+                q.id,
+                "a",
+                q.option_a
+            )}
+
+            ${option(
+                q.id,
+                "b",
+                q.option_b
+            )}
+
+            ${option(
+                q.id,
+                "c",
+                q.option_c
+            )}
+
+            ${option(
+                q.id,
+                "d",
+                q.option_d
+            )}
+
+        </div>
+
+        `
+    ).join("");
+
+}
+
+
+// ======================================
+// OPTION
+// ======================================
+
+function option(
+    questionId,
+    value,
+    text
+) {
+
+    return `
+
+        <label class="option">
+
+            <input
+            type="radio"
+            name="question-${questionId}"
+            value="${value}"
+            required>
+
+            ${escapeHTML(text)}
+
+        </label>
+
+    `;
+
+}
+
+
+// ======================================
+// SUBMIT
+// ======================================
+
+document
+.getElementById(
+    "quizForm"
+)
+.addEventListener(
+    "submit",
+    async event => {
+
+        event.preventDefault();
+
+
+        const form =
+        new FormData(event.target);
+
+
+        let earned = 0;
+
+        let total = 0;
+
+
+        questions.forEach(
+            question => {
+
+                const answer =
+                form.get(
+                    `question-${question.id}`
+                );
+
+
+                total +=
+                Number(
+                    question.points || 0
+                );
+
+
+                if (
+                    answer ===
+                    question.correct_answer
+                ) {
+
+                    earned +=
+                    Number(
+                        question.points || 0
+                    );
+
+                }
+
+            }
+        );
+
+
+        const percentage =
+        total > 0
+        ? Math.round(
+            (earned / total) * 100
+        )
+        : 0;
+
+
+        const passed =
+        percentage >=
+        Number(
+            quiz.passing_score || 70
+        );
+
+
+        const {
+            error
+        } =
+        await supabaseClient
+            .from("quiz_attempts")
+            .insert({
+
+                quiz_id:
+                Number(quizId),
+
+                user_id:
+                user.id,
+
+                score:
+                percentage,
+
+                total_points:
+                total,
+
+                passed:
+                passed
+
+            });
+
+
+        if (error) {
+
+            alert(
+                error.message
+            );
+
+            return;
+
+        }
+
+
+        showResult(
+            percentage,
+            earned,
+            total,
+            passed
+        );
+
+    }
+);
+
+
+// ======================================
+// RESULT
+// ======================================
+
+function showResult(
+    percentage,
+    earned,
+    total,
+    passed
+) {
+
+    document.getElementById(
+        "quizForm"
+    ).style.display =
+    "none";
+
+
+    const result =
+    document.getElementById(
+        "result"
+    );
+
+
+    result.style.display =
+    "block";
+
+
+    document.getElementById(
+        "score"
+    ).textContent =
+    percentage + "%";
+
+
+    const status =
+    document.getElementById(
+        "resultStatus"
+    );
+
+
+    status.textContent =
+    passed
+    ? "✓ PASSED"
+    : "✗ NOT PASSED";
+
+
+    status.className =
+    passed
+    ? "passed"
+    : "failed";
+
+
+    document.getElementById(
+        "resultMessage"
+    ).textContent =
+
+    `You earned ${earned} out of ${total} points. ` +
+
+    (
+        passed
+        ? "Congratulations! You completed this quiz."
+        : `You need ${quiz.passing_score}% to pass.`
+    );
+
+}
+
+
+// ======================================
+// ESCAPE
+// ======================================
+
+function escapeHTML(text) {
+
+    return String(text)
+
+        .replaceAll(
+            "&",
+            "&amp;"
+        )
+
+        .replaceAll(
+            "<",
+            "&lt;"
+        )
+
+        .replaceAll(
+            ">",
+            "&gt;"
+        )
+
+        .replaceAll(
+            '"',
+            "&quot;"
+        )
+
+        .replaceAll(
+            "'",
+            "&#039;"
+        );
+
+}
+
+
+init();
+
+</script>
+
+</body>
+
+</html>
+```

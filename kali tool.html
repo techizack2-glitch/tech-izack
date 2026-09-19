@@ -1,0 +1,717 @@
+```html
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>
+Kali Tool Lab | Tech Izack
+</title>
+
+<link
+rel="stylesheet"
+href="style.css">
+
+<style>
+
+.tool-page {
+
+    padding:110px 20px 70px;
+
+}
+
+
+.tool-container {
+
+    max-width:900px;
+
+    margin:auto;
+
+}
+
+
+.panel {
+
+    background:var(--card);
+
+    border:1px solid var(--border);
+
+    border-radius:10px;
+
+    padding:28px;
+
+    margin-bottom:20px;
+
+}
+
+
+.tool-title {
+
+    font-family:Orbitron;
+
+    font-size:38px;
+
+    margin:15px 0;
+
+}
+
+
+.panel h2 {
+
+    font-family:Orbitron;
+
+    font-size:20px;
+
+    margin-bottom:15px;
+
+}
+
+
+.text {
+
+    color:var(--muted);
+
+    line-height:1.8;
+
+}
+
+
+.lab-warning {
+
+    border-left:4px solid #ffb020;
+
+    background:#151005;
+
+    padding:18px;
+
+    color:#d8c49a;
+
+    line-height:1.7;
+
+}
+
+
+.command {
+
+    background:#02060b;
+
+    color:#20d68a;
+
+    padding:20px;
+
+    border-radius:7px;
+
+    overflow:auto;
+
+    font-family:monospace;
+
+}
+
+
+.question {
+
+    font-size:19px;
+
+    line-height:1.6;
+
+}
+
+
+.answer {
+
+    display:block;
+
+    padding:14px;
+
+    margin:10px 0;
+
+    border:1px solid var(--border);
+
+    border-radius:7px;
+
+    cursor:pointer;
+
+}
+
+
+.answer:hover {
+
+    border-color:var(--cyan);
+
+}
+
+
+.feedback {
+
+    display:none;
+
+    margin-top:20px;
+
+    padding:20px;
+
+    border-radius:7px;
+
+}
+
+
+.feedback.correct {
+
+    display:block;
+
+    border:1px solid #20d68a;
+
+    background:#061a14;
+
+}
+
+
+.feedback.wrong {
+
+    display:block;
+
+    border:1px solid #ff6475;
+
+    background:#1a080c;
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<header class="navbar">
+
+<div class="container nav-inner">
+
+
+<a
+href="kali-linux.html"
+class="logo">
+
+<span>&lt;</span>
+
+TECH IZACK
+
+<span>/&gt;</span>
+
+</a>
+
+
+<a
+href="student-dashboard.html"
+class="btn btn-outline">
+
+Dashboard
+
+</a>
+
+
+</div>
+
+</header>
+
+
+<main class="tool-page">
+
+
+<div class="tool-container">
+
+
+<section class="panel">
+
+
+<span
+id="category"
+class="section-tag">
+
+// LOADING
+
+</span>
+
+
+<h1
+id="toolName"
+class="tool-title">
+
+Loading...
+
+</h1>
+
+
+<span
+id="level"
+class="badge">
+
+</span>
+
+
+<p
+id="description"
+class="text">
+
+</p>
+
+
+</section>
+
+
+<section class="panel">
+
+
+<h2>
+Purpose
+</h2>
+
+
+<p
+id="purpose"
+class="text">
+
+</p>
+
+
+</section>
+
+
+<section class="panel">
+
+
+<h2>
+Authorized Practical Lab
+</h2>
+
+
+<div
+class="lab-warning">
+
+⚠ Practice only on systems,
+virtual machines, applications,
+or networks that you own or have
+explicit permission to test.
+
+</div>
+
+
+<p
+id="instructions"
+class="text">
+
+</p>
+
+
+<h2
+style="margin-top:25px;">
+
+Example Lab Command
+
+</h2>
+
+
+<pre
+id="command"
+class="command">
+
+</pre>
+
+
+</section>
+
+
+<section class="panel">
+
+
+<h2>
+Knowledge Check
+</h2>
+
+
+<p
+id="question"
+class="question">
+
+Loading...
+
+</p>
+
+
+<div id="answers">
+
+</div>
+
+
+<button
+class="btn btn-primary"
+onclick="checkAnswer()">
+
+Check Answer
+
+</button>
+
+
+<div
+id="feedback"
+class="feedback">
+
+</div>
+
+
+</section>
+
+
+</div>
+
+</main>
+
+
+<script
+src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+</script>
+
+
+<script>
+
+
+const SUPABASE_URL =
+"WEKA_PROJECT_URL_HAPA";
+
+
+const SUPABASE_KEY =
+"WEKA_PUBLISHABLE_KEY_HAPA";
+
+
+const supabaseClient =
+window.supabase.createClient(
+
+    SUPABASE_URL,
+
+    SUPABASE_KEY
+
+);
+
+
+let tool;
+
+
+async function loadTool() {
+
+    const id =
+        new URLSearchParams(
+            location.search
+        ).get("id");
+
+
+    if (!id) {
+
+        showError(
+            "Tool not found."
+        );
+
+        return;
+
+    }
+
+
+    const {
+        data,
+        error
+    } =
+    await supabaseClient
+
+        .from("kali_tools")
+
+        .select("*")
+
+        .eq(
+            "id",
+            id
+        )
+
+        .eq(
+            "published",
+            true
+        )
+
+        .single();
+
+
+    if (error || !data) {
+
+        showError(
+            "Tool not found."
+        );
+
+        return;
+
+    }
+
+
+    tool =
+        data;
+
+
+    document.getElementById(
+        "category"
+    ).textContent =
+
+        "// " +
+        tool.category;
+
+
+    document.getElementById(
+        "toolName"
+    ).textContent =
+
+        tool.name;
+
+
+    document.getElementById(
+        "level"
+    ).textContent =
+
+        tool.level;
+
+
+    document.getElementById(
+        "description"
+    ).textContent =
+
+        tool.description || "";
+
+
+    document.getElementById(
+        "purpose"
+    ).textContent =
+
+        tool.purpose || "";
+
+
+    document.getElementById(
+        "instructions"
+    ).textContent =
+
+        tool.lab_instructions || "";
+
+
+    document.getElementById(
+        "command"
+    ).textContent =
+
+        tool.safe_command || "";
+
+
+    document.getElementById(
+        "question"
+    ).textContent =
+
+        tool.quiz_question || "";
+
+
+    renderAnswers();
+
+}
+
+
+function renderAnswers() {
+
+    const container =
+        document.getElementById(
+            "answers"
+        );
+
+
+    /*
+      For the first version,
+      create the answer choices
+      from a small predefined set.
+    */
+
+
+    container.innerHTML = `
+
+        <label class="answer">
+
+            <input
+            type="radio"
+            name="answer"
+            value="correct">
+
+            Network discovery and security auditing
+
+        </label>
+
+
+        <label class="answer">
+
+            <input
+            type="radio"
+            name="answer"
+            value="wrong">
+
+            Video editing
+
+        </label>
+
+
+        <label class="answer">
+
+            <input
+            type="radio"
+            name="answer"
+            value="wrong">
+
+            Photo manipulation
+
+        </label>
+
+
+        <label class="answer">
+
+            <input
+            type="radio"
+            name="answer"
+            value="wrong">
+
+            Music production
+
+        </label>
+
+    `;
+
+}
+
+
+function checkAnswer() {
+
+    const selected =
+        document.querySelector(
+            'input[name="answer"]:checked'
+        );
+
+
+    const feedback =
+        document.getElementById(
+            "feedback"
+        );
+
+
+    if (!selected) {
+
+        alert(
+            "Choose an answer first."
+        );
+
+        return;
+
+    }
+
+
+    if (
+        selected.value ===
+        "correct"
+    ) {
+
+        feedback.className =
+            "feedback correct";
+
+
+        feedback.innerHTML = `
+
+            <strong>
+                ✓ Correct
+            </strong>
+
+            <p>
+
+                Good work. You identified
+                the primary defensive purpose
+                of this tool.
+
+            </p>
+
+        `;
+
+    }
+
+    else {
+
+        feedback.className =
+            "feedback wrong";
+
+
+        feedback.innerHTML = `
+
+            <strong>
+                ✗ Try again
+            </strong>
+
+            <p>
+
+                Review the tool description
+                and lab section, then try
+                again.
+
+            </p>
+
+        `;
+
+    }
+
+}
+
+
+function showError(message) {
+
+    document.body.innerHTML = `
+
+        <div style="
+            color:white;
+            text-align:center;
+            padding:100px;
+        ">
+
+            <h1>
+                ${message}
+            </h1>
+
+            <a
+            href="kali-linux.html"
+            class="btn btn-primary">
+
+                Back to Kali Linux
+
+            </a>
+
+        </div>
+
+    `;
+
+}
+
+
+loadTool();
+
+</script>
+
+</body>
+
+</html>
+```
+<a
+id="startQuiz"
+class="btn btn-primary"
+href="#">
+
+🧠 Start Quiz
+
+</a>

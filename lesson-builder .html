@@ -1,0 +1,717 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>Lesson Builder | Tech Izack</title>
+
+<link rel="stylesheet"
+href="style.css">
+
+<style>
+
+.builder-page {
+    padding:120px 0 80px;
+}
+
+.builder-card {
+    max-width:900px;
+    margin:auto;
+
+    background:var(--card);
+
+    border:1px solid var(--border);
+
+    border-radius:10px;
+
+    padding:35px;
+}
+
+.form-group {
+    margin-bottom:22px;
+}
+
+.form-group label {
+    display:block;
+    margin-bottom:8px;
+    color:#b9c6d6;
+}
+
+input,
+textarea,
+select {
+    width:100%;
+    padding:14px;
+
+    background:#050b14;
+    color:white;
+
+    border:1px solid var(--border);
+
+    border-radius:6px;
+}
+
+textarea {
+    min-height:250px;
+    resize:vertical;
+}
+
+.form-row {
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:20px;
+}
+
+.message {
+    margin-top:20px;
+}
+
+.success {
+    color:#20d68a;
+}
+
+.error {
+    color:#ff6475;
+}
+
+@media(max-width:700px) {
+
+    .form-row {
+        grid-template-columns:1fr;
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+<header class="navbar">
+
+<div class="container nav-inner">
+
+<a
+href="admin-dashboard.html"
+class="logo">
+
+<span>&lt;</span>
+TECH IZACK
+<span>/&gt;</span>
+
+</a>
+
+<a
+href="admin-dashboard.html"
+class="btn btn-outline">
+
+Admin
+
+</a>
+
+</div>
+
+</header>
+
+
+<main class="builder-page">
+
+<div class="container">
+
+<div class="builder-card">
+
+<span class="section-tag">
+// ACADEMY / LESSON BUILDER
+</span>
+
+
+<h1
+style="
+font-family:Orbitron;
+margin:15px 0 30px;
+">
+
+Create Lesson
+
+</h1>
+
+
+<form id="lessonForm">
+
+
+<div class="form-group">
+
+<label>
+Course *
+</label>
+
+<select
+id="courseId"
+required>
+
+<option value="">
+Loading courses...
+</option>
+
+</select>
+
+</div>
+
+
+<div class="form-group">
+
+<label>
+Lesson Title *
+</label>
+
+<input
+id="title"
+placeholder="Introduction to Linux"
+required>
+
+</div>
+
+
+<div class="form-row">
+
+<div class="form-group">
+
+<label>
+Lesson Order
+</label>
+
+<input
+id="lessonOrder"
+type="number"
+min="1"
+value="1">
+
+</div>
+
+
+<div class="form-group">
+
+<label>
+Video URL
+</label>
+
+<input
+id="videoUrl"
+type="url"
+placeholder="https://youtube.com/...">
+
+</div>
+
+</div>
+
+
+<div class="form-group">
+
+<label>
+Lesson Content *
+</label>
+
+<textarea
+id="content"
+placeholder="Write the lesson content here..."
+required>
+</textarea>
+
+</div>
+
+
+<div class="form-group">
+
+<label>
+
+<input
+id="published"
+type="checkbox">
+
+&nbsp;
+
+Publish lesson
+
+</label>
+
+</div>
+
+
+<button
+type="submit"
+class="btn btn-primary">
+
+Save Lesson →
+
+</button>
+
+
+<p
+id="message"
+class="message">
+</p>
+
+
+</form>
+
+</div>
+
+</div>
+
+</main>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+
+
+const SUPABASE_URL =
+"WEKA_PROJECT_URL_HAPA";
+
+
+const SUPABASE_KEY =
+"WEKA_PUBLISHABLE_KEY_HAPA";
+
+
+const supabaseClient =
+window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
+
+
+const params =
+new URLSearchParams(
+    window.location.search
+);
+
+
+const lessonId =
+params.get("id");
+
+
+let editing = false;
+
+
+// ==========================
+// ADMIN
+// ==========================
+
+async function checkAdmin() {
+
+    const {
+        data:{user}
+    } =
+    await supabaseClient
+        .auth
+        .getUser();
+
+
+    if (!user) {
+
+        location.href =
+        "index.html";
+
+        return false;
+
+    }
+
+
+    const {
+        data:profile
+    } =
+    await supabaseClient
+        .from("profiles")
+        .select("role")
+        .eq("id",user.id)
+        .single();
+
+
+    if (
+        !profile ||
+        profile.role !== "admin"
+    ) {
+
+        location.href =
+        "dashboard.html";
+
+        return false;
+
+    }
+
+
+    return true;
+
+}
+
+
+// ==========================
+// COURSES
+// ==========================
+
+async function loadCourses() {
+
+    const {
+        data,
+        error
+    } =
+    await supabaseClient
+        .from("courses")
+        .select("id,title")
+        .order("title");
+
+
+    if (error) {
+
+        showMessage(
+            error.message,
+            true
+        );
+
+        return;
+
+    }
+
+
+    const select =
+    document.getElementById(
+        "courseId"
+    );
+
+
+    select.innerHTML = `
+        <option value="">
+            Select course
+        </option>
+    `;
+
+
+    data.forEach(
+        course => {
+
+            select.innerHTML += `
+
+            <option
+            value="${course.id}">
+
+            ${escapeHTML(
+                course.title
+            )}
+
+            </option>
+
+            `;
+
+        }
+    );
+
+}
+
+
+// ==========================
+// LOAD LESSON
+// ==========================
+
+async function loadLesson() {
+
+    if (!lessonId) return;
+
+
+    editing = true;
+
+
+    const {
+        data,
+        error
+    } =
+    await supabaseClient
+        .from("lessons")
+        .select("*")
+        .eq("id",lessonId)
+        .single();
+
+
+    if (error || !data) {
+
+        showMessage(
+            "Lesson not found.",
+            true
+        );
+
+        return;
+
+    }
+
+
+    document.getElementById(
+        "courseId"
+    ).value =
+    data.course_id;
+
+
+    document.getElementById(
+        "title"
+    ).value =
+    data.title || "";
+
+
+    document.getElementById(
+        "lessonOrder"
+    ).value =
+    data.lesson_order || 1;
+
+
+    document.getElementById(
+        "videoUrl"
+    ).value =
+    data.video_url || "";
+
+
+    document.getElementById(
+        "content"
+    ).value =
+    data.content || "";
+
+
+    document.getElementById(
+        "published"
+    ).checked =
+    data.published === true;
+
+
+    document.querySelector(
+        "h1"
+    ).textContent =
+    "Edit Lesson";
+
+
+    document.querySelector(
+        "#lessonForm button"
+    ).textContent =
+    "Update Lesson →";
+
+}
+
+
+// ==========================
+// SAVE
+// ==========================
+
+document
+.getElementById("lessonForm")
+.addEventListener(
+"submit",
+async function(event) {
+
+    event.preventDefault();
+
+
+    const payload = {
+
+        course_id:
+        Number(
+            document
+            .getElementById(
+                "courseId"
+            )
+            .value
+        ),
+
+        title:
+        document
+        .getElementById(
+            "title"
+        )
+        .value
+        .trim(),
+
+        lesson_order:
+        Number(
+            document
+            .getElementById(
+                "lessonOrder"
+            )
+            .value
+        ),
+
+        video_url:
+        document
+        .getElementById(
+            "videoUrl"
+        )
+        .value
+        .trim() || null,
+
+        content:
+        document
+        .getElementById(
+            "content"
+        )
+        .value
+        .trim(),
+
+        published:
+        document
+        .getElementById(
+            "published"
+        )
+        .checked
+
+    };
+
+
+    if (
+        !payload.course_id ||
+        !payload.title ||
+        !payload.content
+    ) {
+
+        showMessage(
+            "Course, title and content are required.",
+            true
+        );
+
+        return;
+
+    }
+
+
+    let result;
+
+
+    if (editing) {
+
+        result =
+        await supabaseClient
+            .from("lessons")
+            .update(payload)
+            .eq(
+                "id",
+                lessonId
+            );
+
+    } else {
+
+        result =
+        await supabaseClient
+            .from("lessons")
+            .insert(payload);
+
+    }
+
+
+    if (result.error) {
+
+        showMessage(
+            result.error.message,
+            true
+        );
+
+        return;
+
+    }
+
+
+    showMessage(
+        editing
+        ? "✓ Lesson updated successfully!"
+        : "✓ Lesson created successfully!",
+        false
+    );
+
+
+    if (!editing) {
+
+        setTimeout(
+            () => {
+
+                location.href =
+                "admin-dashboard.html";
+
+            },
+            1000
+        );
+
+    }
+
+});
+
+
+// ==========================
+
+function showMessage(
+    text,
+    error
+) {
+
+    const element =
+    document.getElementById(
+        "message"
+    );
+
+
+    element.textContent =
+    text;
+
+
+    element.className =
+    "message " +
+    (
+        error
+        ? "error"
+        : "success"
+    );
+
+}
+
+
+// ==========================
+
+function escapeHTML(text) {
+
+    return String(text)
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+
+}
+
+
+// ==========================
+
+(async()=>{
+
+    const allowed =
+    await checkAdmin();
+
+    if (!allowed) return;
+
+    await loadCourses();
+
+    await loadLesson();
+
+})();
+
+</script>
+
+</body>
+</html>
+```
+<a
+href="quiz.html?id=1"
+class="btn btn-primary">
+
+🧠 Start Quiz →
+
+</a>

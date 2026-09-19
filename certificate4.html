@@ -1,0 +1,629 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0">
+
+<title>Certificate | Tech Izack Academy</title>
+
+<link rel="stylesheet" href="style.css">
+
+<style>
+
+.certificate-page {
+    min-height:100vh;
+    padding:100px 20px 60px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+.certificate-wrapper {
+    width:100%;
+    max-width:1050px;
+}
+
+.certificate {
+
+    position:relative;
+
+    background:
+        radial-gradient(
+            circle at top right,
+            rgba(0,217,255,.12),
+            transparent 30%
+        ),
+        #071018;
+
+    border:2px solid #00d9ff;
+
+    padding:70px 60px;
+
+    text-align:center;
+
+    box-shadow:
+        0 0 40px
+        rgba(0,217,255,.15);
+
+    overflow:hidden;
+}
+
+.certificate::before {
+
+    content:"";
+
+    position:absolute;
+
+    inset:15px;
+
+    border:1px solid
+        rgba(0,217,255,.35);
+
+    pointer-events:none;
+
+}
+
+.certificate-logo {
+
+    font-family:Orbitron;
+
+    font-size:20px;
+
+    color:#00d9ff;
+
+    letter-spacing:4px;
+
+}
+
+.certificate h1 {
+
+    font-family:Georgia, serif;
+
+    font-size:50px;
+
+    color:white;
+
+    margin:25px 0 10px;
+
+}
+
+.subtitle {
+
+    color:#9baab8;
+
+    font-size:16px;
+
+}
+
+.student-name {
+
+    font-family:Georgia, serif;
+
+    font-size:42px;
+
+    color:#00d9ff;
+
+    margin:25px 0;
+
+}
+
+.course-name {
+
+    font-size:25px;
+
+    color:white;
+
+    font-weight:bold;
+
+}
+
+.certificate-info {
+
+    display:flex;
+
+    justify-content:space-between;
+
+    gap:20px;
+
+    margin-top:50px;
+
+    color:#9baab8;
+
+    text-align:left;
+
+}
+
+.info-box {
+
+    flex:1;
+
+}
+
+.info-box strong {
+
+    display:block;
+
+    color:white;
+
+    margin-top:5px;
+
+}
+
+.verify {
+
+    margin-top:35px;
+
+}
+
+.verify a {
+
+    color:#00d9ff;
+
+}
+
+.qr {
+
+    margin-top:25px;
+
+}
+
+.qr img {
+
+    width:120px;
+
+    height:120px;
+
+    background:white;
+
+    padding:8px;
+
+}
+
+.actions {
+
+    display:flex;
+
+    justify-content:center;
+
+    gap:10px;
+
+    margin-top:25px;
+
+}
+
+@media(max-width:700px) {
+
+    .certificate {
+
+        padding:45px 25px;
+
+    }
+
+    .certificate h1 {
+
+        font-size:36px;
+
+    }
+
+    .student-name {
+
+        font-size:30px;
+
+    }
+
+    .certificate-info {
+
+        flex-direction:column;
+
+        text-align:center;
+
+    }
+
+}
+
+@media print {
+
+    .navbar,
+    .actions {
+
+        display:none !important;
+
+    }
+
+    .certificate-page {
+
+        padding:0;
+
+    }
+
+    .certificate {
+
+        box-shadow:none;
+
+        min-height:80vh;
+
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<header class="navbar">
+
+<div class="container nav-inner">
+
+<a
+href="index.html"
+class="logo">
+
+<span>&lt;</span>
+TECH IZACK
+<span>/&gt;</span>
+
+</a>
+
+<a
+href="student-dashboard.html"
+class="btn btn-outline">
+
+Dashboard
+
+</a>
+
+</div>
+
+</header>
+
+
+<main class="certificate-page">
+
+<div class="certificate-wrapper">
+
+
+<div
+id="certificate"
+class="certificate">
+
+<div class="certificate-logo">
+
+TECH IZACK ACADEMY
+
+</div>
+
+
+<h1>
+
+Certificate of Completion
+
+</h1>
+
+
+<div class="subtitle">
+
+This certificate is proudly presented to
+
+</div>
+
+
+<div
+id="studentName"
+class="student-name">
+
+Loading...
+
+</div>
+
+
+<div class="subtitle">
+
+for successfully completing
+
+</div>
+
+
+<div
+id="courseName"
+class="course-name">
+
+Loading...
+
+</div>
+
+
+<div class="certificate-info">
+
+
+<div class="info-box">
+
+Issued Date
+
+<strong
+id="issuedDate">
+
+—
+
+</strong>
+
+</div>
+
+
+<div class="info-box">
+
+Certificate ID
+
+<strong
+id="certificateId">
+
+—
+
+</strong>
+
+</div>
+
+
+<div class="info-box">
+
+Final Score
+
+<strong
+id="score">
+
+—
+
+</strong>
+
+</div>
+
+
+</div>
+
+
+<div class="qr">
+
+<img
+id="qrCode"
+alt="Certificate QR Code">
+
+</div>
+
+
+<div class="verify">
+
+Verify this certificate:
+
+<br>
+
+<a
+id="verifyLink"
+href="#">
+
+Loading...
+
+</a>
+
+</div>
+
+</div>
+
+
+<div class="actions">
+
+<button
+class="btn btn-primary"
+onclick="window.print()">
+
+🖨 Print / Save PDF
+
+</button>
+
+
+<a
+href="student-dashboard.html"
+class="btn btn-outline">
+
+Dashboard
+
+</a>
+
+</div>
+
+
+</div>
+
+</main>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
+<script>
+
+const SUPABASE_URL =
+"WEKA_PROJECT_URL_HAPA";
+
+const SUPABASE_KEY =
+"WEKA_PUBLISHABLE_KEY_HAPA";
+
+
+const supabaseClient =
+window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
+
+
+const params =
+new URLSearchParams(
+    location.search
+);
+
+
+const certificateId =
+params.get("id");
+
+
+async function init() {
+
+    if (!certificateId) {
+
+        document.getElementById(
+            "certificate"
+        ).innerHTML = `
+
+            <h2>
+                Certificate ID missing.
+            </h2>
+
+        `;
+
+        return;
+
+    }
+
+
+    const {
+        data,
+        error
+    } =
+    await supabaseClient
+
+        .from("certificates")
+
+        .select(`
+            certificate_id,
+            student_name,
+            course_title,
+            score,
+            issued_at
+        `)
+
+        .eq(
+            "certificate_id",
+            certificateId
+        )
+
+        .single();
+
+
+    if (
+        error ||
+        !data
+    ) {
+
+        document.getElementById(
+            "certificate"
+        ).innerHTML = `
+
+            <h2 style="color:#ff6475">
+
+                Certificate Not Found
+
+            </h2>
+
+            <p>
+                The certificate ID could not
+                be verified.
+            </p>
+
+        `;
+
+        return;
+
+    }
+
+
+    document.getElementById(
+        "studentName"
+    ).textContent =
+        data.student_name;
+
+
+    document.getElementById(
+        "courseName"
+    ).textContent =
+        data.course_title;
+
+
+    document.getElementById(
+        "certificateId"
+    ).textContent =
+        data.certificate_id;
+
+
+    document.getElementById(
+        "score"
+    ).textContent =
+        data.score !== null
+        ? `${data.score}%`
+        : "Completed";
+
+
+    const date =
+        new Date(
+            data.issued_at
+        );
+
+
+    document.getElementById(
+        "issuedDate"
+    ).textContent =
+        date.toLocaleDateString(
+            "en-GB",
+            {
+                day:"2-digit",
+                month:"long",
+                year:"numeric"
+            }
+        );
+
+
+    const verifyUrl =
+        `${location.origin}/verify.html?id=${encodeURIComponent(
+            data.certificate_id
+        )}`;
+
+
+    document.getElementById(
+        "verifyLink"
+    ).href =
+        verifyUrl;
+
+
+    document.getElementById(
+        "verifyLink"
+    ).textContent =
+        verifyUrl;
+
+
+    document.getElementById(
+        "qrCode"
+    ).src =
+        "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data="
+        +
+        encodeURIComponent(
+            verifyUrl
+        );
+
+}
+
+
+init();
+
+</script>
+
+</body>
+
+</html>
+```
