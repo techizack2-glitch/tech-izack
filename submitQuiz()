@@ -1,0 +1,126 @@
+```javascript
+async function submitQuiz() {
+
+    const answers = [];
+
+
+    for (const question of questions) {
+
+        const selected =
+            document.querySelector(
+                `input[name="question-${question.id}"]:checked`
+            );
+
+
+        if (selected) {
+
+            answers.push({
+
+                question_id:
+                    question.id,
+
+                option:
+                    selected.value
+
+            });
+
+        }
+
+    }
+
+
+    if (
+        answers.length === 0
+    ) {
+
+        alert(
+            "Please answer at least one question."
+        );
+
+        return;
+
+    }
+
+
+    const {
+        data: sessionData
+    } =
+    await supabaseClient.auth
+        .getSession();
+
+
+    const session =
+        sessionData.session;
+
+
+    if (!session) {
+
+        location.href =
+            "login.html";
+
+        return;
+
+    }
+
+
+    const response =
+        await fetch(
+
+            `${SUPABASE_URL}/functions/v1/submit-quiz`,
+
+            {
+
+                method: "POST",
+
+                headers: {
+
+                    "Content-Type":
+                        "application/json",
+
+                    "Authorization":
+                        `Bearer ${session.access_token}`
+
+                },
+
+                body: JSON.stringify({
+
+                    quiz_id:
+                        quiz.id,
+
+                    answers
+
+                })
+
+            }
+
+        );
+
+
+    const result =
+        await response.json();
+
+
+    if (!response.ok) {
+
+        alert(
+            result.error ||
+            "Quiz submission failed."
+        );
+
+        return;
+
+    }
+
+
+    showResult(
+
+        result.score,
+
+        result.percentage,
+
+        result.passed
+
+    );
+
+}
+```

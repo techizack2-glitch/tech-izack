@@ -1113,25 +1113,3 @@ async function deleteCourse(
     await loadStats();
     await loadCourses();
 }
-.select(`
-    id,
-    question,
-    option_a,
-    option_b,
-    option_c,
-    option_d,
-    question_order
-`)
-.select(`
-    id,
-    course_id,
-    lesson_id,
-    title,
-    description,
-    instructions,
-    difficulty,
-    points,
-    hint,
-    published,
-    position
-`)
