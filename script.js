@@ -185,7 +185,7 @@ document.querySelectorAll("nav a").forEach(link => {
 });
 function openCourse(id) {
     window.location.href =
-        `course.html?id=${id}`;
+        `courses/course.html?id=${id}`;
 }
 let labs = [];
 async function loadLabs() {

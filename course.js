@@ -57,8 +57,7 @@ async function initialize() {
 
         alert("Course not found.");
 
-        window.location.href =
-            "dashboard.html";
+        window.location.href = "pages/dashboard.html";
 
         return;
     }
