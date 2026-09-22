@@ -10,169 +10,768 @@
 
     <title>Student Dashboard | Tech Izack</title>
 
+    <!-- Google Fonts -->
     <link rel="preconnect"
           href="https://fonts.googleapis.com">
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Orbitron:wght@500;700;800&display=swap"
           rel="stylesheet">
 
+    <!-- Font Awesome -->
     <link rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
+    <!-- Main CSS -->
     <link rel="stylesheet"
           href="../style.css">
 
-    <style>
 
-        .dashboard {
-            padding: 130px 0 80px;
-        }
+<style>
 
-        .dashboard-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 20px;
-            margin-bottom: 40px;
-        }
+/* ================================
+   DASHBOARD THEME
+================================ */
 
-        .dashboard-header h1 {
-            font-family: "Orbitron";
-            font-size: 32px;
-        }
+:root {
+    --dash-bg: #050b16;
+    --dash-card: #0b1424;
+    --dash-card-2: #0e1a2d;
+    --dash-border: rgba(0, 229, 255, 0.16);
+    --dash-cyan: #00e5ff;
+    --dash-blue: #1677ff;
+    --dash-purple: #7c4dff;
+    --dash-text: #f3f7ff;
+    --dash-muted: #8d9bb3;
+    --dash-success: #00e676;
+    --dash-danger: #ff5252;
+}
 
-        .dashboard-header span {
-            color: var(--cyan);
-        }
 
-        .user-box {
-            padding: 15px 20px;
-            border: 1px solid var(--border);
-            background: var(--card);
-            border-radius: 8px;
-        }
+/* BODY */
 
-        .user-box small {
-            color: var(--muted);
-        }
+body {
+    background:
+        radial-gradient(
+            circle at top right,
+            rgba(0, 229, 255, 0.08),
+            transparent 30%
+        ),
+        radial-gradient(
+            circle at bottom left,
+            rgba(22, 119, 255, 0.08),
+            transparent 30%
+        ),
+        var(--dash-bg);
 
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
-            margin-bottom: 45px;
-        }
+    color: var(--dash-text);
+}
 
-        .dashboard-stat {
-            padding: 25px;
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-        }
 
-        .dashboard-stat i {
-            color: var(--cyan);
-            font-size: 25px;
-        }
+/* ================================
+   NAVBAR
+================================ */
 
-        .dashboard-stat strong {
-            display: block;
-            font-size: 30px;
-            margin-top: 10px;
-        }
+.dashboard-navbar {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
 
-        .dashboard-stat p {
-            color: var(--muted);
-            font-size: 13px;
-        }
+    background: rgba(5, 11, 22, 0.92);
 
-        .dashboard-title {
-            font-family: "Orbitron";
-            margin-bottom: 20px;
-        }
+    backdrop-filter: blur(12px);
 
-        .course-list {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
-        }
+    border-bottom: 1px solid var(--dash-border);
+}
 
-        .student-course {
-            padding: 25px;
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-        }
 
-        .student-course i {
-            color: var(--cyan);
-            font-size: 30px;
-        }
+.dashboard-navbar .nav-inner {
+    min-height: 72px;
 
-        .student-course h3 {
-            margin: 15px 0 7px;
-        }
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
 
-        .student-course p {
-            color: var(--muted);
-            font-size: 13px;
-        }
 
-        .progress {
-            height: 7px;
-            background: #101d32;
-            border-radius: 10px;
-            margin: 20px 0 8px;
-            overflow: hidden;
-        }
+.dashboard-logo {
+    color: white;
+    text-decoration: none;
 
-        .progress-bar {
-            height: 100%;
-            width: 0;
-            background: linear-gradient(
-                90deg,
-                var(--blue),
-                var(--cyan)
-            );
-        }
+    font-family: "Orbitron", sans-serif;
+    font-weight: 800;
+    font-size: 20px;
 
-        .progress-text {
-            color: var(--muted);
-            font-size: 11px;
-        }
+    letter-spacing: 1px;
+}
 
-        @media(max-width: 800px) {
 
-            .dashboard-grid,
-            .course-list {
-                grid-template-columns: 1fr;
-            }
+.dashboard-logo span {
+    color: var(--dash-cyan);
+}
 
-            .dashboard-header {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-        }
 
-    </style>
+.logout-btn {
+    border: 1px solid rgba(255,255,255,0.15);
+
+    background: rgba(255,255,255,0.04);
+
+    color: #fff;
+
+    padding: 10px 17px;
+
+    border-radius: 8px;
+
+    cursor: pointer;
+
+    transition: 0.25s;
+}
+
+
+.logout-btn:hover {
+    background: rgba(255,82,82,0.12);
+
+    border-color: rgba(255,82,82,0.5);
+
+    color: #ff7272;
+
+    transform: translateY(-2px);
+}
+
+
+/* ================================
+   DASHBOARD
+================================ */
+
+.dashboard {
+    min-height: calc(100vh - 72px);
+
+    padding: 70px 0 100px;
+}
+
+
+.dashboard-container {
+    max-width: 1180px;
+
+    margin: auto;
+
+    padding: 0 20px;
+}
+
+
+/* ================================
+   HEADER
+================================ */
+
+.dashboard-header {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 30px;
+
+    margin-bottom: 45px;
+}
+
+
+.dashboard-tag {
+    display: inline-block;
+
+    margin-bottom: 12px;
+
+    color: var(--dash-cyan);
+
+    font-size: 12px;
+
+    font-weight: 700;
+
+    letter-spacing: 2px;
+}
+
+
+.dashboard-header h1 {
+    margin: 0;
+
+    font-family: "Orbitron", sans-serif;
+
+    font-size: clamp(27px, 4vw, 42px);
+
+    line-height: 1.2;
+}
+
+
+.dashboard-header h1 span {
+    color: var(--dash-cyan);
+
+    text-shadow:
+        0 0 20px rgba(0,229,255,0.35);
+}
+
+
+.dashboard-subtitle {
+    color: var(--dash-muted);
+
+    margin-top: 12px;
+
+    font-size: 15px;
+}
+
+
+/* USER BOX */
+
+.user-box {
+    min-width: 250px;
+
+    padding: 18px 20px;
+
+    border: 1px solid var(--dash-border);
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(14,26,45,0.95),
+            rgba(7,15,28,0.95)
+        );
+
+    border-radius: 12px;
+
+    box-shadow:
+        0 15px 40px rgba(0,0,0,0.25);
+}
+
+
+.user-box small {
+    display: block;
+
+    color: var(--dash-muted);
+
+    margin-bottom: 6px;
+}
+
+
+.user-box strong {
+    color: #fff;
+
+    word-break: break-word;
+}
+
+
+/* ================================
+   STAT CARDS
+================================ */
+
+.dashboard-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap: 20px;
+
+    margin-bottom: 55px;
+}
+
+
+.dashboard-stat {
+    position: relative;
+
+    overflow: hidden;
+
+    padding: 26px;
+
+    border: 1px solid var(--dash-border);
+
+    border-radius: 14px;
+
+    background:
+        linear-gradient(
+            145deg,
+            var(--dash-card-2),
+            var(--dash-card)
+        );
+
+    box-shadow:
+        0 15px 35px rgba(0,0,0,0.25);
+
+    transition: 0.3s;
+}
+
+
+.dashboard-stat::before {
+    content: "";
+
+    position: absolute;
+
+    width: 100px;
+    height: 100px;
+
+    right: -40px;
+    top: -40px;
+
+    background: var(--dash-cyan);
+
+    opacity: 0.06;
+
+    border-radius: 50%;
+}
+
+
+.dashboard-stat:hover {
+    transform: translateY(-5px);
+
+    border-color:
+        rgba(0,229,255,0.4);
+
+    box-shadow:
+        0 20px 45px rgba(0,0,0,0.35),
+        0 0 25px rgba(0,229,255,0.06);
+}
+
+
+.stat-icon {
+    width: 48px;
+    height: 48px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 10px;
+
+    background:
+        rgba(0,229,255,0.08);
+
+    color: var(--dash-cyan);
+
+    font-size: 20px;
+}
+
+
+.dashboard-stat strong {
+    display: block;
+
+    margin-top: 18px;
+
+    font-size: 32px;
+
+    font-weight: 800;
+}
+
+
+.dashboard-stat p {
+    margin: 6px 0 0;
+
+    color: var(--dash-muted);
+
+    font-size: 13px;
+}
+
+
+/* ================================
+   COURSE SECTION
+================================ */
+
+.course-section-header {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    margin-bottom: 22px;
+}
+
+
+.dashboard-title {
+    margin: 0;
+
+    font-family: "Orbitron", sans-serif;
+
+    font-size: 24px;
+}
+
+
+.dashboard-title::before {
+    content: "// ";
+
+    color: var(--dash-cyan);
+}
+
+
+.course-list {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap: 22px;
+}
+
+
+/* ================================
+   COURSE CARD
+================================ */
+
+.student-course {
+    position: relative;
+
+    overflow: hidden;
+
+    padding: 25px;
+
+    border-radius: 14px;
+
+    border: 1px solid var(--dash-border);
+
+    background:
+        linear-gradient(
+            145deg,
+            #0d1b30,
+            #08111f
+        );
+
+    box-shadow:
+        0 15px 40px rgba(0,0,0,0.25);
+
+    transition:
+        transform 0.3s,
+        border-color 0.3s,
+        box-shadow 0.3s;
+}
+
+
+.student-course:hover {
+    transform: translateY(-7px);
+
+    border-color:
+        rgba(0,229,255,0.45);
+
+    box-shadow:
+        0 20px 45px rgba(0,0,0,0.4),
+        0 0 25px rgba(0,229,255,0.06);
+}
+
+
+.course-icon {
+    width: 55px;
+    height: 55px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 12px;
+
+    color: var(--dash-cyan);
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(0,229,255,0.14),
+            rgba(22,119,255,0.12)
+        );
+
+    border: 1px solid
+        rgba(0,229,255,0.12);
+
+    font-size: 23px;
+}
+
+
+.student-course h3 {
+    margin: 18px 0 9px;
+
+    font-size: 19px;
+
+    color: #fff;
+}
+
+
+.student-course p {
+    color: var(--dash-muted);
+
+    font-size: 13px;
+
+    line-height: 1.7;
+
+    min-height: 45px;
+
+    margin-bottom: 18px;
+}
+
+
+/* ================================
+   PROGRESS
+================================ */
+
+.progress-info {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    margin-bottom: 8px;
+
+    font-size: 11px;
+}
+
+
+.progress-label {
+    color: var(--dash-muted);
+}
+
+
+.progress-number {
+    color: var(--dash-cyan);
+
+    font-weight: 700;
+}
+
+
+.progress {
+    height: 8px;
+
+    width: 100%;
+
+    background: #050b15;
+
+    border-radius: 20px;
+
+    overflow: hidden;
+
+    border: 1px solid
+        rgba(255,255,255,0.04);
+}
+
+
+.progress-bar {
+    height: 100%;
+
+    width: 0;
+
+    border-radius: 20px;
+
+    background:
+        linear-gradient(
+            90deg,
+            var(--dash-blue),
+            var(--dash-cyan)
+        );
+
+    box-shadow:
+        0 0 12px
+        rgba(0,229,255,0.35);
+
+    transition: width 0.6s ease;
+}
+
+
+/* ================================
+   START LEARNING BUTTON
+================================ */
+
+.course-btn {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 8px;
+
+    width: 100%;
+
+    margin-top: 20px;
+
+    padding: 12px 18px;
+
+    border-radius: 8px;
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--dash-blue),
+            #075cff
+        );
+
+    color: white;
+
+    text-decoration: none;
+
+    font-weight: 700;
+
+    font-size: 13px;
+
+    border: 1px solid
+        rgba(255,255,255,0.08);
+
+    box-shadow:
+        0 8px 20px
+        rgba(22,119,255,0.18);
+
+    transition: 0.25s;
+}
+
+
+.course-btn:hover {
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 12px 25px
+        rgba(22,119,255,0.3);
+
+    background:
+        linear-gradient(
+            135deg,
+            #2587ff,
+            #0068ff
+        );
+}
+
+
+/* ================================
+   EMPTY / ERROR
+================================ */
+
+.course-message {
+    grid-column: 1 / -1;
+
+    padding: 35px;
+
+    text-align: center;
+
+    color: var(--dash-muted);
+
+    border: 1px dashed
+        rgba(255,255,255,0.12);
+
+    border-radius: 12px;
+
+    background:
+        rgba(255,255,255,0.02);
+}
+
+
+.course-message i {
+    display: block;
+
+    margin-bottom: 12px;
+
+    color: var(--dash-cyan);
+
+    font-size: 30px;
+}
+
+
+/* ================================
+   RESPONSIVE
+================================ */
+
+@media (max-width: 900px) {
+
+    .dashboard-grid,
+    .course-list {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+}
+
+
+@media (max-width: 700px) {
+
+    .dashboard {
+        padding-top: 45px;
+    }
+
+
+    .dashboard-header {
+        flex-direction: column;
+
+        align-items: flex-start;
+    }
+
+
+    .user-box {
+        width: 100%;
+
+        min-width: 0;
+    }
+
+
+    .dashboard-grid,
+    .course-list {
+        grid-template-columns: 1fr;
+    }
+
+
+    .course-section-header {
+        align-items: flex-start;
+    }
+
+}
+
+
+/* ================================
+   SMALL MOBILE
+================================ */
+
+@media (max-width: 430px) {
+
+    .dashboard-container {
+        padding: 0 15px;
+    }
+
+
+    .dashboard-header h1 {
+        font-size: 27px;
+    }
+
+
+    .dashboard-stat {
+        padding: 21px;
+    }
+
+
+    .student-course {
+        padding: 21px;
+    }
+
+}
+
+</style>
 
 </head>
 
 
 <body>
 
-<header class="navbar">
+
+<!-- ================================
+     NAVBAR
+================================ -->
+
+<header class="dashboard-navbar">
 
     <div class="container nav-inner">
 
-        <a href="index.html" class="logo">
+        <a href="../index.html"
+           class="dashboard-logo">
+
             <span>&lt;</span>TECH IZACK<span>/&gt;</span>
+
         </a>
 
-        <button class="btn btn-outline"
-                onclick="logout()">
+
+        <button
+            class="logout-btn"
+            onclick="logout()">
 
             <i class="fas fa-right-from-bracket"></i>
+
             Logout
 
         </button>
@@ -182,50 +781,80 @@
 </header>
 
 
+
+<!-- ================================
+     MAIN DASHBOARD
+================================ -->
+
 <main class="dashboard">
 
-    <div class="container">
+    <div class="dashboard-container">
+
+
+        <!-- HEADER -->
 
         <div class="dashboard-header">
 
             <div>
 
-                <span class="section-tag">
+                <span class="dashboard-tag">
                     // STUDENT DASHBOARD
                 </span>
 
+
                 <h1>
-                    Welcome, <span id="studentName">Student</span>
+
+                    Welcome,
+                    <span id="studentName">
+                        Student
+                    </span>
+
                 </h1>
 
-                <p style="color:var(--muted);">
+
+                <p class="dashboard-subtitle">
                     Continue your cybersecurity journey.
                 </p>
 
             </div>
 
+
             <div class="user-box">
 
-                <small>Logged in as</small>
+                <small>
+                    Logged in as
+                </small>
 
-                <div id="studentEmail">
+                <strong id="studentEmail">
                     Loading...
-                </div>
+                </strong>
 
             </div>
 
         </div>
 
 
+
+        <!-- ================================
+             STATISTICS
+        ================================= -->
+
         <div class="dashboard-grid">
+
 
             <div class="dashboard-stat">
 
-                <i class="fas fa-book-open"></i>
+                <div class="stat-icon">
+
+                    <i class="fas fa-book-open"></i>
+
+                </div>
+
 
                 <strong id="courseCount">
                     0
                 </strong>
+
 
                 <p>
                     Enrolled Courses
@@ -234,13 +863,20 @@
             </div>
 
 
+
             <div class="dashboard-stat">
 
-                <i class="fas fa-flask"></i>
+                <div class="stat-icon">
+
+                    <i class="fas fa-flask"></i>
+
+                </div>
+
 
                 <strong>
                     0
                 </strong>
+
 
                 <p>
                     Labs Completed
@@ -249,13 +885,20 @@
             </div>
 
 
+
             <div class="dashboard-stat">
 
-                <i class="fas fa-certificate"></i>
+                <div class="stat-icon">
+
+                    <i class="fas fa-certificate"></i>
+
+                </div>
+
 
                 <strong>
                     0
                 </strong>
+
 
                 <p>
                     Certificates
@@ -263,34 +906,63 @@
 
             </div>
 
+
         </div>
 
 
-        <h2 class="dashboard-title">
-            My Courses
-        </h2>
+
+        <!-- ================================
+             COURSES
+        ================================= -->
+
+        <div class="course-section-header">
+
+            <h2 class="dashboard-title">
+                My Courses
+            </h2>
+
+        </div>
+
 
         <div id="courseList"
              class="course-list">
 
-            <p style="color:var(--muted);">
+            <div class="course-message">
+
+                <i class="fas fa-spinner fa-spin"></i>
+
                 Loading courses...
-            </p>
+
+            </div>
 
         </div>
+
 
     </div>
 
 </main>
 
 
+
+<!-- SUPABASE -->
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 
 <script>
 
-const SUPABASE_URL = "WEKA_PROJECT_URL_HAPA";
 
-const SUPABASE_KEY = "WEKA_PUBLISHABLE_KEY_HAPA";
+/* ================================
+   SUPABASE CONFIG
+================================ */
+
+const SUPABASE_URL =
+    "WEKA_PROJECT_URL_HAPA";
+
+
+const SUPABASE_KEY =
+    "WEKA_PUBLISHABLE_KEY_HAPA";
+
 
 const supabaseClient =
     window.supabase.createClient(
@@ -299,152 +971,311 @@ const supabaseClient =
     );
 
 
-// Check login
+
+/* ================================
+   LOAD DASHBOARD
+================================ */
 
 async function loadDashboard() {
 
     const {
         data: { user }
-    } = await supabaseClient.auth.getUser();
+    } =
+        await supabaseClient.auth.getUser();
+
+
+    /* NOT LOGGED IN */
 
     if (!user) {
 
-        window.location.href = "index.html";
+        window.location.href =
+            "../index.html";
 
         return;
     }
 
 
-    document.getElementById("studentEmail")
-        .textContent = user.email;
+    /* EMAIL */
 
+    document.getElementById(
+        "studentEmail"
+    ).textContent = user.email;
+
+
+
+    /* PROFILE */
 
     const {
         data: profile
-    } = await supabaseClient
-        .from("profiles")
-        .select("*")
-        .eq("id", user.id)
-        .single();
+    } =
+        await supabaseClient
+            .from("profiles")
+            .select("*")
+            .eq("id", user.id)
+            .single();
 
 
-    if (profile && profile.full_name) {
+    if (
+        profile &&
+        profile.full_name
+    ) {
 
-        document.getElementById("studentName")
-            .textContent = profile.full_name;
+        document.getElementById(
+            "studentName"
+        ).textContent =
+            profile.full_name;
 
     }
 
 
+    /* COURSES */
+
     await loadCourses(user.id);
+
 }
 
 
-// Load courses
+
+/* ================================
+   LOAD COURSES
+================================ */
 
 async function loadCourses(userId) {
 
     const {
         data,
         error
-    } = await supabaseClient
-        .from("enrollments")
-        .select(`
-            progress,
-            courses (
-                id,
-                title,
-                description,
-                level,
-                lessons,
-                labs
-            )
-        `)
-        .eq("user_id", userId);
+    } =
+        await supabaseClient
+            .from("enrollments")
+            .select(`
+                progress,
+                courses (
+                    id,
+                    title,
+                    description,
+                    level,
+                    lessons,
+                    labs
+                )
+            `)
+            .eq(
+                "user_id",
+                userId
+            );
 
+
+    /* ERROR */
 
     if (error) {
 
-        console.error(error);
+        console.error(
+            "Course loading error:",
+            error
+        );
+
+
+        document.getElementById(
+            "courseList"
+        ).innerHTML = `
+
+            <div class="course-message">
+
+                <i class="fas fa-triangle-exclamation"></i>
+
+                Unable to load courses.
+
+            </div>
+
+        `;
 
         return;
     }
 
 
-    document.getElementById("courseCount")
-        .textContent = data.length;
+
+    /* COURSE COUNT */
+
+    document.getElementById(
+        "courseCount"
+    ).textContent =
+        data.length;
+
 
 
     const list =
-        document.getElementById("courseList");
+        document.getElementById(
+            "courseList"
+        );
 
+
+
+    /* NO COURSES */
 
     if (!data.length) {
 
         list.innerHTML = `
-            <p style="color:#8d9bb3;">
-                You have not enrolled in any course yet.
-            </p>
+
+            <div class="course-message">
+
+                <i class="fas fa-book-open"></i>
+
+                You have not enrolled
+                in any course yet.
+
+            </div>
+
         `;
 
         return;
     }
 
 
-    list.innerHTML = data.map(item => {
 
-        const course = item.courses;
+    /* COURSE CARDS */
 
-        return `
+    list.innerHTML = data
+        .map(item => {
 
-            <article class="student-course">
 
-                <i class="fas fa-shield-halved"></i>
+            const course =
+                item.courses;
 
-                <h3>
-                    ${course.title}
-                </h3>
 
-                <p>
-                    ${course.description || ""}
-                </p>
+            if (!course) {
 
-                <div class="progress">
+                return "";
 
-                    <div
-                        class="progress-bar"
-                        style="width:${item.progress}%">
+            }
+
+
+            const progress =
+                Math.max(
+                    0,
+                    Math.min(
+                        100,
+                        Number(
+                            item.progress
+                        ) || 0
+                    )
+                );
+
+
+
+            return `
+
+                <article
+                    class="student-course">
+
+
+                    <div class="course-icon">
+
+                        <i class="fas fa-shield-halved"></i>
+
                     </div>
 
-                </div>
 
-                <span class="progress-text">
-                    ${item.progress}% completed
-                </span>
 
-            </article>
+                    <h3>
 
-        `;
+                        ${course.title}
 
-    }).join("");
+                    </h3>
+
+
+
+                    <p>
+
+                        ${
+                            course.description ||
+                            "Cybersecurity course"
+                        }
+
+                    </p>
+
+
+
+                    <div class="progress-info">
+
+                        <span class="progress-label">
+                            Course Progress
+                        </span>
+
+                        <span class="progress-number">
+
+                            ${progress}%
+
+                        </span>
+
+                    </div>
+
+
+
+                    <div class="progress">
+
+                        <div
+                            class="progress-bar"
+                            style="width:${progress}%">
+
+                        </div>
+
+                    </div>
+
+
+
+                    <a
+                        href="../courses/course-player.html?id=${course.id}"
+                        class="course-btn">
+
+                        <i class="fas fa-play"></i>
+
+                        Start Learning
+
+                    </a>
+
+
+                </article>
+
+            `;
+
+
+        })
+        .join("");
+
 }
 
 
-// Logout
+
+/* ================================
+   LOGOUT
+================================ */
 
 async function logout() {
 
-    await supabaseClient.auth.signOut();
+    await supabaseClient
+        .auth
+        .signOut();
 
-    window.location.href = "index.html";
+
+    window.location.href =
+        "../index.html";
+
 }
 
+
+
+/* START */
 
 loadDashboard();
 
 </script>
 
-    <script src="../script.js"></script>
+
+<!-- MAIN SCRIPT -->
+
+<script src="../script.js"></script>
+
 
 </body>
+
 </html>
